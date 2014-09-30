@@ -2,6 +2,9 @@
 Thumbs.db
 ehthumbs.db
 
+#JMonkey Files
+nbproject/private/
+
 # Folder config file
 Desktop.ini
 
