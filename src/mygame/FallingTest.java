@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package mygame;
 
 
@@ -12,10 +9,6 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
 
-/**
- *
- * @author krish
- */
 public class FallingTest extends SimpleApplication {
 
     protected Geometry player;
@@ -34,7 +27,6 @@ public class FallingTest extends SimpleApplication {
         player.setMaterial(mat);
         rootNode.attachChild(player);
     }
-    protected boolean grow = true;
 
     @Override
     public void simpleUpdate(float tpf) {
