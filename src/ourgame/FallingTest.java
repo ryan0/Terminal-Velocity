@@ -1,5 +1,5 @@
 
-package mygame;
+package ourgame;
 
 
 import com.jme3.app.SimpleApplication;
@@ -31,5 +31,6 @@ public class FallingTest extends SimpleApplication {
     @Override
     public void simpleUpdate(float tpf) {
         player.move(0,-2*tpf,0);
+        player.rotate(0, .02f, .02f);
     }
 }
