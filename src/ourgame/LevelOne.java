@@ -30,9 +30,15 @@ public class LevelOne extends SimpleApplication{
     CameraNode camNode;
     Node pNode;
     ChaseCamera chaseCam;
+    
+    double g = -9.8;
+    double yVel = 0;
+    int terminalVel = 100;
+    
     public void simpleInitApp()
     {
-    
+        flyCam.setEnabled(false);
+        
         AmbientLight lamp = new AmbientLight();
         lamp.setColor(ColorRGBA.Blue);
         rootNode.addLight(lamp);
@@ -55,9 +61,11 @@ public class LevelOne extends SimpleApplication{
         pNode = new Node("pNode");
         pNode.attachChild(player);
         
+        
+        
         Spatial terrain = assetManager.loadModel("Models/Terrain/Terrain.j3o");
-        Material theGround = new Material (assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        theGround.setTexture("ColorMap", assetManager.loadTexture("Textures/GroundStuffs.png"));
+        Material theGround = new Material (assetManager, "Common/MatDefs/Light/Lighting.j3md");
+        theGround.setTexture("DiffuseMap", assetManager.loadTexture("Textures/GroundStuffs.png"));
         terrain.setMaterial(theGround);
         terrain.setLocalScale(new Vector3f(500f,200f,500f));
         terrain.setLocalTranslation(new Vector3f(0,-900,0));
@@ -66,8 +74,15 @@ public class LevelOne extends SimpleApplication{
         camNode = new CameraNode("Camera Node", cam);
         camNode.setControlDir(ControlDirection.SpatialToCamera);
         pNode.attachChild(camNode);
-        camNode.setLocalTranslation(new Vector3f(0, 40, 0));
-        camNode.lookAt(player.getLocalTranslation(), Vector3f.UNIT_Y);
+        
+        chaseCam = new ChaseCamera(cam, camNode, inputManager);
+        chaseCam.setSpatial(player);
+        chaseCam.setChasingSensitivity(.5f);
+        chaseCam.setMinDistance(10);
+        chaseCam.setMaxDistance(20);
+        chaseCam.setEnabled(true);
+        chaseCam.setDefaultDistance(15);
+        
         
         rootNode.attachChild(pNode);
         
@@ -77,8 +92,11 @@ public class LevelOne extends SimpleApplication{
     @Override
     public void simpleUpdate (float tpf)
     {
-        player.move(0,-50*tpf,0);
-        camNode.move(0,-50*tpf,0);
+        player.move(0,(int)(yVel*tpf),0);
+        yVel += g*tpf;
+        if(yVel>terminalVel)
+            yVel = terminalVel;
+        
     }
     private void initKeys()
     {
@@ -96,19 +114,19 @@ public class LevelOne extends SimpleApplication{
             Vector3f v = player.getLocalTranslation();
             if (name.equals("Down"))
             {
-                player.setLocalTranslation(v.x, v.y,v.z-5*tpf);
+                player.setLocalTranslation(v.x, v.y,v.z-50*tpf);
             }     
             else if (name.equals("Right"))
             {
-                player.setLocalTranslation(v.x-5*tpf,v.y,v.z);
+                player.setLocalTranslation(v.x-50*tpf,v.y,v.z);
             }
             else if (name.equals("Up"))
             {
-                player.setLocalTranslation(v.x,v.y,v.z+5*tpf);
+                player.setLocalTranslation(v.x,v.y,v.z+50*tpf);
             }
             else if (name.equals("Left"))
             {
-                player.setLocalTranslation(v.x+5*tpf,v.y, v.z);
+                player.setLocalTranslation(v.x+50*tpf,v.y, v.z);
             }
         }
     };

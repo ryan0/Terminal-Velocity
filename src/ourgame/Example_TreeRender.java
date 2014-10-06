@@ -44,8 +44,10 @@ public class Example_TreeRender extends SimpleApplication
         sun.setDirection(new Vector3f(0,-1,0));
         rootNode.addLight(sun);
         
+        //Make a ground
+        
         //Start adding a bunch of trees
-        for(int countX = -100;countX<0;countX+=(int)(Math.random()*6+6))
+        for(int countX = -100;countX<100;countX+=6)
         {
             for(int countZ = -100;countZ<100;countZ+=(int)(Math.random()*6+6))
             {
@@ -69,7 +71,7 @@ public class Example_TreeRender extends SimpleApplication
                 treeNode.attachChild(leaves);
                 
                 //Add some randomness so the forest doesn't look ugly
-                treeNode.setLocalTranslation(countX+(int)(Math.random()*2), 0, countZ+(int)(Math.random()*2));
+                treeNode.setLocalTranslation(countX+(int)(Math.random()*5), 0, countZ+(int)(Math.random()*2));
                 treeNode.setLocalScale((float) (Math.random()*1.5+.3));
                 treeNode.setLocalRotation(new Matrix3f((int)(Math.random()*90),0,0,0,0,0,20,0,0));
                 treeNode.setCullHint(Spatial.CullHint.Never);

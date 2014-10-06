@@ -31,6 +31,6 @@ public class FallingTest extends SimpleApplication {
     @Override
     public void simpleUpdate(float tpf) {
         player.move(0,-2*tpf,0);
-        player.rotate(0, .02f, .02f);
+        player.rotate(0, 2*tpf, 2*tpf);
     }
 }
