@@ -31,12 +31,10 @@ public class LevelOne extends SimpleApplication{
     
     double g = -9.8;
     double yVel = 0;
-    int terminalVel = 100;
+    int terminalVel = 5;
     
     public void simpleInitApp()
-    {
-        flyCam.setEnabled(false);
-        
+    {   
         rootNode.attachChild(SkyFactory.createSky(assetManager, 
                 assetManager.loadTexture("Textures/Sky/Sky_West.jpg"), 
                 assetManager.loadTexture("Textures/Sky/Sky_East.jpg"), 
@@ -61,17 +59,17 @@ public class LevelOne extends SimpleApplication{
         player.rotate(135, 0, -90);
         pNode.attachChild(player);
         
-        
         CameraNode camNode = new CameraNode("Camera Node", cam);
         camNode.setControlDir(ControlDirection.SpatialToCamera);
         pNode.attachChild(camNode);
         
         ChaseCamera chaseCam = new ChaseCamera(cam, camNode, inputManager);
-        chaseCam.setSpatial(player);
-        chaseCam.setMinDistance(10);
-        chaseCam.setMaxDistance(20);
-        chaseCam.setDefaultDistance(15);
+        chaseCam.setDragToRotate(false);
+        chaseCam.setMinDistance(15);
+        chaseCam.setMaxDistance(30);
+        chaseCam.setDefaultDistance(20);
         chaseCam.setEnabled(true);
+        chaseCam.setSpatial(player);
         
         rootNode.attachChild(pNode);
         
@@ -88,11 +86,10 @@ public class LevelOne extends SimpleApplication{
     @Override
     public void simpleUpdate (float tpf)
     {
-        player.move(0,(int)(yVel*tpf),0);
         yVel += g*tpf;
-        if(yVel>terminalVel)
+        if(yVel > terminalVel)
             yVel = terminalVel;
-        
+        player.move(0,(float)(yVel*tpf),0);
     }
     private void initKeys()
     {
@@ -108,19 +105,19 @@ public class LevelOne extends SimpleApplication{
         public void onAnalog(String name, float value, float tpf)
         {
             Vector3f v = player.getLocalTranslation();
-            if (name.equals("Down"))
+            if (name.equals("Right"))
             {
                 player.setLocalTranslation(v.x, v.y,v.z-50*tpf);
             }     
-            else if (name.equals("Right"))
+            else if (name.equals("Up"))
             {
                 player.setLocalTranslation(v.x-50*tpf,v.y,v.z);
             }
-            else if (name.equals("Up"))
+            else if (name.equals("Left"))
             {
                 player.setLocalTranslation(v.x,v.y,v.z+50*tpf);
             }
-            else if (name.equals("Left"))
+            else if (name.equals("Down"))
             {
                 player.setLocalTranslation(v.x+50*tpf,v.y, v.z);
             }
