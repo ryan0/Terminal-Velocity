@@ -7,6 +7,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.RenderManager;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.shape.Box;
+import com.jme3.util.SkyFactory;
 
 /**
  * test
@@ -21,6 +22,15 @@ public class Main extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
+        rootNode.attachChild(SkyFactory.createSky(assetManager, 
+                assetManager.loadTexture("Textures/Sky/Sky_West.jpg"), 
+                assetManager.loadTexture("Textures/Sky/Sky_East.jpg"), 
+                assetManager.loadTexture("Textures/Sky/Sky_North.jpg"), 
+                assetManager.loadTexture("Textures/Sky/Sky_South.jpg"), 
+                assetManager.loadTexture("Textures/Sky/Sky_Up.jpg"), 
+                assetManager.loadTexture("Textures/Sky/Sky_Down.jpg")));
+        
+        
         Box b = new Box(1, 1, 1);
         Geometry geom = new Geometry("Box", b);
         //Hi Ryan

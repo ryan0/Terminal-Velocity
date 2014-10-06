@@ -3,6 +3,7 @@
  * and open the template in the editor.
  */
 package ourgame;
+import com.jme3.util.SkyFactory;
 import com.jme3.app.SimpleApplication;
 import com.jme3.input.ChaseCamera;
 import com.jme3.input.KeyInput;
@@ -26,10 +27,7 @@ public class LevelOne extends SimpleApplication{
         LevelOne app = new LevelOne();
         app.start();
     }
-    protected Spatial player;
-    CameraNode camNode;
-    Node pNode;
-    ChaseCamera chaseCam;
+    private Spatial player;
     
     double g = -9.8;
     double yVel = 0;
@@ -39,28 +37,43 @@ public class LevelOne extends SimpleApplication{
     {
         flyCam.setEnabled(false);
         
+        rootNode.attachChild(SkyFactory.createSky(assetManager, 
+                assetManager.loadTexture("Textures/Sky/Sky_West.jpg"), 
+                assetManager.loadTexture("Textures/Sky/Sky_East.jpg"), 
+                assetManager.loadTexture("Textures/Sky/Sky_North.jpg"), 
+                assetManager.loadTexture("Textures/Sky/Sky_South.jpg"), 
+                assetManager.loadTexture("Textures/Sky/Sky_Up.jpg"), 
+                assetManager.loadTexture("Textures/Sky/Sky_Down.jpg")));
+        
         AmbientLight lamp = new AmbientLight();
-        lamp.setColor(ColorRGBA.Blue);
+        lamp.setColor(ColorRGBA.White);
         rootNode.addLight(lamp);
         DirectionalLight sun = new DirectionalLight();
-        sun.setColor(ColorRGBA.White.mult(2));
+        sun.setColor(ColorRGBA.White);
         sun.setDirection(new Vector3f(0,-1,0));
         rootNode.addLight(sun);
         
-        player = assetManager.loadModel("Models/Dude/WIP Dude Frame.j3o");
-        Material skinAndClothes = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        Node pNode = new Node("pNode");
+        player = assetManager.loadModel("Models/Dude/WIP Dude Frame.obj");
+        Material skinAndClothes = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
         player.setMaterial(skinAndClothes);
-        Quaternion pitch90 = new Quaternion();
-        pitch90.fromAngleAxis (FastMath.PI/2, new Vector3f(0,0,1));
-        Quaternion roll180 = new Quaternion();
-        roll180.fromAngleAxis (FastMath.PI, new Vector3f(0,1,0));
-        Quaternion yaw90 = new Quaternion();
-        yaw90.fromAngleAxis (-FastMath.PI/2, new Vector3f(1,0,0));
-        Quaternion pRotation = (pitch90.mult(roll180)).mult(yaw90);
-        player.setLocalRotation(pRotation);
-        pNode = new Node("pNode");
+        
+        player.rotate(135, 0, -90);
         pNode.attachChild(player);
         
+        
+        CameraNode camNode = new CameraNode("Camera Node", cam);
+        camNode.setControlDir(ControlDirection.SpatialToCamera);
+        pNode.attachChild(camNode);
+        
+        ChaseCamera chaseCam = new ChaseCamera(cam, camNode, inputManager);
+        chaseCam.setSpatial(player);
+        chaseCam.setMinDistance(10);
+        chaseCam.setMaxDistance(20);
+        chaseCam.setDefaultDistance(15);
+        chaseCam.setEnabled(true);
+        
+        rootNode.attachChild(pNode);
         
         
         Spatial terrain = assetManager.loadModel("Models/Terrain/Terrain.j3o");
@@ -69,23 +82,6 @@ public class LevelOne extends SimpleApplication{
         terrain.setMaterial(theGround);
         terrain.setLocalScale(new Vector3f(500f,200f,500f));
         terrain.setLocalTranslation(new Vector3f(0,-900,0));
-        //THIS IS WHERE I LEAVE OFFFF!!!!!! DUN DUN DUN...
-        
-        camNode = new CameraNode("Camera Node", cam);
-        camNode.setControlDir(ControlDirection.SpatialToCamera);
-        pNode.attachChild(camNode);
-        
-        chaseCam = new ChaseCamera(cam, camNode, inputManager);
-        chaseCam.setSpatial(player);
-        chaseCam.setChasingSensitivity(.5f);
-        chaseCam.setMinDistance(10);
-        chaseCam.setMaxDistance(20);
-        chaseCam.setEnabled(true);
-        chaseCam.setDefaultDistance(15);
-        
-        
-        rootNode.attachChild(pNode);
-        
         rootNode.attachChild(terrain);
         initKeys();
     }
