@@ -36,7 +36,7 @@ public class LevelOne extends SimpleApplication{
     private BulletAppState bulletAppState;
     private RigidBodyControl terrainControl;
     private RigidBodyControl playerControl;
-    private Spatial player;
+    
     public void simpleInitApp()
     {   
         rootNode.attachChild(SkyFactory.createSky(assetManager, 
@@ -72,6 +72,7 @@ public class LevelOne extends SimpleApplication{
         
         
         Node pNode = new Node("pNode");
+        Spatial player;
         player = assetManager.loadModel("Models/Dude/WIP Dude Frame.obj");
         Material skinAndClothes = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
         player.setMaterial(skinAndClothes);
@@ -113,21 +114,13 @@ public class LevelOne extends SimpleApplication{
         inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_RIGHT));
         inputManager.addMapping("Down", new KeyTrigger(KeyInput.KEY_DOWN));
         inputManager.addMapping("Left", new KeyTrigger(KeyInput.KEY_LEFT));
-        inputManager.addMapping("Up", new KeyTrigger(KeyInput.KEY_W));
-        inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
-        inputManager.addMapping("Down", new KeyTrigger(KeyInput.KEY_S));
-        inputManager.addMapping("Left", new KeyTrigger(KeyInput.KEY_A));
-        inputManager.addMapping("Jetpack", new KeyTrigger(KeyInput.KEY_J));
-        inputManager.addListener(analogListener,"Up", "Right", "Down", "Left","Jetpack");
+        
+        inputManager.addListener(analogListener,"Up", "Right", "Down", "Left");
     }
     private AnalogListener analogListener = new AnalogListener()
     {
         public void onAnalog(String name, float value, float tpf)
         {
-            if (name.equals("Jetpack"))
-            {
-                playerControl.applyCentralForce(new Vector3f(0,1f,0));
-            }
             if (name.equals("Right"))
             {
                 playerControl.applyCentralForce(new Vector3f(0, 0, -2));
