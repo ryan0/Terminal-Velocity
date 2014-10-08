@@ -37,6 +37,9 @@ public class LevelOne extends SimpleApplication{
     private RigidBodyControl terrainControl;
     private RigidBodyControl playerControl;
     
+    ChaseCamera chaseCam;
+    float playerAccel = 0;
+    
     public void simpleInitApp()
     {   
         rootNode.attachChild(SkyFactory.createSky(assetManager, 
@@ -55,9 +58,9 @@ public class LevelOne extends SimpleApplication{
         sun.setDirection(new Vector3f(0,-1,0));
         rootNode.addLight(sun);
         
-        
         bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
+        
         
         Spatial terrain = assetManager.loadModel("Models/Terrain/Terrain.j3o");
         Material theGround = new Material (assetManager, "Common/MatDefs/Light/Lighting.j3md");
@@ -68,6 +71,7 @@ public class LevelOne extends SimpleApplication{
         CollisionShape terrainShape = CollisionShapeFactory.createMeshShape(terrain);
         terrainControl = new RigidBodyControl(terrainShape, 0);
         terrain.addControl(terrainControl);
+        bulletAppState.getPhysicsSpace().add(terrainControl);
         rootNode.attachChild(terrain);
         
         
@@ -81,17 +85,16 @@ public class LevelOne extends SimpleApplication{
         
         CapsuleCollisionShape PlayerShape = new CapsuleCollisionShape(1.5f, 6f, 1);
         playerControl = new RigidBodyControl(PlayerShape, .05f);
-        playerControl.setGravity(new Vector3f(0f, 9.8f, 0f));
-        //playerControl.setPhysicsLocation(new Vector3f(0f, 10000f, 0f));
         player.addControl(playerControl);
-        
+        bulletAppState.getPhysicsSpace().add(playerControl);
         pNode.attachChild(player);
+        playerControl.setGravity(Vector3f.ZERO);
         
         CameraNode camNode = new CameraNode("Camera Node", cam);
         camNode.setControlDir(ControlDirection.SpatialToCamera);
         pNode.attachChild(camNode);
         
-        ChaseCamera chaseCam = new ChaseCamera(cam, camNode, inputManager);
+        chaseCam = new ChaseCamera(cam, camNode, inputManager);
         chaseCam.setDragToRotate(false);
         chaseCam.setMinDistance(15);
         chaseCam.setMaxDistance(30);
@@ -101,27 +104,35 @@ public class LevelOne extends SimpleApplication{
         
         rootNode.attachChild(pNode);
         
-        bulletAppState.getPhysicsSpace().add(terrainControl);
-        bulletAppState.getPhysicsSpace().add(playerControl);
-        
         initKeys();
     }
-
+    
+    @Override
+    public void simpleUpdate(float tpf)
+    {
+        playerControl.applyCentralForce(cam.getDirection().mult(tpf).mult(playerAccel));
+    }
     
     private void initKeys()
     {
-        inputManager.addMapping("Up", new KeyTrigger(KeyInput.KEY_UP));
-        inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_RIGHT));
-        inputManager.addMapping("Down", new KeyTrigger(KeyInput.KEY_DOWN));
-        inputManager.addMapping("Left", new KeyTrigger(KeyInput.KEY_LEFT));
+        inputManager.addMapping("Up", new KeyTrigger(KeyInput.KEY_W));
+        inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
+        inputManager.addMapping("Down", new KeyTrigger(KeyInput.KEY_S));
+        inputManager.addMapping("Left", new KeyTrigger(KeyInput.KEY_A));
+        inputManager.addMapping("Start", new KeyTrigger(KeyInput.KEY_RETURN));
         
-        inputManager.addListener(analogListener,"Up", "Right", "Down", "Left");
+        inputManager.addListener(analogListener,"Up", "Right", "Down", "Left", "Start");
     }
     private AnalogListener analogListener = new AnalogListener()
     {
         public void onAnalog(String name, float value, float tpf)
         {
-            if (name.equals("Right"))
+            if (name.equals("Start"))
+            {
+                playerControl.setGravity(new Vector3f(0f, -9.8f, 0f));
+                playerAccel = 100;
+            }   
+            else if (name.equals("Right"))
             {
                 playerControl.applyCentralForce(new Vector3f(0, 0, -2));
             }     
