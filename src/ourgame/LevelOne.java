@@ -22,10 +22,15 @@ import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
+import com.jme3.post.FilterPostProcessor;
+import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.CameraNode;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.CameraControl.ControlDirection;
+import com.jme3.shadow.DirectionalLightShadowFilter;
+import com.jme3.shadow.DirectionalLightShadowRenderer;
+import com.jme3.shadow.EdgeFilteringMode;
 
 public class LevelOne extends SimpleApplication{
     public static void main(String [] args)
@@ -39,13 +44,16 @@ public class LevelOne extends SimpleApplication{
     
     public void simpleInitApp()
     {   
-        rootNode.attachChild(SkyFactory.createSky(assetManager, 
+        Node skyNode = new Node();
+        skyNode.attachChild(SkyFactory.createSky(assetManager, 
                 assetManager.loadTexture("Textures/Sky/Sky_West.jpg"), 
                 assetManager.loadTexture("Textures/Sky/Sky_East.jpg"), 
                 assetManager.loadTexture("Textures/Sky/Sky_North.jpg"), 
                 assetManager.loadTexture("Textures/Sky/Sky_South.jpg"), 
                 assetManager.loadTexture("Textures/Sky/Sky_Up.jpg"), 
                 assetManager.loadTexture("Textures/Sky/Sky_Down.jpg")));
+        skyNode.setShadowMode(RenderQueue.ShadowMode.Off);
+        rootNode.attachChild(skyNode);
         
         AmbientLight lamp = new AmbientLight();
         lamp.setColor(ColorRGBA.White);
@@ -55,6 +63,27 @@ public class LevelOne extends SimpleApplication{
         sun.setDirection(new Vector3f(0,-1,0));
         rootNode.addLight(sun);
         
+        rootNode.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
+        final int SHADOWMAP_SIZE = 1028;
+        DirectionalLightShadowRenderer dlsr = new DirectionalLightShadowRenderer(assetManager, SHADOWMAP_SIZE, 3);
+        dlsr.setLight(sun);
+        //dlsr.setLambda(0.55f);
+        dlsr.setShadowIntensity(0.6f);
+        //dlsr.setEdgeFilteringMode(EdgeFilteringMode.Nearest);
+        viewPort.addProcessor(dlsr);
+        
+        /*
+        DirectionalLightShadowFilter dlsf;
+        dlsf = new DirectionalLightShadowFilter(assetManager, SHADOWMAP_SIZE, 3);
+        dlsf.setLight(sun);
+        dlsf.setLambda(0.55f);
+        dlsf.setShadowIntensity(0.6f);
+        dlsf.setEdgeFilteringMode(EdgeFilteringMode.Nearest);
+        dlsf.setEnabled(false);
+
+        FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
+        fpp.addFilter(dlsf);
+        * */
         
         bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
