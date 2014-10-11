@@ -3,6 +3,7 @@
  * and open the template in the editor.
  */
 package ourgame;
+import com.jme3.app.Application;
 import com.jme3.util.SkyFactory;
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
@@ -42,16 +43,16 @@ public class LevelOne extends SimpleApplication{
     private BulletAppState bulletAppState;
     private RigidBodyControl terrainControl;
     private RigidBodyControl playerControl;
-    
+   
     public void simpleInitApp()
-    {   
+    {
         Node skyNode = new Node();
-        skyNode.attachChild(SkyFactory.createSky(assetManager, 
-                assetManager.loadTexture("Textures/Sky/Sky_West.jpg"), 
-                assetManager.loadTexture("Textures/Sky/Sky_East.jpg"), 
-                assetManager.loadTexture("Textures/Sky/Sky_North.jpg"), 
-                assetManager.loadTexture("Textures/Sky/Sky_South.jpg"), 
-                assetManager.loadTexture("Textures/Sky/Sky_Up.jpg"), 
+        skyNode.attachChild(SkyFactory.createSky(assetManager,
+                assetManager.loadTexture("Textures/Sky/Sky_West.jpg"),
+                assetManager.loadTexture("Textures/Sky/Sky_East.jpg"),
+                assetManager.loadTexture("Textures/Sky/Sky_North.jpg"),
+                assetManager.loadTexture("Textures/Sky/Sky_South.jpg"),
+                assetManager.loadTexture("Textures/Sky/Sky_Up.jpg"),
                 assetManager.loadTexture("Textures/Sky/Sky_Down.jpg")));
         skyNode.setShadowMode(RenderQueue.ShadowMode.Off);
         rootNode.attachChild(skyNode);
@@ -74,17 +75,17 @@ public class LevelOne extends SimpleApplication{
         viewPort.addProcessor(dlsr);
         
         /*
-        DirectionalLightShadowFilter dlsf;
-        dlsf = new DirectionalLightShadowFilter(assetManager, SHADOWMAP_SIZE, 3);
-        dlsf.setLight(sun);
-        dlsf.setLambda(0.55f);
-        dlsf.setShadowIntensity(0.6f);
-        dlsf.setEdgeFilteringMode(EdgeFilteringMode.Nearest);
-        dlsf.setEnabled(false);
-
-        FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
-        fpp.addFilter(dlsf);
-        * */
+         * DirectionalLightShadowFilter dlsf;
+         * dlsf = new DirectionalLightShadowFilter(assetManager, SHADOWMAP_SIZE, 3);
+         * dlsf.setLight(sun);
+         * dlsf.setLambda(0.55f);
+         * dlsf.setShadowIntensity(0.6f);
+         * dlsf.setEdgeFilteringMode(EdgeFilteringMode.Nearest);
+         * dlsf.setEnabled(false);
+         * 
+         * FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
+         * fpp.addFilter(dlsf);
+         * */
         
         bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
@@ -136,7 +137,7 @@ public class LevelOne extends SimpleApplication{
         
         initKeys();
     }
-
+    
     
     private void initKeys()
     {
@@ -144,7 +145,10 @@ public class LevelOne extends SimpleApplication{
         inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_RIGHT));
         inputManager.addMapping("Down", new KeyTrigger(KeyInput.KEY_DOWN));
         inputManager.addMapping("Left", new KeyTrigger(KeyInput.KEY_LEFT));
-        
+        inputManager.addMapping("Up", new KeyTrigger(KeyInput.KEY_W));
+        inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
+        inputManager.addMapping("Down", new KeyTrigger(KeyInput.KEY_S));
+        inputManager.addMapping("Left", new KeyTrigger(KeyInput.KEY_A));
         inputManager.addListener(analogListener,"Up", "Right", "Down", "Left");
     }
     private AnalogListener analogListener = new AnalogListener()
@@ -154,7 +158,7 @@ public class LevelOne extends SimpleApplication{
             if (name.equals("Right"))
             {
                 playerControl.applyCentralForce(new Vector3f(0, 0, -2));
-            }     
+            }
             else if (name.equals("Up"))
             {
                 playerControl.applyCentralForce(new Vector3f(-2, 0, 0));

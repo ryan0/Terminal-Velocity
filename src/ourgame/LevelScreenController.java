@@ -31,16 +31,16 @@ public class LevelScreenController extends AbstractAppState implements ScreenCon
     }
     public void startLevel()
     {
-        if (levelSelection.compareTo("one")==0)
+        if (levelSelection.compareTo("Level One")==0)
         {
-            //AppSettings settings = new AppSettings(true);
-            //settings.setFullscreen(true);
-            //settings.setResolution(1280,720);
+            //AppSettings sets = new AppSettings(true);
+            //sets.setFullscreen(true);
+            //sets.setResolution(1280,720);
             LevelOne gameScr = new LevelOne();
             gameScr.setShowSettings(false);
-            //gameScr.setSettings(settings);
+            //gameScr.setSettings(sets);
             gameScr.start();
-            app.stop();
+            
         }
         else
         {
