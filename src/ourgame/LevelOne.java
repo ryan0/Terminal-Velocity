@@ -31,6 +31,7 @@ import com.jme3.scene.control.CameraControl.ControlDirection;
 import com.jme3.shadow.DirectionalLightShadowFilter;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
 import com.jme3.shadow.EdgeFilteringMode;
+import com.jme3.system.AppSettings;
 
 public class LevelOne extends SimpleApplication{
     public static void main(String [] args)
