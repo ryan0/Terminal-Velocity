@@ -4,6 +4,7 @@ ehthumbs.db
 
 #JMonkey Files
 nbproject/private/
+*.class
 
 # Folder config file
 Desktop.ini

@@ -9,11 +9,8 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
-import com.jme3.bullet.control.BetterCharacterControl;
-import com.jme3.bullet.control.CharacterControl;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.input.ChaseCamera;
@@ -25,27 +22,20 @@ import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
-import com.jme3.post.FilterPostProcessor;
-import com.jme3.renderer.Camera;
-import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.CameraNode;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.CameraControl.ControlDirection;
-import com.jme3.shadow.DirectionalLightShadowFilter;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
-import com.jme3.shadow.EdgeFilteringMode;
-import com.jme3.system.AppSettings;
 
-public class LevelOne extends AbstractAppState{
-    
+public class Level extends AbstractAppState{
     private SimpleApplication app;
     private AppStateManager stateManager;
+    
     private BulletAppState bulletAppState;
     private RigidBodyControl terrainControl;
     private RigidBodyControl playerControl;
-    private Camera cam;
    
     @Override
     public void initialize(AppStateManager stateManager1, Application dahApp)
@@ -53,12 +43,61 @@ public class LevelOne extends AbstractAppState{
         super.initialize(stateManager1, app);
         app = (SimpleApplication)dahApp;
         stateManager = stateManager1;
-        cam = app.getCamera();
-//        stateManager1.detach(stateManager1.getState(LevelScreenController.class));
-//        stateManager1.detach(stateManager1.getState(StartScreenController.class));
-//        stateManager1.detach(stateManager1.getState(MenuScreenController.class));
         
         
+        bulletAppState = new BulletAppState();
+        stateManager.attach(bulletAppState);
+        
+        Spatial terrain = app.getAssetManager().loadModel("Models/Terrain/Terrain.j3o");
+        Material theGround = new Material (app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
+        theGround.setTexture("DiffuseMap", app.getAssetManager().loadTexture("Textures/GroundStuffs.png"));
+        terrain.setMaterial(theGround);
+        terrain.setLocalScale(new Vector3f(1000f, 1000f, 1000f));
+        
+        CollisionShape terrainShape = CollisionShapeFactory.createMeshShape(terrain);
+        terrainControl = new RigidBodyControl(terrainShape, 0);
+        terrain.addControl(terrainControl);
+        app.getRootNode().attachChild(terrain);
+        
+        
+        Node pNode = new Node("pNode");
+        Spatial player;
+        player = app.getAssetManager().loadModel("Models/Dude/WIP Dude Frame.obj");
+        Material skinAndClothes = new Material(app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
+        player.setMaterial(skinAndClothes);
+        player.setLocalTranslation(0, 1000, 0);
+        player.rotate(135, 0, -90);
+        
+        CapsuleCollisionShape PlayerShape = new CapsuleCollisionShape(1.5f, 6f, 1);
+        playerControl = new RigidBodyControl(PlayerShape, .05f);
+        playerControl.setGravity(new Vector3f(0f, 9.8f, 0f));
+        //playerControl.setPhysicsLocation(new Vector3f(0f, 10000f, 0f));
+        player.addControl(playerControl);
+        
+        pNode.attachChild(player);
+        
+        CameraNode camNode = new CameraNode("Camera Node", app.getCamera());
+        camNode.setControlDir(ControlDirection.SpatialToCamera);
+        pNode.attachChild(camNode);
+        
+        ChaseCamera chaseCam = new ChaseCamera(app.getCamera(), camNode, app.getInputManager());
+        chaseCam.setDragToRotate(false);
+        chaseCam.setMinDistance(15);
+        chaseCam.setMaxDistance(30);
+        chaseCam.setDefaultDistance(20);
+        chaseCam.setEnabled(true);
+        chaseCam.setSpatial(player);
+        
+        app.getRootNode().attachChild(pNode);
+        
+        bulletAppState.getPhysicsSpace().add(terrainControl);
+        bulletAppState.getPhysicsSpace().add(playerControl);
+        
+        initKeys();
+    }
+    
+    private void initLight()
+    {
         Node skyNode = new Node();
         skyNode.attachChild(SkyFactory.createSky(app.getAssetManager(),
                 app.getAssetManager().loadTexture("Textures/Sky/Sky_West.jpg"),
@@ -99,56 +138,6 @@ public class LevelOne extends AbstractAppState{
          * FilterPostProcessor fpp = new FilterPostProcessor(app.getAssetManager());
          * fpp.addFilter(dlsf);
          * */
-        
-        bulletAppState = new BulletAppState();
-        stateManager.attach(bulletAppState);
-        
-        Spatial terrain = app.getAssetManager().loadModel("Models/Terrain/Terrain.j3o");
-        Material theGround = new Material (app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
-        theGround.setTexture("DiffuseMap", app.getAssetManager().loadTexture("Textures/GroundStuffs.png"));
-        terrain.setMaterial(theGround);
-        terrain.setLocalScale(new Vector3f(1000f, 1000f, 1000f));
-        
-        CollisionShape terrainShape = CollisionShapeFactory.createMeshShape(terrain);
-        terrainControl = new RigidBodyControl(terrainShape, 0);
-        terrain.addControl(terrainControl);
-        app.getRootNode().attachChild(terrain);
-        
-        
-        Node pNode = new Node("pNode");
-        Spatial player;
-        player = app.getAssetManager().loadModel("Models/Dude/WIP Dude Frame.obj");
-        Material skinAndClothes = new Material(app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
-        player.setMaterial(skinAndClothes);
-        player.setLocalTranslation(0, 1000, 0);
-        player.rotate(135, 0, -90);
-        
-        CapsuleCollisionShape PlayerShape = new CapsuleCollisionShape(1.5f, 6f, 1);
-        playerControl = new RigidBodyControl(PlayerShape, .05f);
-        playerControl.setGravity(new Vector3f(0f, 9.8f, 0f));
-        //playerControl.setPhysicsLocation(new Vector3f(0f, 10000f, 0f));
-        player.addControl(playerControl);
-        
-        pNode.attachChild(player);
-        
-        CameraNode camNode = new CameraNode("Camera Node", cam);
-        camNode.setControlDir(ControlDirection.SpatialToCamera);
-        pNode.attachChild(camNode);
-        
-        ChaseCamera chaseCam = new ChaseCamera(cam, camNode, app.getInputManager());
-        chaseCam.setDragToRotate(false);
-        chaseCam.setMinDistance(15);
-        chaseCam.setMaxDistance(30);
-        chaseCam.setDefaultDistance(20);
-        chaseCam.setEnabled(true);
-        chaseCam.setSpatial(player);
-        
-        app.getRootNode().attachChild(pNode);
-        
-        bulletAppState.getPhysicsSpace().add(terrainControl);
-        bulletAppState.getPhysicsSpace().add(playerControl);
-        
-        initKeys();
     }
     
     private void initKeys()
@@ -185,5 +174,4 @@ public class LevelOne extends AbstractAppState{
             }
         }
     };
-    
 }

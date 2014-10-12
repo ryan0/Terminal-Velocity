@@ -1,63 +1,37 @@
 package ourgame;
 
-import com.jme3.app.Application;
+import com.jme3.app.SimpleApplication;
 import com.jme3.niftygui.NiftyJmeDisplay;
-import com.jme3.system.AppSettings;
-import com.jme3.system.JmeContext;
+import com.jme3.renderer.RenderManager;
 
 
-public class Main extends Application {
+public class Main extends SimpleApplication {
     
-    public static void main(String[] args) {
+    public static void main(String[] args) 
+    {
         Main app = new Main();
         app.start();
     }
-    
+ 
     @Override
-    public void start(JmeContext.Type contextType)
+    public void simpleInitApp() 
     {
-        AppSettings settings = new AppSettings(true);
-        settings.setResolution(1024, 768);
-        setSettings(settings);
+        flyCam.setDragToRotate(true);
         
-        super.start(contextType);
-    }
-    
-    @Override
-    public void initialize()
-    {
-        super.initialize();
-        
-        //LevelOne state = new LevelOne();
-        //stateManager.attach(state);
-        
-        NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(assetManager,
-                                                           inputManager,
-                                                           audioRenderer,
-                                                           guiViewPort);
+        NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(assetManager, inputManager, audioRenderer, guiViewPort);
         niftyDisplay.getNifty().fromXml("Interface/GameMenu.xml", "start");
-        
         guiViewPort.addProcessor(niftyDisplay);
     }
-    
+ 
     @Override
-    public void update(){
-        super.update();
-
-        // do some animation
-        float tpf = timer.getTimePerFrame();
-
-        stateManager.update(tpf);
-        stateManager.render(renderManager);
-
-        // render the viewports
-        renderManager.render(tpf, context.isRenderable());
+    public void simpleUpdate(float tpf) 
+    {
+        
     }
-
+ 
     @Override
-    public void destroy(){
-        super.destroy();
-
-        System.out.println("Destroy");
+    public void simpleRender(RenderManager rm) 
+    {
+       
     }
 }

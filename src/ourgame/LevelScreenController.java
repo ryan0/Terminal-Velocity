@@ -1,57 +1,44 @@
 package ourgame;
 
-import com.jme3.app.Application;
-import com.jme3.app.SimpleApplication;
-import com.jme3.app.state.AbstractAppState;
-import com.jme3.app.state.AppStateManager;
-import com.jme3.system.AppSettings;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.elements.render.TextRenderer;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 
-public class LevelScreenController extends AbstractAppState implements ScreenController {
+public class LevelScreenController implements ScreenController {
     private String levelSelection = "";
     private Nifty nifty;
-    private Application app;
     private Screen screen;
-    @Override
-    public void initialize(AppStateManager stateManager, Application app) {
-        super.initialize(stateManager, app);
-        this.app = app;
-    }
+    
     public void selectLevel(String x)
     {
         levelSelection = x;
         Element niftyElement = nifty.getCurrentScreen().findElementByName("levelText");
         niftyElement.getRenderer(TextRenderer.class).setText(x+ " Selected");
     }
-    public void quitGame()
+    
+    public void changeScreens(String screenName)
     {
-        app.stop();
+        nifty.gotoScreen(screenName);
     }
+    
     public void startLevel()
     {
         if (levelSelection.compareTo("Level One")==0)
         {
-            LevelOne gameScr = new LevelOne();
-            gameScr.initialize(app.getStateManager(), app);
-            app.stop();
-            
-            
+            Level gameState = new Level();
+            //gameState.initialize(app.getStateManager(), app);
+            //app.stop(); 
         }
         else
         {
             Element niftyElement = nifty.getCurrentScreen().findElementByName("levelText");
             niftyElement.getRenderer(TextRenderer.class).setText("Please Select a Level to Continue");
         }
-        
-    }
-    @Override
-    public void update(float tpf) {
     }
     
+  
     public void bind(Nifty nifty, Screen screen) {
         this.nifty = nifty;
         this.screen = screen;
