@@ -6,6 +6,8 @@ package ourgame;
 import com.jme3.app.Application;
 import com.jme3.util.SkyFactory;
 import com.jme3.app.SimpleApplication;
+import com.jme3.app.state.AbstractAppState;
+import com.jme3.app.state.AppStateManager;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
@@ -24,6 +26,8 @@ import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.post.FilterPostProcessor;
+import com.jme3.renderer.Camera;
+import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.CameraNode;
 import com.jme3.scene.Node;
@@ -34,78 +38,85 @@ import com.jme3.shadow.DirectionalLightShadowRenderer;
 import com.jme3.shadow.EdgeFilteringMode;
 import com.jme3.system.AppSettings;
 
-public class LevelOne extends SimpleApplication{
-    public static void main(String [] args)
-    {
-        LevelOne app = new LevelOne();
-        app.start();
-    }
+public class LevelOne extends AbstractAppState{
+    
+    private SimpleApplication app;
+    private AppStateManager stateManager;
     private BulletAppState bulletAppState;
     private RigidBodyControl terrainControl;
     private RigidBodyControl playerControl;
+    private Camera cam;
    
-    public void simpleInitApp()
+    @Override
+    public void initialize(AppStateManager stateManager1, Application dahApp)
     {
+        super.initialize(stateManager1, app);
+        app = (SimpleApplication)dahApp;
+//        stateManager1.detach(stateManager1.getState(LevelScreenController.class));
+//        stateManager1.detach(stateManager1.getState(StartScreenController.class));
+//        stateManager1.detach(stateManager1.getState(MenuScreenController.class));
+        
+        
         Node skyNode = new Node();
-        skyNode.attachChild(SkyFactory.createSky(assetManager,
-                assetManager.loadTexture("Textures/Sky/Sky_West.jpg"),
-                assetManager.loadTexture("Textures/Sky/Sky_East.jpg"),
-                assetManager.loadTexture("Textures/Sky/Sky_North.jpg"),
-                assetManager.loadTexture("Textures/Sky/Sky_South.jpg"),
-                assetManager.loadTexture("Textures/Sky/Sky_Up.jpg"),
-                assetManager.loadTexture("Textures/Sky/Sky_Down.jpg")));
+        skyNode.attachChild(SkyFactory.createSky(app.getAssetManager(),
+                app.getAssetManager().loadTexture("Textures/Sky/Sky_West.jpg"),
+                app.getAssetManager().loadTexture("Textures/Sky/Sky_East.jpg"),
+                app.getAssetManager().loadTexture("Textures/Sky/Sky_North.jpg"),
+                app.getAssetManager().loadTexture("Textures/Sky/Sky_South.jpg"),
+                app.getAssetManager().loadTexture("Textures/Sky/Sky_Up.jpg"),
+                app.getAssetManager().loadTexture("Textures/Sky/Sky_Down.jpg")));
         skyNode.setShadowMode(RenderQueue.ShadowMode.Off);
-        rootNode.attachChild(skyNode);
+        app.getRootNode().attachChild(skyNode);
         
         AmbientLight lamp = new AmbientLight();
         lamp.setColor(ColorRGBA.White);
-        rootNode.addLight(lamp);
+        app.getRootNode().addLight(lamp);
         DirectionalLight sun = new DirectionalLight();
         sun.setColor(ColorRGBA.White);
         sun.setDirection(new Vector3f(0,-1,0));
-        rootNode.addLight(sun);
+        app.getRootNode().addLight(sun);
         
-        rootNode.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
+        app.getRootNode().setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
         final int SHADOWMAP_SIZE = 1028;
-        DirectionalLightShadowRenderer dlsr = new DirectionalLightShadowRenderer(assetManager, SHADOWMAP_SIZE, 3);
+        DirectionalLightShadowRenderer dlsr = new DirectionalLightShadowRenderer(app.getAssetManager(), SHADOWMAP_SIZE, 3);
         dlsr.setLight(sun);
         //dlsr.setLambda(0.55f);
         dlsr.setShadowIntensity(0.6f);
         //dlsr.setEdgeFilteringMode(EdgeFilteringMode.Nearest);
-        viewPort.addProcessor(dlsr);
+        app.getViewPort().addProcessor(dlsr);
         
         /*
          * DirectionalLightShadowFilter dlsf;
-         * dlsf = new DirectionalLightShadowFilter(assetManager, SHADOWMAP_SIZE, 3);
+         * dlsf = new DirectionalLightShadowFilter(app.getAssetManager(), SHADOWMAP_SIZE, 3);
          * dlsf.setLight(sun);
          * dlsf.setLambda(0.55f);
          * dlsf.setShadowIntensity(0.6f);
          * dlsf.setEdgeFilteringMode(EdgeFilteringMode.Nearest);
          * dlsf.setEnabled(false);
          * 
-         * FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
+         * FilterPostProcessor fpp = new FilterPostProcessor(app.getAssetManager());
          * fpp.addFilter(dlsf);
          * */
         
         bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
         
-        Spatial terrain = assetManager.loadModel("Models/Terrain/Terrain.j3o");
-        Material theGround = new Material (assetManager, "Common/MatDefs/Light/Lighting.j3md");
-        theGround.setTexture("DiffuseMap", assetManager.loadTexture("Textures/GroundStuffs.png"));
+        Spatial terrain = app.getAssetManager().loadModel("Models/Terrain/Terrain.j3o");
+        Material theGround = new Material (app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
+        theGround.setTexture("DiffuseMap", app.getAssetManager().loadTexture("Textures/GroundStuffs.png"));
         terrain.setMaterial(theGround);
         terrain.setLocalScale(new Vector3f(1000f, 1000f, 1000f));
         
         CollisionShape terrainShape = CollisionShapeFactory.createMeshShape(terrain);
         terrainControl = new RigidBodyControl(terrainShape, 0);
         terrain.addControl(terrainControl);
-        rootNode.attachChild(terrain);
+        app.getRootNode().attachChild(terrain);
         
         
         Node pNode = new Node("pNode");
         Spatial player;
-        player = assetManager.loadModel("Models/Dude/WIP Dude Frame.obj");
-        Material skinAndClothes = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
+        player = app.getAssetManager().loadModel("Models/Dude/WIP Dude Frame.obj");
+        Material skinAndClothes = new Material(app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
         player.setMaterial(skinAndClothes);
         player.setLocalTranslation(0, 1000, 0);
         player.rotate(135, 0, -90);
@@ -122,7 +133,7 @@ public class LevelOne extends SimpleApplication{
         camNode.setControlDir(ControlDirection.SpatialToCamera);
         pNode.attachChild(camNode);
         
-        ChaseCamera chaseCam = new ChaseCamera(cam, camNode, inputManager);
+        ChaseCamera chaseCam = new ChaseCamera(cam, camNode, app.getInputManager());
         chaseCam.setDragToRotate(false);
         chaseCam.setMinDistance(15);
         chaseCam.setMaxDistance(30);
@@ -130,7 +141,7 @@ public class LevelOne extends SimpleApplication{
         chaseCam.setEnabled(true);
         chaseCam.setSpatial(player);
         
-        rootNode.attachChild(pNode);
+        app.getRootNode().attachChild(pNode);
         
         bulletAppState.getPhysicsSpace().add(terrainControl);
         bulletAppState.getPhysicsSpace().add(playerControl);
@@ -138,18 +149,17 @@ public class LevelOne extends SimpleApplication{
         initKeys();
     }
     
-    
     private void initKeys()
     {
-        inputManager.addMapping("Up", new KeyTrigger(KeyInput.KEY_UP));
-        inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_RIGHT));
-        inputManager.addMapping("Down", new KeyTrigger(KeyInput.KEY_DOWN));
-        inputManager.addMapping("Left", new KeyTrigger(KeyInput.KEY_LEFT));
-        inputManager.addMapping("Up", new KeyTrigger(KeyInput.KEY_W));
-        inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
-        inputManager.addMapping("Down", new KeyTrigger(KeyInput.KEY_S));
-        inputManager.addMapping("Left", new KeyTrigger(KeyInput.KEY_A));
-        inputManager.addListener(analogListener,"Up", "Right", "Down", "Left");
+        app.getInputManager().addMapping("Up", new KeyTrigger(KeyInput.KEY_UP));
+        app.getInputManager().addMapping("Right", new KeyTrigger(KeyInput.KEY_RIGHT));
+        app.getInputManager().addMapping("Down", new KeyTrigger(KeyInput.KEY_DOWN));
+        app.getInputManager().addMapping("Left", new KeyTrigger(KeyInput.KEY_LEFT));
+        app.getInputManager().addMapping("Up", new KeyTrigger(KeyInput.KEY_W));
+        app.getInputManager().addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
+        app.getInputManager().addMapping("Down", new KeyTrigger(KeyInput.KEY_S));
+        app.getInputManager().addMapping("Left", new KeyTrigger(KeyInput.KEY_A));
+        app.getInputManager().addListener(analogListener,"Up", "Right", "Down", "Left");
     }
     private AnalogListener analogListener = new AnalogListener()
     {

@@ -10,7 +10,7 @@ import de.lessvoid.nifty.Nifty;
 public class Main extends SimpleApplication {
     public static void main(String[] args) {
         AppSettings settings = new AppSettings(true);
-        settings.setFullscreen(true);
+        settings.setFullscreen(false);
         settings.setResolution(1280,720);
         Main app = new Main();
         app.setShowSettings(false);
@@ -27,12 +27,17 @@ public class Main extends SimpleApplication {
         Nifty nifty = niftyDisplay.getNifty();
         nifty.addXml("Interface/GameMenu.xml");
         nifty.gotoScreen("start");
+        
         StartScreenController startScreen = (StartScreenController) nifty.getScreen("start").getScreenController();
         MenuScreenController menuScreen = (MenuScreenController) nifty.getScreen("mainMenu").getScreenController();
         LevelScreenController levelScreen = (LevelScreenController) nifty.getScreen("levelSelect").getScreenController();
+        LevelOne levelOne = new LevelOne();
+        
         stateManager.attach(startScreen);
         stateManager.attach(menuScreen);
         stateManager.attach(levelScreen);
+        //stateManager.attach(levelOne);
+        
         guiViewPort.addProcessor(niftyDisplay);
         flyCam.setDragToRotate(true);
     }
