@@ -1,54 +1,63 @@
 package ourgame;
 
-import com.jme3.app.SimpleApplication;
+import com.jme3.app.Application;
 import com.jme3.niftygui.NiftyJmeDisplay;
-import com.jme3.renderer.RenderManager;
 import com.jme3.system.AppSettings;
-import de.lessvoid.nifty.Nifty;
+import com.jme3.system.JmeContext;
 
 
-public class Main extends SimpleApplication {
+public class Main extends Application {
+    
     public static void main(String[] args) {
-        AppSettings settings = new AppSettings(true);
-        settings.setFullscreen(false);
-        settings.setResolution(1280,720);
         Main app = new Main();
-        app.setShowSettings(false);
-        app.setSettings(settings);
         app.start();
     }
     
     @Override
-    public void simpleInitApp() {
-        setDisplayFps(false);
-        setDisplayStatView(false);
-//        NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(
-//                assetManager, inputManager, audioRenderer, guiViewPort);
-//        Nifty nifty = niftyDisplay.getNifty();
-//        nifty.addXml("Interface/GameMenu.xml");
-//        nifty.gotoScreen("start");
-//        
-//        StartScreenController startScreen = (StartScreenController) nifty.getScreen("start").getScreenController();
-//        MenuScreenController menuScreen = (MenuScreenController) nifty.getScreen("mainMenu").getScreenController();
-//        LevelScreenController levelScreen = (LevelScreenController) nifty.getScreen("levelSelect").getScreenController();
-        LevelOne levelOne = new LevelOne();
+    public void start(JmeContext.Type contextType)
+    {
+        AppSettings settings = new AppSettings(true);
+        settings.setResolution(1024, 768);
+        setSettings(settings);
         
-//        stateManager.attach(startScreen);
-//        stateManager.attach(menuScreen);
-//        stateManager.attach(levelScreen);
-        stateManager.attach(levelOne);
-        
-//        guiViewPort.addProcessor(niftyDisplay);
-        flyCam.setDragToRotate(true);
+        super.start(contextType);
     }
     
     @Override
-    public void simpleUpdate(float tpf) {
-        //TODO: add update code
+    public void initialize()
+    {
+        super.initialize();
+        
+        //LevelOne state = new LevelOne();
+        //stateManager.attach(state);
+        
+        NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(assetManager,
+                                                           inputManager,
+                                                           audioRenderer,
+                                                           guiViewPort);
+        niftyDisplay.getNifty().fromXml("Interface/GameMenu.xml", "start");
+        
+        guiViewPort.addProcessor(niftyDisplay);
     }
     
     @Override
-    public void simpleRender(RenderManager rm) {
-        //TODO: add render code
+    public void update(){
+        super.update();
+
+        // do some animation
+        float tpf = timer.getTimePerFrame();
+
+        stateManager.update(tpf);
+        stateManager.render(renderManager);
+
+        // render the viewports
+        renderManager.render(tpf, context.isRenderable());
+    }
+
+    @Override
+    public void destroy(){
+        super.destroy();
+
+        System.out.println("Destroy");
     }
 }
