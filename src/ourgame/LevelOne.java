@@ -52,6 +52,8 @@ public class LevelOne extends AbstractAppState{
     {
         super.initialize(stateManager1, app);
         app = (SimpleApplication)dahApp;
+        stateManager = stateManager1;
+        cam = app.getCamera();
 //        stateManager1.detach(stateManager1.getState(LevelScreenController.class));
 //        stateManager1.detach(stateManager1.getState(StartScreenController.class));
 //        stateManager1.detach(stateManager1.getState(MenuScreenController.class));

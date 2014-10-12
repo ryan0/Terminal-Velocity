@@ -22,23 +22,23 @@ public class Main extends SimpleApplication {
     public void simpleInitApp() {
         setDisplayFps(false);
         setDisplayStatView(false);
-        NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(
-                assetManager, inputManager, audioRenderer, guiViewPort);
-        Nifty nifty = niftyDisplay.getNifty();
-        nifty.addXml("Interface/GameMenu.xml");
-        nifty.gotoScreen("start");
-        
-        StartScreenController startScreen = (StartScreenController) nifty.getScreen("start").getScreenController();
-        MenuScreenController menuScreen = (MenuScreenController) nifty.getScreen("mainMenu").getScreenController();
-        LevelScreenController levelScreen = (LevelScreenController) nifty.getScreen("levelSelect").getScreenController();
+//        NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(
+//                assetManager, inputManager, audioRenderer, guiViewPort);
+//        Nifty nifty = niftyDisplay.getNifty();
+//        nifty.addXml("Interface/GameMenu.xml");
+//        nifty.gotoScreen("start");
+//        
+//        StartScreenController startScreen = (StartScreenController) nifty.getScreen("start").getScreenController();
+//        MenuScreenController menuScreen = (MenuScreenController) nifty.getScreen("mainMenu").getScreenController();
+//        LevelScreenController levelScreen = (LevelScreenController) nifty.getScreen("levelSelect").getScreenController();
         LevelOne levelOne = new LevelOne();
         
-        stateManager.attach(startScreen);
-        stateManager.attach(menuScreen);
-        stateManager.attach(levelScreen);
-        //stateManager.attach(levelOne);
+//        stateManager.attach(startScreen);
+//        stateManager.attach(menuScreen);
+//        stateManager.attach(levelScreen);
+        stateManager.attach(levelOne);
         
-        guiViewPort.addProcessor(niftyDisplay);
+//        guiViewPort.addProcessor(niftyDisplay);
         flyCam.setDragToRotate(true);
     }
     
