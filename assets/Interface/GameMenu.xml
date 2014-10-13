@@ -69,7 +69,11 @@
     </screen>
     
     <screen id="hud" controller = "ourgame.GuiStateController">
-        
+        <layer id="HUD" childLayout = "center">
+            <panel childLayout = "center" visibleToMouse = "false">
+                <image filename = "Interface/HUD.png" height = "100%" width = "100%"/>
+            </panel>
+        </layer>
     </screen>
     
 </nifty>

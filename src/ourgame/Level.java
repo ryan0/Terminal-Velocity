@@ -8,8 +8,9 @@ import com.jme3.util.SkyFactory;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
+import com.jme3.audio.AudioNode;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
+import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
@@ -40,10 +41,10 @@ public class Level extends AbstractAppState{
     @Override
     public void initialize(AppStateManager stateManager1, Application dahApp)
     {
+        
         super.initialize(stateManager1, app);
         app = (SimpleApplication)dahApp;
         stateManager = stateManager1;
-        
         initLight();
         
         bulletAppState = new BulletAppState();
@@ -69,9 +70,11 @@ public class Level extends AbstractAppState{
         player.setLocalTranslation(0, 1000, 0);
         player.rotate(135, 0, -90);
         
-        CapsuleCollisionShape PlayerShape = new CapsuleCollisionShape(1.5f, 6f, 1);
+        BoxCollisionShape PlayerShape = new BoxCollisionShape(new Vector3f(1.5f, 6f, 1));
         playerControl = new RigidBodyControl(PlayerShape, .05f);
         playerControl.setGravity(new Vector3f(0f, 9.8f, 0f));
+        playerControl.setAngularDamping(.6f);
+        playerControl.setFriction(.8f);
         //playerControl.setPhysicsLocation(new Vector3f(0f, 10000f, 0f));
         player.addControl(playerControl);
         
@@ -81,13 +84,16 @@ public class Level extends AbstractAppState{
         camNode.setControlDir(ControlDirection.SpatialToCamera);
         pNode.attachChild(camNode);
         
+        
         ChaseCamera chaseCam = new ChaseCamera(app.getCamera(), camNode, app.getInputManager());
-        chaseCam.setDragToRotate(false);
+        chaseCam.setDragToRotate(true);
         chaseCam.setMinDistance(15);
         chaseCam.setMaxDistance(30);
         chaseCam.setDefaultDistance(20);
         chaseCam.setEnabled(true);
         chaseCam.setSpatial(player);
+        
+        
         
         app.getRootNode().attachChild(pNode);
         
@@ -95,6 +101,12 @@ public class Level extends AbstractAppState{
         bulletAppState.getPhysicsSpace().add(playerControl);
         
         initKeys();
+        
+        AudioNode soundNode = new AudioNode(app.getAssetManager(), "Sounds/Sandstorm.ogg", false);
+        soundNode.setPositional(false);
+        soundNode.setLooping(true);
+        soundNode.play();
+        app.getRootNode().attachChild(soundNode);
     }
     
     private void initLight()
