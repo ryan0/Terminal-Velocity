@@ -44,6 +44,7 @@ public class Level extends AbstractAppState{
         app = (SimpleApplication)dahApp;
         stateManager = stateManager1;
         
+        initLight();
         
         bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);

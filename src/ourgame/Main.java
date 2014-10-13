@@ -1,7 +1,6 @@
 package ourgame;
 
 import com.jme3.app.SimpleApplication;
-import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.RenderManager;
 
 
@@ -17,10 +16,8 @@ public class Main extends SimpleApplication {
     public void simpleInitApp() 
     {
         flyCam.setDragToRotate(true);
-        
-        NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(assetManager, inputManager, audioRenderer, guiViewPort);
-        niftyDisplay.getNifty().fromXml("Interface/GameMenu.xml", "start");
-        guiViewPort.addProcessor(niftyDisplay);
+        stateManager.attach(new GuiStateController());
+        stateManager.attach(new Level());
     }
  
     @Override
