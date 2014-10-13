@@ -10,24 +10,17 @@ import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.audio.AudioNode;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
-import com.jme3.input.ChaseCamera;
-import com.jme3.input.KeyInput;
-import com.jme3.input.controls.AnalogListener;
-import com.jme3.input.controls.KeyTrigger;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue;
-import com.jme3.scene.CameraNode;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
-import com.jme3.scene.control.CameraControl.ControlDirection;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
 
 public class Level extends AbstractAppState{
@@ -36,7 +29,6 @@ public class Level extends AbstractAppState{
     
     private BulletAppState bulletAppState;
     private RigidBodyControl terrainControl;
-    private RigidBodyControl playerControl;
    
     @Override
     public void initialize(AppStateManager stateManager1, Application dahApp)
@@ -60,47 +52,11 @@ public class Level extends AbstractAppState{
         terrainControl = new RigidBodyControl(terrainShape, 0);
         terrain.addControl(terrainControl);
         app.getRootNode().attachChild(terrain);
-        
-        
-        Node pNode = new Node("pNode");
-        Spatial player;
-        player = app.getAssetManager().loadModel("Models/Dude/WIP Dude Frame.obj");
-        Material skinAndClothes = new Material(app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
-        player.setMaterial(skinAndClothes);
-        player.setLocalTranslation(0, 1000, 0);
-        player.rotate(135, 0, -90);
-        
-        BoxCollisionShape PlayerShape = new BoxCollisionShape(new Vector3f(1.5f, 6f, 1));
-        playerControl = new RigidBodyControl(PlayerShape, .05f);
-        playerControl.setGravity(new Vector3f(0f, 9.8f, 0f));
-        playerControl.setAngularDamping(.6f);
-        playerControl.setFriction(.8f);
-        //playerControl.setPhysicsLocation(new Vector3f(0f, 10000f, 0f));
-        player.addControl(playerControl);
-        
-        pNode.attachChild(player);
-        
-        CameraNode camNode = new CameraNode("Camera Node", app.getCamera());
-        camNode.setControlDir(ControlDirection.SpatialToCamera);
-        pNode.attachChild(camNode);
-        
-        
-        ChaseCamera chaseCam = new ChaseCamera(app.getCamera(), camNode, app.getInputManager());
-        chaseCam.setDragToRotate(true);
-        chaseCam.setMinDistance(15);
-        chaseCam.setMaxDistance(30);
-        chaseCam.setDefaultDistance(20);
-        chaseCam.setEnabled(true);
-        chaseCam.setSpatial(player);
-        
-        
-        
-        app.getRootNode().attachChild(pNode);
-        
         bulletAppState.getPhysicsSpace().add(terrainControl);
-        bulletAppState.getPhysicsSpace().add(playerControl);
         
-        initKeys();
+        Player player = new Player(bulletAppState, app); 
+        app.getRootNode().attachChild(player);
+        
         
         AudioNode soundNode = new AudioNode(app.getAssetManager(), "Sounds/Sandstorm.ogg", false);
         soundNode.setPositional(false);
@@ -152,39 +108,4 @@ public class Level extends AbstractAppState{
          * fpp.addFilter(dlsf);
          * */
     }
-    
-    private void initKeys()
-    {
-        app.getInputManager().addMapping("Up", new KeyTrigger(KeyInput.KEY_UP));
-        app.getInputManager().addMapping("Right", new KeyTrigger(KeyInput.KEY_RIGHT));
-        app.getInputManager().addMapping("Down", new KeyTrigger(KeyInput.KEY_DOWN));
-        app.getInputManager().addMapping("Left", new KeyTrigger(KeyInput.KEY_LEFT));
-        app.getInputManager().addMapping("Up", new KeyTrigger(KeyInput.KEY_W));
-        app.getInputManager().addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
-        app.getInputManager().addMapping("Down", new KeyTrigger(KeyInput.KEY_S));
-        app.getInputManager().addMapping("Left", new KeyTrigger(KeyInput.KEY_A));
-        app.getInputManager().addListener(analogListener,"Up", "Right", "Down", "Left");
-    }
-    private AnalogListener analogListener = new AnalogListener()
-    {
-        public void onAnalog(String name, float value, float tpf)
-        {
-            if (name.equals("Right"))
-            {
-                playerControl.applyCentralForce(new Vector3f(0, 0, -2));
-            }
-            else if (name.equals("Up"))
-            {
-                playerControl.applyCentralForce(new Vector3f(-2, 0, 0));
-            }
-            else if (name.equals("Left"))
-            {
-                playerControl.applyCentralForce(new Vector3f(0, 0, 2));
-            }
-            else if (name.equals("Down"))
-            {
-                playerControl.applyCentralForce(new Vector3f(2, 0, 0));
-            }
-        }
-    };
 }
