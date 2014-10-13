@@ -8,12 +8,17 @@ import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
-import com.jme3.niftygui.NiftyJmeDisplay;
+import de.lessvoid.nifty.Nifty;
+import de.lessvoid.nifty.screen.Screen;
+import de.lessvoid.nifty.screen.ScreenController;
 
-public class GuiStateController extends AbstractAppState
+public class GuiStateController extends AbstractAppState implements ScreenController
 {
     private SimpleApplication app;
     private AppStateManager stateManager;
+    
+    private Nifty nifty;
+    private Screen screen;
     
    
     @Override
@@ -22,13 +27,33 @@ public class GuiStateController extends AbstractAppState
         super.initialize(stateManager1, app);
         app = (SimpleApplication)dahApp;
         stateManager = stateManager1;
+    }
+    
+    public void startLevel()
+    {
+        Level level = new Level();
+        stateManager.attach(level);
+        nifty.gotoScreen("hud");
+    }
+
+    public void changeScreens(String screenName)
+    {
+        nifty.gotoScreen(screenName);
+    }
+    
+    public void bind(Nifty nifty, Screen screen) 
+    {
+        this.nifty = nifty;
+        this.screen = screen;
+    }
+
+    public void onStartScreen() 
+    {
         
-        NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(
-                app.getAssetManager(), 
-                app.getInputManager(), 
-                app.getAudioRenderer(), 
-                app.getGuiViewPort());
-        niftyDisplay.getNifty().fromXml("Interface/GameMenu.xml", "start");
-        app.getGuiViewPort().addProcessor(niftyDisplay);
+    }
+
+    public void onEndScreen() 
+    {
+       
     }
 }

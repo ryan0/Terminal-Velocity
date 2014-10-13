@@ -49,9 +49,9 @@ public class Level extends AbstractAppState{
         bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
         
-        Spatial terrain = app.getAssetManager().loadModel("Models/Terrain/Terrain.j3o");
+        Spatial terrain = app.getAssetManager().loadModel("Models/Terrain/terrain.obj");
         Material theGround = new Material (app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
-        theGround.setTexture("DiffuseMap", app.getAssetManager().loadTexture("Textures/GroundStuffs.png"));
+        theGround.setTexture("DiffuseMap", app.getAssetManager().loadTexture("Textures/TerrainTexture.png"));
         terrain.setMaterial(theGround);
         terrain.setLocalScale(new Vector3f(1000f, 1000f, 1000f));
         

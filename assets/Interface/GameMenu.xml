@@ -5,7 +5,7 @@
     <useControls filename="nifty-default-controls.xml" />
     
     
-    <screen id="start" controller = "ourgame.StartScreenController">
+    <screen id="start" controller = "ourgame.GuiStateController">
         <layer id="background" childLayout = "center">
             <panel childLayout = "center" visibleToMouse = "true">
                 <image filename = "Interface/MainScreen.jpeg" imageMode="resize:40,490,110,170,40,560,40,270,40,560,40,40" height = "100%" width = "100%"/>
@@ -14,7 +14,7 @@
         </layer>
     </screen>
     
-    <screen id = "mainMenu" controller = "ourgame.MenuScreenController">
+    <screen id = "mainMenu" controller = "ourgame.GuiStateController">
         <layer id = "foreground" childLayout = "vertical">
             <panel id = "topText" height = "25%" width = "50%" align = "center" valign = "center" childLayout = "vertical">
                 <text text = "Welcome to the game!" font = "Interface/Fonts/ArialBlack-36.fnt" align = "center" valign = "center" />
@@ -35,7 +35,7 @@
         </layer>
     </screen>
     
-    <screen id = "levelSelect" controller = "ourgame.LevelScreenController">
+    <screen id = "levelSelect" controller = "ourgame.GuiStateController">
         <layer id = "foreground" childLayout = "vertical">
             <panel id = "topText" height = "25%" width = "50%" align = "center" valign = "center" childLayout = "vertical">
                 <text id = "levelText" text = "Level Select Menu" font = "Interface/Fonts/ArialBlack-36.fnt" align = "center" valign = "center" />
@@ -67,4 +67,9 @@
             </panel>
         </layer>        
     </screen>
+    
+    <screen id="hud" controller = "ourgame.GuiStateController">
+        
+    </screen>
+    
 </nifty>
