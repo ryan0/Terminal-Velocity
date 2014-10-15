@@ -41,16 +41,17 @@ public class Player extends Node
         
         mesh = app.getAssetManager().loadModel("Models/Dude/WIP Dude Frame.obj");
         mesh.setMaterial(new Material(app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md"));
-        mesh.setLocalTranslation(0, 1000, 0);
         mesh.rotate(135, 0, -90);
         attachChild(mesh);
         
         CapsuleCollisionShape PlayerShape = new CapsuleCollisionShape(1.5f, 6f, 1);
         physicsControl = new RigidBodyControl(PlayerShape, .05f);
-        physicsControl.setGravity(new Vector3f(0f, 9.8f, 0f));
         mesh.addControl(physicsControl);
         bulletAppState.getPhysicsSpace().add(physicsControl);
         bulletAppState.getPhysicsSpace().addCollisionListener(new PlayerPhysicsListener());
+        physicsControl.setGravity(new Vector3f(0f, -9.8f, 0f));
+        physicsControl.setPhysicsLocation(new Vector3f(0, 1000, 0));
+        
         
         
         soundNode = new AudioNode(app.getAssetManager(), "Sounds/scream.ogg", false);

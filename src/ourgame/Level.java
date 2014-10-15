@@ -41,18 +41,10 @@ public class Level extends AbstractAppState{
         
         bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
+        app.getCamera().setFrustumFar(8000);
         
-        Spatial terrain = app.getAssetManager().loadModel("Models/Terrain/terrain.obj");
-        Material theGround = new Material (app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
-        theGround.setTexture("DiffuseMap", app.getAssetManager().loadTexture("Textures/TerrainTexture.png"));
-        terrain.setMaterial(theGround);
-        terrain.setLocalScale(new Vector3f(1000f, 1000f, 1000f));
-        
-        CollisionShape terrainShape = CollisionShapeFactory.createMeshShape(terrain);
-        terrainControl = new RigidBodyControl(terrainShape, 0);
-        terrain.addControl(terrainControl);
-        app.getRootNode().attachChild(terrain);
-        bulletAppState.getPhysicsSpace().add(terrainControl);
+        Terrain terrain = new Terrain(bulletAppState, app);
+         app.getRootNode().attachChild(terrain);
         
         Player player = new Player(bulletAppState, app); 
         app.getRootNode().attachChild(player);
@@ -85,7 +77,7 @@ public class Level extends AbstractAppState{
         app.getRootNode().addLight(lamp);
         DirectionalLight sun = new DirectionalLight();
         sun.setColor(ColorRGBA.White);
-        sun.setDirection(new Vector3f(0,-1,0));
+        sun.setDirection(new Vector3f(1f,-1f, 0f));
         app.getRootNode().addLight(sun);
         
         app.getRootNode().setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
