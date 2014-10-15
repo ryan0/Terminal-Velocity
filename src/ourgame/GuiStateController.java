@@ -47,6 +47,11 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         this.screen = screen;
     }
 
+    public void quit()
+    {
+        app.stop();
+    }
+    
     public void onStartScreen() 
     {
         

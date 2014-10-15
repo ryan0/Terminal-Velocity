@@ -61,7 +61,9 @@ public class Level extends AbstractAppState{
         AudioNode soundNode = new AudioNode(app.getAssetManager(), "Sounds/Sandstorm.ogg", false);
         soundNode.setPositional(false);
         soundNode.setLooping(true);
+        soundNode.setVolume(.1f);
         soundNode.play();
+        
         app.getRootNode().attachChild(soundNode);
     }
     
