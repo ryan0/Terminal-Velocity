@@ -10,9 +10,7 @@ import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.audio.AudioNode;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
-import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.material.Material;
@@ -52,7 +50,7 @@ public class Level extends AbstractAppState{
         
         player = new Player(bulletAppState, app); 
         app.getRootNode().attachChild(player);
-        
+        bulletAppState.getPhysicsSpace().setAccuracy(1f/500f);
         
         AudioNode soundNode = new AudioNode(app.getAssetManager(), "Sounds/Sandstorm.ogg", false);
         soundNode.setPositional(false);

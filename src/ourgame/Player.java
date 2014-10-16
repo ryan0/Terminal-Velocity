@@ -1,7 +1,4 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+
 package ourgame;
 
 import com.jme3.app.Application;
@@ -56,9 +53,10 @@ public class Player extends Node
         mesh.addControl(physicsControl);
         bulletAppState.getPhysicsSpace().add(physicsControl);
         bulletAppState.getPhysicsSpace().addCollisionListener(new PlayerPhysicsListener());
+
         physicsControl.setGravity(new Vector3f(0f, -9.8f, 0f));
         physicsControl.setPhysicsLocation(new Vector3f(-18000, 23000, -10000));
-        
+
         
         
         
@@ -104,7 +102,7 @@ public class Player extends Node
         public void collision(PhysicsCollisionEvent event) 
         {
             if(event.getNodeA().getName().equals("Player") || event.getNodeB().getName().equals("Player"));
-                soundNode.play(); 
+                soundNode.play();
         }
     }
 }

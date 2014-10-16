@@ -17,7 +17,7 @@ public class Main extends SimpleApplication {
 //        double width = screenSize.getWidth();
 //        double height = screenSize.getHeight();
         Main app = new Main();
-//        AppSettings blah = new AppSettings(true);
+        AppSettings blah = new AppSettings(true);
 //        blah.setResolution((int)width, (int)height);
 //        blah.setFullscreen(true);
 //        app.setSettings(blah);
