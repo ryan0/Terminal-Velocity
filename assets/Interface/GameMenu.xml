@@ -8,7 +8,7 @@
     <screen id="start" controller = "ourgame.GuiStateController">
         <layer id="background" childLayout = "center">
             <panel childLayout = "center" visibleToMouse = "true">
-                <image filename = "Interface/Terminal Velocity Title screen.jpg" height = "100%" width = "100%"/>
+                <image filename = "Interface/Images/Terminal Velocity Title screen.jpg" height = "100%" width = "100%"/>
                 <interact onClick = "changeScreens(mainMenu)"/>
             </panel>
         </layer>
@@ -17,7 +17,7 @@
     <screen id = "mainMenu" controller = "ourgame.GuiStateController">
         <layer id="background" childLayout = "center">
             <panel childLayout = "center" visibleToMouse = "true">
-                <image filename = "Interface/Clouds.jpg" height = "100%" width = "100%"/>
+                <image filename = "Interface/Images/Clouds.jpg" height = "100%" width = "100%"/>
                 <interact onClick = "changeScreens(mainMenu)"/>
             </panel>
         </layer>
@@ -51,8 +51,7 @@
     <screen id = "levelSelect" controller = "ourgame.GuiStateController">
         <layer id="background" childLayout = "center">
             <panel childLayout = "center" visibleToMouse = "true">
-                <image filename = "Interface/Clouds.jpg" height = "100%" width = "100%"/>
-                <interact onClick = "changeScreens(mainMenu)"/>
+                <image filename = "Interface/Images/Clouds.jpg" height = "100%" width = "100%"/>
             </panel>
         </layer>
         <layer id = "foreground" childLayout = "vertical">
@@ -90,7 +89,7 @@
     <screen id="hud" controller = "ourgame.GuiStateController">
         <layer id="HUD" childLayout = "center">
             <panel childLayout = "center" visibleToMouse = "false">
-                <image filename = "Interface/HUD-Slim Red.png" height = "100%" width = "100%"/>
+                <image id = "theHUD" filename = "Interface/Images/HUD-Steel.png" height = "100%" width = "100%"/>
             </panel>
         </layer>
     </screen>
@@ -98,8 +97,7 @@
     <screen id="settings" controller = "ourgame.GuiStateController">
         <layer id="background" childLayout = "center">
             <panel childLayout = "center" visibleToMouse = "true">
-                <image filename = "Interface/Clouds.jpg" height = "100%" width = "100%"/>
-                <interact onClick = "changeScreens(mainMenu)"/>
+                <image filename = "Interface/Images/Clouds.jpg" height = "100%" width = "100%"/>
             </panel>
         </layer>
         <layer id = "foreground" childLayout = "vertical">
@@ -107,24 +105,25 @@
                 <text id = "levelText" text = "Settings" font = "Interface/Fonts/ArialBlack-36.fnt" align = "center" valign = "center" />
             </panel>
             <panel id = "SettingsOptions" height = "75%" width = "75%" align = "center" valign = "center" childLayout = "vertical">
-                <panel id = "button1" height = "20%" width = "75%" align = "center" valign = "center" childLayout = "center">
-                    <control visibleToMouse = "true" name = "button" height = "75%" width = "100%" label = "Resolution" id = "levelOneButton" align = "center" valign = "center">
+                <panel id = "Reolution button panel" height = "20%" width = "75%" align = "center" valign = "center" childLayout = "center">
+                    <control visibleToMouse = "true" name = "button" height = "75%" width = "75%" label = "Resolution" id = "Resolution button" align = "center" valign = "center">
                         <interact onClick = ""/>
                     </control>
                 </panel>
-                <panel id = "button2" height = "20%" width = "75%" align = "center" valign = "center" childLayout = "center">
-                    <control visibleToMouse = "true" name = "button" height = "75%" width = "100%" label = "Key Bindings" id = "levelTwoButton" align = "center" valign = "center">
+                <panel id = "Key bindings button panel" height = "20%" width = "75%" align = "center" valign = "center" childLayout = "center">
+                    <control visibleToMouse = "true" name = "button" height = "75%" width = "75%" label = "Key Bindings" id = "Key bindings button" align = "center" valign = "center">
                         <interact onClick = ""/>
                     </control>
                 </panel>
-                <panel id = "button3" height = "20%" width = "75%" align = "center" valign = "center" childLayout = "center">
-                    <control visibleToMouse = "true" name = "button" height = "75%" width = "100%" label = "HUD Skin" id = "levelThreeButton" align = "center" valign = "center">
-                        <interact onClick = ""/>
+                <panel id = "HUD button panel" height = "20%" width = "100%" align = "center" valign = "center" childLayout = "center">
+                    <control visibleToMouse = "true" name = "button" height = "75%" width = "56.25%" label = "HUD Skin" id = "HUD button" align = "center" valign = "center">
+                        <interact onClick = "cycleHUD()"/>
                     </control>
+                    <image id = "currentHUD" filename = "Interface/Images/HUD-Steel.png" align = "right" valign = "center" height = "75%" width = "17%"/>
                 </panel>
                 <panel id = "bottomButtons" height = "20%" width = "100%" align = "center" valign = "center" childLayout = "horizontal">
                     <panel id = "QuitButton" height = "100%" width = "50%" align = "center" valign = "center" childLayout = "center">
-                        <control visibleToMouse = "true" name = "button" height = "40%" width = "75%" label = "Back" id = "QutButton" align = "center" valign = "center">
+                        <control visibleToMouse = "true" name = "button" height = "40%" width = "75%" label = "Back" id = "QuitButton" align = "center" valign = "center">
                             <interact onClick = "changeScreens(mainMenu)"/>
                         </control>
                     </panel>

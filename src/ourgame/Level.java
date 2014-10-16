@@ -10,17 +10,13 @@ import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.audio.AudioNode;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
-import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
-import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Node;
-import com.jme3.scene.Spatial;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
 
 public class Level extends AbstractAppState{
@@ -41,14 +37,14 @@ public class Level extends AbstractAppState{
         
         bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
-        app.getCamera().setFrustumFar(8000);
+        app.getCamera().setFrustumFar(70000);
         
         Terrain terrain = new Terrain(bulletAppState, app);
          app.getRootNode().attachChild(terrain);
         
         Player player = new Player(bulletAppState, app); 
         app.getRootNode().attachChild(player);
-        
+        bulletAppState.getPhysicsSpace().setAccuracy(1f/500f);
         
         AudioNode soundNode = new AudioNode(app.getAssetManager(), "Sounds/Sandstorm.ogg", false);
         soundNode.setPositional(false);

@@ -26,7 +26,7 @@ public class Terrain extends Node
         Material theGround = new Material (app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
         theGround.setTexture("DiffuseMap", app.getAssetManager().loadTexture("Textures/TerrainTexture.png"));
         mesh.setMaterial(theGround);
-        mesh.setLocalScale(new Vector3f(1000f, 1000f, 1000f));
+        mesh.setLocalScale(new Vector3f(50000f, 30000f, 50000f));
         
         CollisionShape terrainShape = CollisionShapeFactory.createMeshShape(mesh);
         physicsControl = new RigidBodyControl(terrainShape, 0);
