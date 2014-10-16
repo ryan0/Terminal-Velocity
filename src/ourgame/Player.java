@@ -48,6 +48,7 @@ public class Player extends Node
         bulletAppState.getPhysicsSpace().addCollisionListener(new PlayerPhysicsListener());
         physicsControl.setGravity(new Vector3f(0f, 5*-9.8f, 0f));
         physicsControl.setPhysicsLocation(new Vector3f(-20000, 20000, 5000));
+        physicsControl.setAngularDamping(.1f);
         
         
         
