@@ -13,6 +13,7 @@ import com.jme3.material.Material;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.util.TangentBinormalGenerator;
 
 
 public class Terrain extends Node
@@ -23,10 +24,12 @@ public class Terrain extends Node
     public Terrain(BulletAppState bulletAppState, Application app)
     {
         mesh = app.getAssetManager().loadModel("Models/Terrain/terrain.obj");
-        Material theGround = new Material (app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
-        theGround.setTexture("DiffuseMap", app.getAssetManager().loadTexture("Textures/TerrainTexture.png"));
-        mesh.setMaterial(theGround);
-        mesh.setLocalScale(new Vector3f(1000f, 1000f, 1000f));
+        TangentBinormalGenerator.generate(mesh);
+        Material mat = new Material (app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
+        mat.setTexture("DiffuseMap", app.getAssetManager().loadTexture("Textures/TerrainTexture.png"));
+        mat.setTexture("NormalMap", app.getAssetManager().loadTexture("Textures/TerrainNormalMap.png"));
+        mesh.setMaterial(mat);
+        mesh.setLocalScale(new Vector3f(100000f, 100000f, 100000f));
         
         CollisionShape terrainShape = CollisionShapeFactory.createMeshShape(mesh);
         physicsControl = new RigidBodyControl(terrainShape, 0);

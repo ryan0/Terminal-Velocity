@@ -21,8 +21,8 @@ public class Main extends SimpleApplication {
 //        blah.setResolution((int)width, (int)height);
 //        blah.setFullscreen(true);
 //        app.setSettings(blah);
-        app.setDisplayFps(false);
-        app.setDisplayStatView(false);
+//        app.setDisplayFps(false);
+//        app.setDisplayStatView(false);
 //        app.setShowSettings(false);
         app.start();
     }

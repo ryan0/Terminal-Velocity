@@ -5,6 +5,7 @@
 package ourgame;
 
 import com.jme3.app.Application;
+import com.jme3.app.SimpleApplication;
 import com.jme3.audio.AudioNode;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.PhysicsCollisionEvent;
@@ -17,6 +18,8 @@ import com.jme3.input.KeyInput;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.material.Material;
+import com.jme3.math.FastMath;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.CameraNode;
 import com.jme3.scene.Node;
@@ -32,16 +35,20 @@ public class Player extends Node
     private Spatial mesh;
     private RigidBodyControl physicsControl;
     private AudioNode soundNode;
+    private SimpleApplication app;
     
     
-    public Player(BulletAppState bulletAppState, Application app)
+    public Player(BulletAppState bulletAppState, Application appRef)
     {
-        initKeys(app.getInputManager());
         setName("Player");
         
+        app = (SimpleApplication)appRef;
         mesh = app.getAssetManager().loadModel("Models/Dude/WIP Dude Frame.obj");
         mesh.setMaterial(new Material(app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md"));
-        mesh.rotate(135, 0, -90);
+        
+        Quaternion rotation = new Quaternion();
+        rotation.fromAngles(0f, FastMath.PI, -FastMath.PI/2f);
+        mesh.setLocalRotation(rotation);
         attachChild(mesh);
         
         CapsuleCollisionShape PlayerShape = new CapsuleCollisionShape(1.5f, 6f, 1);
@@ -50,7 +57,8 @@ public class Player extends Node
         bulletAppState.getPhysicsSpace().add(physicsControl);
         bulletAppState.getPhysicsSpace().addCollisionListener(new PlayerPhysicsListener());
         physicsControl.setGravity(new Vector3f(0f, -9.8f, 0f));
-        physicsControl.setPhysicsLocation(new Vector3f(0, 1000, 0));
+        physicsControl.setPhysicsLocation(new Vector3f(-18000, 23000, -10000));
+        
         
         
         
@@ -75,6 +83,22 @@ public class Player extends Node
         
     }
     
+    public void update(float tpf)
+    {
+        Vector3f xPlusZ = new Vector3f(
+                app.getCamera().getDirection().x, 
+                0, 
+                app.getCamera().getDirection().z);
+        xPlusZ.normalize();
+        
+        
+        Vector3f angularV = new Vector3f(
+                xPlusZ.x * physicsControl.getLinearVelocity().y * -2,
+                physicsControl.getLinearVelocity().y,
+                xPlusZ.z * physicsControl.getLinearVelocity().y * -2);
+        physicsControl.setLinearVelocity(angularV);
+    }
+    
     public class PlayerPhysicsListener implements PhysicsCollisionListener 
     {
         public void collision(PhysicsCollisionEvent event) 
@@ -83,40 +107,4 @@ public class Player extends Node
                 soundNode.play(); 
         }
     }
-    
-    private void initKeys(InputManager inputManager)
-    {
-        inputManager.addMapping("Up", new KeyTrigger(KeyInput.KEY_UP));
-        inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_RIGHT));
-        inputManager.addMapping("Down", new KeyTrigger(KeyInput.KEY_DOWN));
-        inputManager.addMapping("Left", new KeyTrigger(KeyInput.KEY_LEFT));
-        inputManager.addMapping("Up", new KeyTrigger(KeyInput.KEY_W));
-        inputManager.addMapping("Right", new KeyTrigger(KeyInput.KEY_D));
-        inputManager.addMapping("Down", new KeyTrigger(KeyInput.KEY_S));
-        inputManager.addMapping("Left", new KeyTrigger(KeyInput.KEY_A));
-        inputManager.addListener(analogListener,"Up", "Right", "Down", "Left");
-    }
-    
-    private AnalogListener analogListener = new AnalogListener()
-    {
-        public void onAnalog(String name, float value, float tpf)
-        {
-            if (name.equals("Right"))
-            {
-                physicsControl.applyCentralForce(new Vector3f(0, 0, -2));
-            }
-            else if (name.equals("Up"))
-            {
-                physicsControl.applyCentralForce(new Vector3f(-2, 0, 0));
-            }
-            else if (name.equals("Left"))
-            {
-                physicsControl.applyCentralForce(new Vector3f(0, 0, 2));
-            }
-            else if (name.equals("Down"))
-            {
-                physicsControl.applyCentralForce(new Vector3f(2, 0, 0));
-            }
-        }
-    };
 }
