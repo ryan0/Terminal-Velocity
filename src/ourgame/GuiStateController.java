@@ -8,6 +8,7 @@ import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
+import com.jme3.audio.AudioNode;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.elements.render.ImageRenderer;
@@ -23,28 +24,48 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     private Nifty nifty;
     private Screen screen;
     
-    private String[] HUDs = {"None", "Steel", "Slim Red", "Jungle"};
+    private String[] HUDs = {"None", "Steel", "Slim Red", "Jungle", "Contrast"};
     private int currentHUD = 1;
     
-   
+    private AudioNode clickSound;
+    private AudioNode windSound;
+    
     @Override
     public void initialize(AppStateManager stateManager1, Application dahApp)
     {
         super.initialize(stateManager1, app);
         app = (SimpleApplication)dahApp;
         stateManager = stateManager1;
+        
+        clickSound = new AudioNode(app.getAssetManager(), "Sounds/Click.wav", false);
+        clickSound.setPositional(false);
+        clickSound.setLooping(false);
+        clickSound.setVolume(.5f);
+        app.getRootNode().attachChild(clickSound);
+        
+        windSound = new AudioNode(app.getAssetManager(), "Sounds/Wind.wav", false);
+        windSound.setPositional(false);
+        windSound.setLooping(true);
+        windSound.setVolume(.3f);
+        app.getRootNode().attachChild(windSound);
+        windSound.play();
     }
     
     public void startLevel()
     {
+        clickSound.playInstance();
         Level level = new Level();
         stateManager.attach(level);
         nifty.gotoScreen("hud");
-        
+        windSound.stop();
     }
 
     public void changeScreens(String screenName)
     {
+        if(!nifty.getCurrentScreen().getScreenId().equals("start"))
+            clickSound.playInstance();
+        else
+            windSound.setVolume(.1f);
         nifty.gotoScreen(screenName);
     }
     
@@ -55,6 +76,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     
     public void cycleHUD()
     {
+        clickSound.playInstance();
         if(currentHUD==HUDs.length-1)
             currentHUD=0;
         else
@@ -70,6 +92,11 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         actualHUD.getRenderer(ImageRenderer.class).setImage(img);
     }
     
+    public void changeRes()
+    {
+        
+    }
+    
     public void bind(Nifty nifty, Screen screen) 
     {
         this.nifty = nifty;
@@ -78,6 +105,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
 
     public void quit()
     {
+        clickSound.playInstance();
         app.stop();
     }
     
