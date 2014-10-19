@@ -10,21 +10,27 @@ import com.jme3.bullet.collision.PhysicsCollisionListener;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.input.ChaseCamera;
-import com.jme3.input.InputManager;
-import com.jme3.input.KeyInput;
+import com.jme3.input.MouseInput;
+import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
 import com.jme3.input.controls.KeyTrigger;
+import com.jme3.input.controls.MouseAxisTrigger;
+import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.material.Material;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.jme3.renderer.Camera;
 import com.jme3.scene.CameraNode;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.CameraControl;
 
 /**
- *
+ * A <code>Player</code> is a node which includes a
+ * mesh and the mechanics for the actual falling
+ * character.
+ * 
  * @author Ryan
  */
 public class Player extends Node
@@ -33,13 +39,23 @@ public class Player extends Node
     private RigidBodyControl physicsControl;
     private AudioNode soundNode;
     private SimpleApplication app;
+    private Camera cam;
+
     
     
+    /**
+     * Creates a node containing a player <code>mesh</code> and adds
+     * it to a specific <code>Application</code> and <code>bulletAppState</code>.
+     * 
+     * @param bulletAppState
+     * @param appRef
+     */
     public Player(BulletAppState bulletAppState, Application appRef)
     {
         setName("Player");
         
         app = (SimpleApplication)appRef;
+        cam = app.getCamera();
         mesh = app.getAssetManager().loadModel("Models/Dude/WIP Dude Frame.obj");
         mesh.setMaterial(new Material(app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md"));
         
@@ -50,14 +66,12 @@ public class Player extends Node
         
         CapsuleCollisionShape PlayerShape = new CapsuleCollisionShape(1.5f, 6f, 1);
         physicsControl = new RigidBodyControl(PlayerShape, .05f);
-        mesh.addControl(physicsControl);
+        addControl(physicsControl);
         bulletAppState.getPhysicsSpace().add(physicsControl);
         bulletAppState.getPhysicsSpace().addCollisionListener(new PlayerPhysicsListener());
 
         physicsControl.setGravity(new Vector3f(0f, -9.8f, 0f));
         physicsControl.setPhysicsLocation(new Vector3f(-18000, 23000, -10000));
-
-        
         
         
         soundNode = new AudioNode(app.getAssetManager(), "Sounds/scream.ogg", false);
@@ -66,19 +80,15 @@ public class Player extends Node
         attachChild(soundNode);
         
         
-        CameraNode camNode = new CameraNode("Camera Node", app.getCamera());
+        CameraNode camNode = new CameraNode("Camera Node", cam);
         camNode.setControlDir(CameraControl.ControlDirection.SpatialToCamera);
+        camNode.lookAt(this.getLocalTranslation(), Vector3f.UNIT_Y);
+        camNode.setEnabled(true);
+        camNode.setCamera(cam);
         attachChild(camNode);
-        
-        
-        ChaseCamera chaseCam = new ChaseCamera(app.getCamera(), camNode, app.getInputManager());
-        chaseCam.setDragToRotate(true);
-        chaseCam.setMinDistance(15);
-        chaseCam.setMaxDistance(30);
-        chaseCam.setDefaultDistance(20);
-        chaseCam.setEnabled(true);
-        chaseCam.setSpatial(mesh);
-        
+        camNode.setLocalTranslation(new Vector3f(0, 5, -20));
+        setLocalTranslation(new Vector3f(-18000, 23000, -10000));
+            
     }
     
     public void update(float tpf)
@@ -105,4 +115,5 @@ public class Player extends Node
                 soundNode.play();
         }
     }
+    
 }

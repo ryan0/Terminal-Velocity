@@ -30,7 +30,8 @@ public class Main extends SimpleApplication {
     @Override
     public void simpleInitApp() 
     {
-        flyCam.setDragToRotate(true);
+        flyCam.setEnabled(false);
+        //flyCam.setDragToRotate(true);
         
         GuiStateController guiController = new GuiStateController(); 
         stateManager.attach(guiController);

@@ -10,27 +10,35 @@ import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.audio.AudioNode;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.control.RigidBodyControl;
+import com.jme3.input.MouseInput;
+import com.jme3.input.controls.ActionListener;
+import com.jme3.input.controls.AnalogListener;
+import com.jme3.input.controls.MouseAxisTrigger;
+import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
-import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
-import com.jme3.post.FilterPostProcessor;
-import com.jme3.post.filters.FogFilter;
 import com.jme3.renderer.queue.RenderQueue;
+import com.jme3.scene.CameraNode;
 import com.jme3.scene.Node;
-import com.jme3.scene.Spatial;
-import com.jme3.shadow.DirectionalLightShadowFilter;
+import com.jme3.scene.control.CameraControl;
+import com.jme3.scene.control.Control;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
 import com.jme3.shadow.EdgeFilteringMode;
+import com.jme3.system.AppSettings;
 
-public class Level extends AbstractAppState{
+public class Level extends AbstractAppState implements AnalogListener,ActionListener
+{
     private SimpleApplication app;
     private AppStateManager stateManager;
     
     private BulletAppState bulletAppState;
     Player player;
+    CameraNode camNode;
+    
+    private Vector3f direction = new Vector3f();
+    private boolean rotate = false;
    
     @Override
     public void initialize(AppStateManager stateManager1, Application dahApp)
@@ -46,11 +54,20 @@ public class Level extends AbstractAppState{
         bulletAppState.getPhysicsSpace().setAccuracy(1f/480f);
         
         Terrain terrain = new Terrain(bulletAppState, app);
-         app.getRootNode().attachChild(terrain);
+        app.getRootNode().attachChild(terrain);
         
         player = new Player(bulletAppState, app); 
+        
+//        camNode = new CameraNode("Camera Node", app.getCamera());
+//        camNode.setControlDir(CameraControl.ControlDirection.SpatialToCamera);
+//        camNode.setLocalTranslation(player.getLocalTranslation().add(new Vector3f(0, -5, -20)));
+//        System.out.println(player.getLocalTranslation().toString());
+//        camNode.lookAt(player.getLocalTranslation(), Vector3f.UNIT_Y);
+//        camNode.setEnabled(true);
+        
         app.getRootNode().attachChild(player);
-        bulletAppState.getPhysicsSpace().setAccuracy(1f/500f);
+        
+        bulletAppState.getPhysicsSpace().setAccuracy(1f/250f);
         
         AudioNode soundNode = new AudioNode(app.getAssetManager(), "Sounds/Sandstorm.ogg", false);
         soundNode.setPositional(false);
@@ -59,6 +76,8 @@ public class Level extends AbstractAppState{
         soundNode.play();
         
         app.getRootNode().attachChild(soundNode);
+        
+        registerInput();
     }
     
     @Override
@@ -112,4 +131,44 @@ public class Level extends AbstractAppState{
 //        fpp.addFilter(dlsf);
 //        app.getViewPort().addProcessor(fpp);
     }
+    
+    private void registerInput() {
+        app.getInputManager().addMapping("toggleRotate", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
+        app.getInputManager().addMapping("rotateRight", new MouseAxisTrigger(MouseInput.AXIS_X, true));
+        app.getInputManager().addMapping("rotateLeft", new MouseAxisTrigger(MouseInput.AXIS_X, false));
+        app.getInputManager().addMapping("rotateUp", new MouseAxisTrigger(MouseInput.AXIS_Y, true));
+        app.getInputManager().addMapping("rotateDown", new MouseAxisTrigger(MouseInput.AXIS_Y, false));
+        app.getInputManager().addListener(this, "rotateRight", "rotateLeft", "rotateUp", "rotateDown", "toggleRotate");
+    }
+
+    public void onAnalog(String name, float value, float tpf) {
+        
+        direction.set(app.getCamera().getDirection()).normalizeLocal();
+
+        if (name.equals("rotateRight")) {
+          player.rotate(0, 5 * tpf, 0);
+        }
+        if (name.equals("rotateLeft")) {
+          player.rotate(0, -5 * tpf, 0);
+        }
+        if (name.equals("rotateUp")) {
+          player.rotate(0, 0, 5 * tpf);
+        }
+        if (name.equals("rotateDown")) {
+          player.rotate(0, 0, -5 * tpf);
+        }
+
+    }
+    public void onAction(String name, boolean keyPressed, float tpf) {
+    //toggling rotation on or off
+    if (name.equals("toggleRotate") && keyPressed) {
+      rotate = true;
+      app.getInputManager().setCursorVisible(false);
+    }
+    if (name.equals("toggleRotate") && !keyPressed) {
+      rotate = false;
+      app.getInputManager().setCursorVisible(true);
+    }
+
+  }
 }

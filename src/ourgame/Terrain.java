@@ -16,11 +16,24 @@ import com.jme3.scene.Spatial;
 import com.jme3.util.TangentBinormalGenerator;
 
 
+/**
+ * A node extension that contains a <code>mesh</code>
+ * for the terrain and its specifications.
+ * 
+ * @author Ryan
+ */
 public class Terrain extends Node
 {
     private RigidBodyControl physicsControl;
     private Spatial mesh;
     
+    /**
+     * Creates a node containing a terrain <code>mesh</code> and adds
+     * it to a specific <code>Application</code> and <code>bulletAppState</code>.
+     * 
+     * @param bulletAppState the desired parent bulletAppState
+     * @param app the desired parent Application
+     */
     public Terrain(BulletAppState bulletAppState, Application app)
     {
         mesh = app.getAssetManager().loadModel("Models/Terrain/terrain.obj");

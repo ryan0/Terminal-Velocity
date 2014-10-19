@@ -51,6 +51,10 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         windSound.play();
     }
     
+    /**
+     * Creates a <code>Level</code> appState and attaches it
+     * to the <code>stateManager</code>. 
+     */
     public void startLevel()
     {
         clickSound.playInstance();
