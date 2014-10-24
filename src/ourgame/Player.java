@@ -41,7 +41,7 @@ public class Player extends Node
     private SimpleApplication app;
     private Camera cam;
 
-    
+
     
     /**
      * Creates a node containing a player <code>mesh</code> and adds
@@ -62,7 +62,7 @@ public class Player extends Node
         Quaternion rotation = new Quaternion();
         rotation.fromAngles(0f, FastMath.PI, -FastMath.PI/2f);
         mesh.setLocalRotation(rotation);
-        attachChild(mesh);
+        this.attachChild(mesh);
         
         CapsuleCollisionShape PlayerShape = new CapsuleCollisionShape(1.5f, 6f, 1);
         physicsControl = new RigidBodyControl(PlayerShape, .05f);
@@ -70,23 +70,22 @@ public class Player extends Node
         bulletAppState.getPhysicsSpace().add(physicsControl);
         bulletAppState.getPhysicsSpace().addCollisionListener(new PlayerPhysicsListener());
 
-        physicsControl.setGravity(new Vector3f(0f, -9.8f, 0f));
+        physicsControl.setGravity(new Vector3f(0f, 2*-9.8f, 0f));
         physicsControl.setPhysicsLocation(new Vector3f(-18000, 23000, -10000));
         
         
         soundNode = new AudioNode(app.getAssetManager(), "Sounds/scream.ogg", false);
         soundNode.setPositional(false);
         soundNode.setLooping(false);
-        attachChild(soundNode);
+        this.attachChild(soundNode);
         
         
         CameraNode camNode = new CameraNode("Camera Node", cam);
         camNode.setControlDir(CameraControl.ControlDirection.SpatialToCamera);
-        camNode.lookAt(this.getLocalTranslation(), Vector3f.UNIT_Y);
         camNode.setEnabled(true);
-        camNode.setCamera(cam);
-        attachChild(camNode);
-        camNode.setLocalTranslation(new Vector3f(0, 5, -20));
+        this.attachChild(camNode);
+        camNode.setLocalTranslation(new Vector3f(22, 7, 0));
+        camNode.lookAt(this.getLocalTranslation(), Vector3f.UNIT_Y);
         setLocalTranslation(new Vector3f(-18000, 23000, -10000));
             
     }
@@ -111,8 +110,10 @@ public class Player extends Node
     {
         public void collision(PhysicsCollisionEvent event) 
         {
-            if(event.getNodeA().getName().equals("Player") || event.getNodeB().getName().equals("Player"));
+            if(event.getNodeA().getName().equals("Player") || event.getNodeB().getName().equals("Player")){
                 soundNode.play();
+                
+            }
         }
     }
     

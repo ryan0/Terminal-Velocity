@@ -22,13 +22,10 @@ import com.jme3.math.Vector3f;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.CameraNode;
 import com.jme3.scene.Node;
-import com.jme3.scene.control.CameraControl;
-import com.jme3.scene.control.Control;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
 import com.jme3.shadow.EdgeFilteringMode;
-import com.jme3.system.AppSettings;
 
-public class Level extends AbstractAppState implements AnalogListener,ActionListener
+public class Level extends AbstractAppState implements AnalogListener, ActionListener
 {
     private SimpleApplication app;
     private AppStateManager stateManager;
@@ -36,6 +33,8 @@ public class Level extends AbstractAppState implements AnalogListener,ActionList
     private BulletAppState bulletAppState;
     Player player;
     CameraNode camNode;
+    
+    AudioNode musicNode;
     
     private Vector3f direction = new Vector3f();
     private boolean rotate = false;
@@ -69,13 +68,13 @@ public class Level extends AbstractAppState implements AnalogListener,ActionList
         
         bulletAppState.getPhysicsSpace().setAccuracy(1f/250f);
         
-        AudioNode soundNode = new AudioNode(app.getAssetManager(), "Sounds/Sandstorm.ogg", false);
-        soundNode.setPositional(false);
-        soundNode.setLooping(true);
-        soundNode.setVolume(.1f);
-        soundNode.play();
+        musicNode = new AudioNode(app.getAssetManager(), "Sounds/Sandstorm.ogg", false);
+        musicNode.setPositional(false);
+        musicNode.setLooping(true);
+        musicNode.setVolume(.1f);
+        musicNode.play();
         
-        app.getRootNode().attachChild(soundNode);
+        app.getRootNode().attachChild(musicNode);
         
         registerInput();
     }
@@ -118,6 +117,8 @@ public class Level extends AbstractAppState implements AnalogListener,ActionList
         dlsr.setEdgeFilteringMode(EdgeFilteringMode.Dither);
         app.getViewPort().addProcessor(dlsr);
         
+        //THIS CAN BE USED IN CHANGING THE LINEAR VELOCITY BASED ON CAMERA ANGLE
+        //direction.set(app.getCamera().getDirection()).normalizeLocal();
         
 //        DirectionalLightShadowFilter dlsf;
 //        dlsf = new DirectionalLightShadowFilter(app.getAssetManager(), SHADOWMAP_SIZE, 4);
@@ -143,32 +144,30 @@ public class Level extends AbstractAppState implements AnalogListener,ActionList
 
     public void onAnalog(String name, float value, float tpf) {
         
-        direction.set(app.getCamera().getDirection()).normalizeLocal();
 
-        if (name.equals("rotateRight")) {
+        if (name.equals("rotateRight") && rotate) {
           player.rotate(0, 5 * tpf, 0);
         }
-        if (name.equals("rotateLeft")) {
+        if (name.equals("rotateLeft") && rotate) {
           player.rotate(0, -5 * tpf, 0);
         }
-        if (name.equals("rotateUp")) {
+        if (name.equals("rotateUp") && rotate) {
           player.rotate(0, 0, 5 * tpf);
         }
-        if (name.equals("rotateDown")) {
+        if (name.equals("rotateDown") && rotate) {
           player.rotate(0, 0, -5 * tpf);
         }
 
     }
     public void onAction(String name, boolean keyPressed, float tpf) {
-    //toggling rotation on or off
-    if (name.equals("toggleRotate") && keyPressed) {
-      rotate = true;
-      app.getInputManager().setCursorVisible(false);
+        //toggling rotation on or off
+        if (name.equals("toggleRotate") && keyPressed) {
+          rotate = true;
+          app.getInputManager().setCursorVisible(false);
+        }
+        if (name.equals("toggleRotate") && !keyPressed) {
+          rotate = false;
+          app.getInputManager().setCursorVisible(true);
+        }
     }
-    if (name.equals("toggleRotate") && !keyPressed) {
-      rotate = false;
-      app.getInputManager().setCursorVisible(true);
-    }
-
-  }
 }
