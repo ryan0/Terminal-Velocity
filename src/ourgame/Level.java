@@ -10,23 +10,34 @@ import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.audio.AudioNode;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.control.RigidBodyControl;
+import com.jme3.input.KeyInput;
 import com.jme3.input.MouseInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.AnalogListener;
+import com.jme3.input.controls.KeyTrigger;
 import com.jme3.input.controls.MouseAxisTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.FastMath;
+import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.jme3.post.FilterPostProcessor;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.CameraNode;
 import com.jme3.scene.Node;
+import com.jme3.shadow.DirectionalLightShadowFilter;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
 import com.jme3.shadow.EdgeFilteringMode;
 
 public class Level extends AbstractAppState implements AnalogListener, ActionListener
 {
+    public static final Quaternion PITCH045 = new Quaternion().fromAngleAxis(FastMath.PI/4,   new Vector3f(1,0,0));
+    public static final Quaternion ROLL045  = new Quaternion().fromAngleAxis(FastMath.PI/4,   new Vector3f(0,0,1));
+    public static final Quaternion YAW045   = new Quaternion().fromAngleAxis(FastMath.PI/4,   new Vector3f(0,1,0));
+    
     private SimpleApplication app;
     private AppStateManager stateManager;
     
@@ -36,17 +47,17 @@ public class Level extends AbstractAppState implements AnalogListener, ActionLis
     
     AudioNode musicNode;
     
-    private Vector3f direction = new Vector3f();
-    private boolean rotate = false;
+    private AudioNode soundNode;
    
     @Override
     public void initialize(AppStateManager stateManager1, Application dahApp)
     {
-        
         super.initialize(stateManager1, app);
         app = (SimpleApplication)dahApp;
         stateManager = stateManager1;
         initLight();
+        
+        app.getInputManager().setCursorVisible(false);
         
         bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
@@ -73,6 +84,11 @@ public class Level extends AbstractAppState implements AnalogListener, ActionLis
         musicNode.setLooping(true);
         musicNode.setVolume(.1f);
         musicNode.play();
+        
+        soundNode = new AudioNode(app.getAssetManager(), "Sounds/scream.ogg", false);
+        soundNode.setPositional(false);
+        soundNode.setLooping(false);
+        app.getRootNode().attachChild(soundNode);
         
         app.getRootNode().attachChild(musicNode);
         
@@ -120,54 +136,57 @@ public class Level extends AbstractAppState implements AnalogListener, ActionLis
         //THIS CAN BE USED IN CHANGING THE LINEAR VELOCITY BASED ON CAMERA ANGLE
         //direction.set(app.getCamera().getDirection()).normalizeLocal();
         
-//        DirectionalLightShadowFilter dlsf;
-//        dlsf = new DirectionalLightShadowFilter(app.getAssetManager(), SHADOWMAP_SIZE, 4);
-//        dlsf.setLight(sun);
-//        dlsf.setLambda(0.55f);
-//        dlsf.setShadowIntensity(0.6f);
-//        dlsf.setEdgeFilteringMode(EdgeFilteringMode.PCF4);
-//        dlsf.setEnabled(true);
-//
-//        FilterPostProcessor fpp = new FilterPostProcessor(app.getAssetManager());
-//        fpp.addFilter(dlsf);
-//        app.getViewPort().addProcessor(fpp);
+        DirectionalLightShadowFilter dlsf;
+        dlsf = new DirectionalLightShadowFilter(app.getAssetManager(), SHADOWMAP_SIZE, 4);
+        dlsf.setLight(sun);
+        dlsf.setLambda(0.55f);
+        dlsf.setShadowIntensity(0.6f);
+        dlsf.setEdgeFilteringMode(EdgeFilteringMode.PCF4);
+        dlsf.setEnabled(true);
+
+        FilterPostProcessor fpp = new FilterPostProcessor(app.getAssetManager());
+        fpp.addFilter(dlsf);
+        app.getViewPort().addProcessor(fpp);
     }
     
     private void registerInput() {
-        app.getInputManager().addMapping("toggleRotate", new MouseButtonTrigger(MouseInput.BUTTON_LEFT));
+        
         app.getInputManager().addMapping("rotateRight", new MouseAxisTrigger(MouseInput.AXIS_X, true));
         app.getInputManager().addMapping("rotateLeft", new MouseAxisTrigger(MouseInput.AXIS_X, false));
         app.getInputManager().addMapping("rotateUp", new MouseAxisTrigger(MouseInput.AXIS_Y, true));
         app.getInputManager().addMapping("rotateDown", new MouseAxisTrigger(MouseInput.AXIS_Y, false));
-        app.getInputManager().addListener(this, "rotateRight", "rotateLeft", "rotateUp", "rotateDown", "toggleRotate");
+        app.getInputManager().addMapping("rollLeft", new KeyTrigger(KeyInput.KEY_A));
+        app.getInputManager().addMapping("rollRight", new KeyTrigger(KeyInput.KEY_D));
+        app.getInputManager().addListener(this, "rotateRight", "rotateLeft", "rotateUp", "rotateDown", "rollLeft", "rollRight");
     }
 
     public void onAnalog(String name, float value, float tpf) {
         
-
-        if (name.equals("rotateRight") && rotate) {
-          player.rotate(0, 5 * tpf, 0);
+        if (name.equals("rotateRight")) {
+          //player.getControl(RigidBodyControl.class).applyTorqueImpulse(new Vector3f(0, 1, 0).mult(.5f*tpf));
+          player.getChild("Pivot").rotate(0, 0, tpf);
         }
-        if (name.equals("rotateLeft") && rotate) {
-          player.rotate(0, -5 * tpf, 0);
+        if (name.equals("rotateLeft")) {
+          //player.getControl(RigidBodyControl.class).applyTorqueImpulse(new Vector3f(0, -1, 0).mult(.5f*tpf));
+          player.getChild("Pivot").rotate(0, 0, -tpf);
         }
-        if (name.equals("rotateUp") && rotate) {
-          player.rotate(0, 0, 5 * tpf);
+        if (name.equals("rotateUp")) {
+          //player.getControl(RigidBodyControl.class).applyTorqueImpulse(new Vector3f(0, 0, 1).mult(.5f*tpf));
+          player.getChild("Pivot").rotate(0, tpf, 0);
         }
-        if (name.equals("rotateDown") && rotate) {
-          player.rotate(0, 0, -5 * tpf);
+        if (name.equals("rotateDown")) {
+          //player.getControl(RigidBodyControl.class).applyTorqueImpulse(new Vector3f(0, 0, -1).mult(.5f*tpf));
+          player.getChild("Pivot").rotate(0, -tpf, 0);
         }
 
     }
     public void onAction(String name, boolean keyPressed, float tpf) {
-        //toggling rotation on or off
-        if (name.equals("toggleRotate") && keyPressed) {
-          rotate = true;
-          app.getInputManager().setCursorVisible(false);
+        
+        if (name.equals("rollLeft")) {
+          player.getControl(RigidBodyControl.class).applyTorqueImpulse(new Vector3f(-1, 0, 0).mult(.5f*tpf));
         }
-        if (name.equals("toggleRotate") && !keyPressed) {
-          rotate = false;
-          app.getInputManager().setCursorVisible(true);
+        if (name.equals("rollRight")) {
+          player.getControl(RigidBodyControl.class).applyTorqueImpulse(new Vector3f(1, 0, 0).mult(.5f*tpf));
         }
     }
 }

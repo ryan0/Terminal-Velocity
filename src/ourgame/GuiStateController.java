@@ -24,7 +24,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     private Nifty nifty;
     private Screen screen;
     
-    private String[] HUDs = {"None", "Steel", "Slim Red", "Jungle", "Contrast"};
+    private String[] HUDs = {"None", "Steel", "Slim Red", "Jungle", "Contrast", "Prints", "Goggles"};
     private int currentHUD = 1;
     
     private AudioNode clickSound;

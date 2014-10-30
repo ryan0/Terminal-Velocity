@@ -39,6 +39,7 @@ public class Main extends SimpleApplication {
         NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(assetManager, inputManager, audioRenderer, guiViewPort);
         niftyDisplay.getNifty().fromXml("Interface/GameMenu.xml", "start", guiController);
         getGuiViewPort().addProcessor(niftyDisplay);
+        
     }
  
     @Override

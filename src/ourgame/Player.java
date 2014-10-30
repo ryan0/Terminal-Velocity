@@ -7,6 +7,7 @@ import com.jme3.audio.AudioNode;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
+import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CapsuleCollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.input.ChaseCamera;
@@ -18,6 +19,7 @@ import com.jme3.input.controls.MouseAxisTrigger;
 import com.jme3.input.controls.MouseButtonTrigger;
 import com.jme3.material.Material;
 import com.jme3.math.FastMath;
+import com.jme3.math.Matrix3f;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
@@ -64,12 +66,13 @@ public class Player extends Node
         mesh.setLocalRotation(rotation);
         this.attachChild(mesh);
         
-        CapsuleCollisionShape PlayerShape = new CapsuleCollisionShape(1.5f, 6f, 1);
+        BoxCollisionShape PlayerShape = new BoxCollisionShape(new Vector3f(1.5f, 6f, 1));
         physicsControl = new RigidBodyControl(PlayerShape, .05f);
         addControl(physicsControl);
         bulletAppState.getPhysicsSpace().add(physicsControl);
         bulletAppState.getPhysicsSpace().addCollisionListener(new PlayerPhysicsListener());
-
+        physicsControl.setAngularDamping(.999f);
+        physicsControl.setRestitution(0);
         physicsControl.setGravity(new Vector3f(0f, 2*-9.8f, 0f));
         physicsControl.setPhysicsLocation(new Vector3f(-18000, 23000, -10000));
         
@@ -79,11 +82,14 @@ public class Player extends Node
         soundNode.setLooping(false);
         this.attachChild(soundNode);
         
+        Node pivotNode = new Node("Pivot");
+        pivotNode.setLocalRotation(rotation);
         
         CameraNode camNode = new CameraNode("Camera Node", cam);
         camNode.setControlDir(CameraControl.ControlDirection.SpatialToCamera);
         camNode.setEnabled(true);
-        this.attachChild(camNode);
+        pivotNode.attachChild(camNode);
+        this.attachChild(pivotNode);
         camNode.setLocalTranslation(new Vector3f(22, 7, 0));
         camNode.lookAt(this.getLocalTranslation(), Vector3f.UNIT_Y);
         setLocalTranslation(new Vector3f(-18000, 23000, -10000));
@@ -92,6 +98,7 @@ public class Player extends Node
     
     public void update(float tpf)
     {
+        
         Vector3f xPlusZ = new Vector3f(
                 app.getCamera().getDirection().x, 
                 0, 
@@ -112,7 +119,6 @@ public class Player extends Node
         {
             if(event.getNodeA().getName().equals("Player") || event.getNodeB().getName().equals("Player")){
                 soundNode.play();
-                
             }
         }
     }
