@@ -10,7 +10,7 @@ import java.awt.Toolkit;
 
 public class Main extends SimpleApplication {
     
-    public static void main(String[] args) 
+    public static void main(String[] args)
     {
         
 //        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();

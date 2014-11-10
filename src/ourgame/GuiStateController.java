@@ -9,12 +9,15 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.audio.AudioNode;
+import com.jme3.system.AppSettings;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.elements.render.ImageRenderer;
 import de.lessvoid.nifty.render.NiftyImage;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 
 public class GuiStateController extends AbstractAppState implements ScreenController
 {
@@ -29,6 +32,11 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     
     private AudioNode clickSound;
     private AudioNode windSound;
+    
+    private boolean fullScreen = false;
+    private Dimension res = new Dimension(640,480);
+    
+    private Dimension maxScreenSize = Toolkit.getDefaultToolkit().getScreenSize();
     
     @Override
     public void initialize(AppStateManager stateManager1, Application dahApp)
@@ -96,9 +104,67 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         actualHUD.getRenderer(ImageRenderer.class).setImage(img);
     }
     
-    public void changeRes()
+    public void changeRes(String resValues)
+    {
+        AppSettings newSettings = new AppSettings(true);
+        //Retrieve the individual values from the string "widthxheight"
+        String [] XAndY = resValues.split("x");
+        int x = Integer.parseInt(XAndY[0]);
+        int y = Integer.parseInt(XAndY[1]);
+        newSettings.setResolution(x, y);
+        
+        clickSound.playInstance();
+        
+        //Make sure that we don't get a runtime error due
+        //to the resolution being to large for fullscreen
+        
+        //(Making the computer try to squeeze more pixels
+        //than it has makes it say "DERP")
+        if(fullScreen)
+        {
+            if(maxScreenSize.width>=x && maxScreenSize.height>=y)
+            {
+                res.setSize(x, y);
+                newSettings.setFullscreen(fullScreen);
+                app.setSettings(newSettings);
+                app.restart();
+            }
+        }
+        //Don't perform the check if it isn't fullscreen
+        else
+        {
+            res.setSize(x, y);
+            newSettings.setFullscreen(fullScreen);
+            app.setSettings(newSettings);
+            app.restart();
+        }
+        
+    }
+    
+    public void toggleFullScreen()
     {
         
+        clickSound.playInstance();
+        
+        //Perform the same maximum screen size check as above when changing resolution
+        if(!(res.width>maxScreenSize.width || res.height>maxScreenSize.height))
+        {
+            AppSettings newSettings = new AppSettings(true);
+            if(fullScreen)
+            {
+                newSettings.setFullscreen(false);
+                fullScreen = false;
+            }
+            else
+            {
+                newSettings.setFullscreen(true);
+                fullScreen = true;
+            }
+            newSettings.setResolution(res.width, res.height);
+            newSettings.setFullscreen(fullScreen);
+            app.setSettings(newSettings);
+            app.restart();
+        }
     }
     
     public void bind(Nifty nifty, Screen screen) 
@@ -123,3 +189,5 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
        
     }
 }
+
+
