@@ -10,13 +10,6 @@ import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.audio.AudioNode;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.control.RigidBodyControl;
-import com.jme3.input.KeyInput;
-import com.jme3.input.MouseInput;
-import com.jme3.input.controls.ActionListener;
-import com.jme3.input.controls.AnalogListener;
-import com.jme3.input.controls.KeyTrigger;
-import com.jme3.input.controls.MouseAxisTrigger;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.math.ColorRGBA;
@@ -31,11 +24,15 @@ import com.jme3.shadow.DirectionalLightShadowFilter;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
 import com.jme3.shadow.EdgeFilteringMode;
 
-public class Level extends AbstractAppState implements AnalogListener, ActionListener
+public class Level extends AbstractAppState
 {
     public static final Quaternion PITCH045 = new Quaternion().fromAngleAxis(FastMath.PI/4,   new Vector3f(1,0,0));
     public static final Quaternion ROLL045  = new Quaternion().fromAngleAxis(FastMath.PI/4,   new Vector3f(0,0,1));
     public static final Quaternion YAW045   = new Quaternion().fromAngleAxis(FastMath.PI/4,   new Vector3f(0,1,0));
+    
+    public static final Quaternion PITCH001 = new Quaternion().fromAngleAxis(FastMath.PI/180,   new Vector3f(1,0,0));
+    public static final Quaternion ROLL001  = new Quaternion().fromAngleAxis(FastMath.PI/180,   new Vector3f(0,0,1));
+    public static final Quaternion YAW001   = new Quaternion().fromAngleAxis(FastMath.PI/180,   new Vector3f(0,1,0));
     
     private SimpleApplication app;
     private AppStateManager stateManager;
@@ -91,7 +88,6 @@ public class Level extends AbstractAppState implements AnalogListener, ActionLis
         
         app.getRootNode().attachChild(musicNode);
         
-        registerInput();
     }
     
     @Override
@@ -146,46 +142,5 @@ public class Level extends AbstractAppState implements AnalogListener, ActionLis
         FilterPostProcessor fpp = new FilterPostProcessor(app.getAssetManager());
         fpp.addFilter(dlsf);
         app.getViewPort().addProcessor(fpp);
-    }
-    
-    private void registerInput() {
-        
-        app.getInputManager().addMapping("rotateRight", new MouseAxisTrigger(MouseInput.AXIS_X, true));
-        app.getInputManager().addMapping("rotateLeft", new MouseAxisTrigger(MouseInput.AXIS_X, false));
-        app.getInputManager().addMapping("rotateUp", new MouseAxisTrigger(MouseInput.AXIS_Y, true));
-        app.getInputManager().addMapping("rotateDown", new MouseAxisTrigger(MouseInput.AXIS_Y, false));
-        app.getInputManager().addMapping("rollLeft", new KeyTrigger(KeyInput.KEY_A));
-        app.getInputManager().addMapping("rollRight", new KeyTrigger(KeyInput.KEY_D));
-        app.getInputManager().addListener(this, "rotateRight", "rotateLeft", "rotateUp", "rotateDown", "rollLeft", "rollRight");
-    }
-
-    public void onAnalog(String name, float value, float tpf) {
-        
-        if (name.equals("rotateRight")) {
-          //player.getControl(RigidBodyControl.class).applyTorqueImpulse(new Vector3f(0, 1, 0).mult(.5f*tpf));
-          player.getChild("Pivot").rotate(0, 0, tpf);
-        }
-        if (name.equals("rotateLeft")) {
-          //player.getControl(RigidBodyControl.class).applyTorqueImpulse(new Vector3f(0, -1, 0).mult(.5f*tpf));
-          player.getChild("Pivot").rotate(0, 0, -tpf);
-        }
-        if (name.equals("rotateUp")) {
-          //player.getControl(RigidBodyControl.class).applyTorqueImpulse(new Vector3f(0, 0, 1).mult(.5f*tpf));
-          player.getChild("Pivot").rotate(0, tpf, 0);
-        }
-        if (name.equals("rotateDown")) {
-          //player.getControl(RigidBodyControl.class).applyTorqueImpulse(new Vector3f(0, 0, -1).mult(.5f*tpf));
-          player.getChild("Pivot").rotate(0, -tpf, 0);
-        }
-
-    }
-    public void onAction(String name, boolean keyPressed, float tpf) {
-        
-        if (name.equals("rollLeft")) {
-          player.getControl(RigidBodyControl.class).applyTorqueImpulse(new Vector3f(-1, 0, 0).mult(.5f*tpf));
-        }
-        if (name.equals("rollRight")) {
-          player.getControl(RigidBodyControl.class).applyTorqueImpulse(new Vector3f(1, 0, 0).mult(.5f*tpf));
-        }
     }
 }

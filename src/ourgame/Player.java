@@ -9,6 +9,12 @@ import com.jme3.bullet.collision.PhysicsCollisionEvent;
 import com.jme3.bullet.collision.PhysicsCollisionListener;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
+import com.jme3.input.KeyInput;
+import com.jme3.input.MouseInput;
+import com.jme3.input.controls.ActionListener;
+import com.jme3.input.controls.AnalogListener;
+import com.jme3.input.controls.KeyTrigger;
+import com.jme3.input.controls.MouseAxisTrigger;
 import com.jme3.material.Material;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
@@ -18,6 +24,8 @@ import com.jme3.scene.CameraNode;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.CameraControl;
+import static ourgame.Level.PITCH001;
+import static ourgame.Level.YAW001;
 
 /**
  * A <code>Player</code> is a node which includes a
@@ -26,14 +34,15 @@ import com.jme3.scene.control.CameraControl;
  * 
  * @author Ryan
  */
-public class Player extends Node
+public class Player extends Node implements AnalogListener, ActionListener
 {
     private Spatial mesh;
     private RigidBodyControl physicsControl;
     private AudioNode soundNode;
     private SimpleApplication app;
     private Camera cam;
-
+    private Node pivotNode;
+    private CameraNode camNode;
 
     
     /**
@@ -65,7 +74,7 @@ public class Player extends Node
         physicsControl.setAngularDamping(.999f);
         physicsControl.setRestitution(0);
         physicsControl.setGravity(new Vector3f(0f, 2*-9.8f, 0f));
-        physicsControl.setPhysicsLocation(new Vector3f(-18000, 23000, -10000));
+        physicsControl.setPhysicsLocation(new Vector3f(-18000, 22000, -10000));
         
         
         soundNode = new AudioNode(app.getAssetManager(), "Sounds/scream.ogg", false);
@@ -73,18 +82,19 @@ public class Player extends Node
         soundNode.setLooping(false);
         this.attachChild(soundNode);
         
-        Node pivotNode = new Node("Pivot");
+        pivotNode = new Node("Pivot");
         pivotNode.setLocalRotation(rotation);
         
-        CameraNode camNode = new CameraNode("Camera Node", cam);
+        camNode = new CameraNode("Camera Node", cam);
         camNode.setControlDir(CameraControl.ControlDirection.SpatialToCamera);
         camNode.setEnabled(true);
         pivotNode.attachChild(camNode);
         this.attachChild(pivotNode);
-        camNode.setLocalTranslation(new Vector3f(22, 7, 0));
+        camNode.setLocalTranslation(new Vector3f(-3, -20, 0));
         camNode.lookAt(this.getLocalTranslation(), Vector3f.UNIT_Y);
         setLocalTranslation(new Vector3f(-18000, 23000, -10000));
-            
+        
+        registerInput();
     }
     
     public void update(float tpf)
@@ -114,4 +124,40 @@ public class Player extends Node
         }
     }
     
+    private void registerInput() {
+        
+        app.getInputManager().addMapping("rotateRight", new MouseAxisTrigger(MouseInput.AXIS_X, true));
+        app.getInputManager().addMapping("rotateLeft", new MouseAxisTrigger(MouseInput.AXIS_X, false));
+        app.getInputManager().addMapping("rotateUp", new MouseAxisTrigger(MouseInput.AXIS_Y, true));
+        app.getInputManager().addMapping("rotateDown", new MouseAxisTrigger(MouseInput.AXIS_Y, false));
+        app.getInputManager().addMapping("rollLeft", new KeyTrigger(KeyInput.KEY_A));
+        app.getInputManager().addMapping("rollRight", new KeyTrigger(KeyInput.KEY_D));
+        app.getInputManager().addListener(this, "rotateRight", "rotateLeft", "rotateUp", "rotateDown", "rollLeft", "rollRight");
+    }
+
+    public void onAnalog(String name, float value, float tpf) {
+        
+        if (name.equals("rotateRight")) {
+            pivotNode.rotate(tpf,0,0);
+        }
+        if (name.equals("rotateLeft")) {
+            pivotNode.rotate(-tpf,0,0);
+        }
+        if (name.equals("rotateUp")) {
+            pivotNode.rotate(0,0,tpf);
+        }
+        if (name.equals("rotateDown")) {
+            pivotNode.rotate(0,0,-tpf);
+        }
+        camNode.lookAt(this.getLocalTranslation(),Vector3f.UNIT_Y);
+    }
+    public void onAction(String name, boolean keyPressed, float tpf) {
+        
+        if (name.equals("rollLeft")) {
+          getControl(RigidBodyControl.class).applyTorqueImpulse(new Vector3f(-1, 0, 0).mult(.5f*tpf));
+        }
+        if (name.equals("rollRight")) {
+          getControl(RigidBodyControl.class).applyTorqueImpulse(new Vector3f(1, 0, 0).mult(.5f*tpf));
+        }
+    }
 }
