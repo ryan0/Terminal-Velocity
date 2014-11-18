@@ -99,19 +99,23 @@ public class Player extends Node implements AnalogListener, ActionListener
     
     public void update(float tpf)
     {
-        
+        //update the velocity crap
         Vector3f xPlusZ = new Vector3f(
-                app.getCamera().getDirection().x, 
+                cam.getDirection().x, 
                 0, 
-                app.getCamera().getDirection().z);
+                cam.getDirection().z);
         xPlusZ.normalize();
-        
         
         Vector3f angularV = new Vector3f(
                 xPlusZ.x * physicsControl.getLinearVelocity().y * -2,
                 physicsControl.getLinearVelocity().y,
                 xPlusZ.z * physicsControl.getLinearVelocity().y * -2);
         physicsControl.setLinearVelocity(angularV);
+        
+        //update the mesh orientation
+        Quaternion quat2 = pivotNode.getLocalRotation();
+        
+        mesh.getLocalRotation().slerp(quat2, tpf);
     }
     
     public class PlayerPhysicsListener implements PhysicsCollisionListener 
