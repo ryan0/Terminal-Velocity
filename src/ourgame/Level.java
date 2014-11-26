@@ -131,6 +131,7 @@ public class Level extends AbstractAppState
         sun.setDirection(new Vector3f(1f,-1f, 0f));
         app.getRootNode().addLight(sun);
         
+        
         app.getRootNode().setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
         final int SHADOWMAP_SIZE = 4096;
         DirectionalLightShadowRenderer dlsr = new DirectionalLightShadowRenderer(app.getAssetManager(), SHADOWMAP_SIZE, 4);
@@ -154,5 +155,6 @@ public class Level extends AbstractAppState
         FilterPostProcessor fpp = new FilterPostProcessor(app.getAssetManager());
         fpp.addFilter(dlsf);
         app.getViewPort().addProcessor(fpp);
+        
     }
 }

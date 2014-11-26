@@ -158,16 +158,16 @@ public class Player extends Node implements AnalogListener, ActionListener
     public void onAnalog(String name, float value, float tpf) {
         
         if (name.equals("rotateRight")) {
-            pivotNode.rotate(tpf,0,0);
+            pivotNode.rotate(-tpf * 2,0,0);
         }
         if (name.equals("rotateLeft")) {
-            pivotNode.rotate(-tpf,0,0);
+            pivotNode.rotate(tpf * 2,0,0);
         }
         if (name.equals("rotateUp")) {
-            pivotNode.rotate(0,0,tpf);
+            pivotNode.rotate(0,0,-tpf * 2);
         }
         if (name.equals("rotateDown")) {
-            pivotNode.rotate(0,0,-tpf);
+            pivotNode.rotate(0,0,tpf * 2);
         }
         camNode.lookAt(this.getLocalTranslation(),Vector3f.UNIT_Y);
     }
