@@ -7,13 +7,14 @@ import com.jme3.app.Application;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.GhostControl;
+import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
-import com.jme3.util.TangentBinormalGenerator;
 /**
  *
  * @author SD
@@ -22,7 +23,7 @@ public class Coin extends Node{
     private Spatial mesh;
     
     /**
-     * Creates a node containing a terrain <code>mesh</code> and adds
+     * Creates a node containing a coin <code>mesh</code> and adds
      * it to a specific <code>Application</code> and <code>bulletAppState</code>.
      * 
      * @param bulletAppState the desired parent bulletAppState
@@ -43,6 +44,8 @@ public class Coin extends Node{
         mesh.setLocalScale(size);
         mesh.setLocalTranslation(position);
 
+        mesh.rotate(FastMath.HALF_PI, 0, FastMath.nextRandomFloat()*FastMath.TWO_PI);
+        
         CollisionShape coinShape = CollisionShapeFactory.createMeshShape(mesh);
         GhostControl ghost = new GhostControl(coinShape);
         mesh.addControl(ghost);

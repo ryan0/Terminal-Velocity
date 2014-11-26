@@ -24,8 +24,6 @@ import com.jme3.scene.CameraNode;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.CameraControl;
-import static ourgame.Level.PITCH001;
-import static ourgame.Level.YAW001;
 
 /**
  * A <code>Player</code> is a node which includes a
@@ -122,9 +120,27 @@ public class Player extends Node implements AnalogListener, ActionListener
     {
         public void collision(PhysicsCollisionEvent event) 
         {
-            if(event.getNodeA().getName().equals("Player") || event.getNodeB().getName().equals("Player")){
+            if(event.getNodeA().getName().equals("terrain-geom-0") || event.getNodeB().getName().equals("terrain-geom-0")){
                 soundNode.play();
             }
+            
+            //if there's a coin, remove it
+            if(event.getNodeA().getName().equals("coin-geom-0") || event.getNodeB().getName().equals("coin-geom-0"))
+            {
+                if(event.getNodeA().getName().equals("coin-geom-0"))
+                {
+                    event.getNodeA().removeFromParent();
+                }
+                else
+                {
+                    event.getNodeB().removeFromParent();
+                }
+            }
+            System.out.println("----------------------------------");
+            System.out.println("Collision Between:");
+            System.out.println(event.getNodeA().getName());
+            System.out.println(event.getNodeB().getName());
+            System.out.println("----------------------------------");
         }
     }
     

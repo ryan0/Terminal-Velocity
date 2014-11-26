@@ -75,6 +75,18 @@ public class Level extends AbstractAppState
         
         bulletAppState.getPhysicsSpace().setAccuracy(1f/250f);
         
+        
+        //coin stuff
+        for(int count = 0; count <= 100; count++)
+        {
+            Coin coin = new Coin(bulletAppState, app,
+                    new Vector3f((int)(-21000+FastMath.nextRandomFloat()*6000),
+                        (int)(16000+FastMath.nextRandomFloat()*6000),
+                        (int)(-13000+FastMath.nextRandomFloat()*6000)),
+                    new Vector3f(30,30,30));
+            app.getRootNode().attachChild(coin);
+        }
+        
         musicNode = new AudioNode(app.getAssetManager(), "Sounds/Sandstorm.ogg", false);
         musicNode.setPositional(false);
         musicNode.setLooping(true);
