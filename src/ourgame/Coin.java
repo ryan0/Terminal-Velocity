@@ -7,9 +7,7 @@ import com.jme3.app.Application;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
-import com.jme3.bullet.control.GhostControl;
 import com.jme3.bullet.control.RigidBodyControl;
-import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
@@ -37,17 +35,13 @@ public class Coin extends Node{
         setName("Coin");
         
         this.setShadowMode(RenderQueue.ShadowMode.Off);
-        
-        mesh = app.getAssetManager().loadModel("Models/CoinByRyan/The Coin.obj");
+        mesh = app.getAssetManager().loadModel("Models/CoinByRyan/goldCoin.obj");
         TangentBinormalGenerator.generate(mesh);
         
         Material mat = new Material (app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
-        mat.setTexture("DiffuseMap", app.getAssetManager().loadTexture("Textures/ryanCoin/ryanCoinTex.png"));
-        mat.setTexture("NormalMap", app.getAssetManager().loadTexture("Textures/ryanCoin/ryanCoinNormalMap.png"));
-        mat.setBoolean("UseMaterialColors",true);
-        mat.setColor("Specular",ColorRGBA.White);
-        mat.setColor("Diffuse",ColorRGBA.White);
-        mat.setFloat("Shininess", 2.5f);
+        mat.setTexture("DiffuseMap", app.getAssetManager().loadTexture("Textures/ryanCoin/goldCoinTex.png"));
+        mat.setTexture("NormalMap", app.getAssetManager().loadTexture("Textures/ryanCoin/goldCoinNormalMap.png"));
+        mat.setColor("GlowColor",ColorRGBA.Yellow.mult(.8f));
         mesh.setMaterial(mat);
         mesh.setLocalScale(size);
         mesh.setLocalTranslation(position);

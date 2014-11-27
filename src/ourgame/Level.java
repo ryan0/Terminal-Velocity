@@ -23,6 +23,7 @@ import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.post.FilterPostProcessor;
+import com.jme3.post.filters.BloomFilter;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.CameraNode;
 import com.jme3.scene.Node;
@@ -92,6 +93,10 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
         
         bulletAppState.getPhysicsSpace().setAccuracy(1f/250f);
         
+        Node coinNode = new Node();
+        AmbientLight coinLamp = new AmbientLight();
+        coinLamp.setColor(ColorRGBA.White.mult(2));
+        coinNode.addLight(coinLamp);
         
         //coin stuff
         for(int count = 0; count <= 100; count++)
@@ -101,9 +106,10 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
                         (int)(16000+FastMath.nextRandomFloat()*6000),
                         (int)(-13000+FastMath.nextRandomFloat()*6000)),
                     new Vector3f(30,30,30));
-            app.getRootNode().attachChild(coin);
+            coinNode.attachChild(coin);
         }
-        
+        app.getRootNode().attachChild(coinNode);
+                
         musicNode = new AudioNode(app.getAssetManager(), "Sounds/Sandstorm.ogg", false);
         musicNode.setPositional(false);
         musicNode.setLooping(true);
@@ -177,8 +183,12 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
 
         FilterPostProcessor fpp = new FilterPostProcessor(app.getAssetManager());
         fpp.addFilter(dlsf);
-        app.getViewPort().addProcessor(fpp);
         
+        
+        BloomFilter bloom = new BloomFilter(BloomFilter.GlowMode.Objects);
+        fpp.addFilter(bloom);
+        
+        app.getViewPort().addProcessor(fpp);
     }
     public void bind(Nifty nifty, Screen screen) 
     {
