@@ -5,6 +5,7 @@
 package ourgame;
 import com.jme3.app.Application;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.collision.shapes.CollisionShape;
 import com.jme3.bullet.control.GhostControl;
 import com.jme3.bullet.control.RigidBodyControl;
@@ -13,6 +14,7 @@ import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
+import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.util.TangentBinormalGenerator;
@@ -33,7 +35,10 @@ public class Coin extends Node{
     public Coin(BulletAppState bulletAppState, Application app, Vector3f position,Vector3f size)
     {
         setName("Coin");
-        mesh = app.getAssetManager().loadModel("Models/CoinByRyan/Coin_I_Put_Far_Too_Much_Time_Into.obj");
+        
+        this.setShadowMode(RenderQueue.ShadowMode.Off);
+        
+        mesh = app.getAssetManager().loadModel("Models/CoinByRyan/The Coin.obj");
         TangentBinormalGenerator.generate(mesh);
         
         Material mat = new Material (app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
@@ -46,9 +51,14 @@ public class Coin extends Node{
         mesh.setMaterial(mat);
         mesh.setLocalScale(size);
         mesh.setLocalTranslation(position);
-
+        mesh.rotate(FastMath.HALF_PI,FastMath.TWO_PI*FastMath.nextRandomFloat(),0);
         
+        CollisionShape coinShape = new BoxCollisionShape(new Vector3f(30, 30, 30));
+        RigidBodyControl control = new RigidBodyControl(coinShape, .000001f);
+        mesh.addControl(control);
         this.attachChild(mesh);
+        bulletAppState.getPhysicsSpace().add(mesh);
+        control.setGravity(new Vector3f());
     }
     
 }

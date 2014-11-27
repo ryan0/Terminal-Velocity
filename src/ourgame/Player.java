@@ -125,9 +125,9 @@ public class Player extends Node implements AnalogListener, ActionListener
             }
             
             //if there's a coin, remove it
-            if(event.getNodeA().getName().equals("coin-geom-0") || event.getNodeB().getName().equals("coin-geom-0"))
+            if(event.getNodeA().getName().equals("The Coin-geom-0") || event.getNodeB().getName().equals("The Coin-geom-0"))
             {
-                if(event.getNodeA().getName().equals("coin-geom-0"))
+                if(event.getNodeA().getName().equals("The Coin-geom-0"))
                 {
                     event.getNodeA().removeFromParent();
                 }
@@ -158,26 +158,28 @@ public class Player extends Node implements AnalogListener, ActionListener
     public void onAnalog(String name, float value, float tpf) {
         
         if (name.equals("rotateRight")) {
-            pivotNode.rotate(-tpf * 2,0,0);
+            pivotNode.rotate(-.01f,0,0);
         }
         if (name.equals("rotateLeft")) {
-            pivotNode.rotate(tpf * 2,0,0);
+            pivotNode.rotate(.01f,0,0);
         }
         if (name.equals("rotateUp")) {
-            pivotNode.rotate(0,0,-tpf * 2);
+            pivotNode.rotate(0,0,-.01f);
         }
         if (name.equals("rotateDown")) {
-            pivotNode.rotate(0,0,tpf * 2);
+            pivotNode.rotate(0,0,.01f);
         }
         camNode.lookAt(this.getLocalTranslation(),Vector3f.UNIT_Y);
     }
     public void onAction(String name, boolean keyPressed, float tpf) {
         
         if (name.equals("rollLeft")) {
-          getControl(RigidBodyControl.class).applyTorqueImpulse(new Vector3f(-1, 0, 0).mult(.5f*tpf));
+          //getControl(RigidBodyControl.class).applyTorqueImpulse(new Vector3f(-1, 0, 0).mult(.5f*tpf));
+          mesh.rotate(0, -.1f, 0);
         }
         if (name.equals("rollRight")) {
-          getControl(RigidBodyControl.class).applyTorqueImpulse(new Vector3f(1, 0, 0).mult(.5f*tpf));
+          //getControl(RigidBodyControl.class).applyTorqueImpulse(new Vector3f(1, 0, 0).mult(.5f*tpf));
+          mesh.rotate(0, .1f, 0);
         }
     }
 }
