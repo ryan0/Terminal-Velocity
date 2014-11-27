@@ -129,17 +129,17 @@ public class Player extends Node implements AnalogListener, ActionListener
             }
             
             //if there's a coin, remove it
-            if((event.getNodeA().getName().equals("The Coin-geom-0")&&event.getNodeB().getName().equals("Player")) || (event.getNodeA().getName().equals("Player")&&event.getNodeB().getName().equals("The Coin-geom-0")))
+            if((event.getNodeA().getName().equals("goldCoin-geom-0")&&event.getNodeB().getName().equals("Player")) || (event.getNodeA().getName().equals("Player")&&event.getNodeB().getName().equals("goldCoin-geom-0")))
             {
-                if(event.getNodeA().getName().equals("The Coin-geom-0"))
+                if(event.getNodeA().getName().equals("goldCoin-geom-0"))
                 {
                     event.getNodeA().removeFromParent();
-                    points = points+1000;
+                    points = points+100;
                 }
                 else
                 {
                     event.getNodeB().removeFromParent();
-                    points = points+1000;
+                    points = points+100;
                 }
             }
             System.out.println("----------------------------------");

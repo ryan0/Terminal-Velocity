@@ -109,8 +109,11 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
             coinNode.attachChild(coin);
         }
         app.getRootNode().attachChild(coinNode);
-                
-        musicNode = new AudioNode(app.getAssetManager(), "Sounds/Sandstorm.ogg", false);
+        
+        if(Math.random()>.5)
+            musicNode = new AudioNode(app.getAssetManager(), "Sounds/Sandstorm.ogg", false);
+        else
+            musicNode = new AudioNode(app.getAssetManager(), "Sounds/Nightcore_Clip.wav", false);
         musicNode.setPositional(false);
         musicNode.setLooping(true);
         musicNode.setVolume(.1f);
@@ -209,6 +212,7 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
         }
 
     }
+    @Override
     public void cleanup()
     {
         app.getInputManager().setCursorVisible(true);
