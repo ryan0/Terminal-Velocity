@@ -67,6 +67,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     {
         clickSound.playInstance();
         Level level = new Level();
+        level.setNifty(nifty);
         stateManager.attach(level);
         nifty.gotoScreen("hud");
         windSound.stop();

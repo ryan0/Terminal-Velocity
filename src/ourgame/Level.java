@@ -10,6 +10,12 @@ import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.audio.AudioNode;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.control.RigidBodyControl;
+import com.jme3.input.KeyInput;
+import com.jme3.input.MouseInput;
+import com.jme3.input.controls.ActionListener;
+import com.jme3.input.controls.KeyTrigger;
+import com.jme3.input.controls.MouseAxisTrigger;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.math.ColorRGBA;
@@ -23,9 +29,17 @@ import com.jme3.scene.Node;
 import com.jme3.shadow.DirectionalLightShadowFilter;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
 import com.jme3.shadow.EdgeFilteringMode;
+import de.lessvoid.nifty.Nifty;
+import de.lessvoid.nifty.elements.Element;
+import de.lessvoid.nifty.elements.render.TextRenderer;
+import de.lessvoid.nifty.screen.Screen;
+import de.lessvoid.nifty.screen.ScreenController;
 
-public class Level extends AbstractAppState
+public class Level extends AbstractAppState implements ActionListener,ScreenController
 {
+    private Nifty nifty;
+    private Screen screen;
+    private int points;
     public static final Quaternion PITCH045 = new Quaternion().fromAngleAxis(FastMath.PI/4,   new Vector3f(1,0,0));
     public static final Quaternion ROLL045  = new Quaternion().fromAngleAxis(FastMath.PI/4,   new Vector3f(0,0,1));
     public static final Quaternion YAW045   = new Quaternion().fromAngleAxis(FastMath.PI/4,   new Vector3f(0,1,0));
@@ -36,6 +50,9 @@ public class Level extends AbstractAppState
     
     private SimpleApplication app;
     private AppStateManager stateManager;
+    
+    private AmbientLight lamp;
+    private DirectionalLight sun;
     
     private BulletAppState bulletAppState;
     Player player;
@@ -99,13 +116,19 @@ public class Level extends AbstractAppState
         app.getRootNode().attachChild(soundNode);
         
         app.getRootNode().attachChild(musicNode);
-        
+        registerInput();
     }
-    
+    public void setNifty(Nifty nif)
+    {
+        nifty = nif;
+    }
     @Override
     public void update(float tpf)
     {
         player.update(tpf);
+        points = player.getPoints();
+        Element niftyElement = nifty.getCurrentScreen().findElementByName("points");
+        niftyElement.getRenderer(TextRenderer.class).setText("Score: "+points);
     }
     
     private void initLight()
@@ -123,10 +146,10 @@ public class Level extends AbstractAppState
         skyNode.setShadowMode(RenderQueue.ShadowMode.Off);
         app.getRootNode().attachChild(skyNode);
         
-        AmbientLight lamp = new AmbientLight();
+        lamp = new AmbientLight();
         lamp.setColor(ColorRGBA.White);
         app.getRootNode().addLight(lamp);
-        DirectionalLight sun = new DirectionalLight();
+        sun = new DirectionalLight();
         sun.setColor(ColorRGBA.White);
         sun.setDirection(new Vector3f(1f,-1f, 0f));
         app.getRootNode().addLight(sun);
@@ -156,5 +179,43 @@ public class Level extends AbstractAppState
         fpp.addFilter(dlsf);
         app.getViewPort().addProcessor(fpp);
         
+    }
+    public void bind(Nifty nifty, Screen screen) 
+    {
+        this.nifty = nifty;
+        this.screen = screen;
+    }
+    private void registerInput() {
+        app.getInputManager().addMapping("leave", new KeyTrigger(KeyInput.KEY_E));
+        app.getInputManager().addListener(this, "leave");
+    }
+
+
+    public void onAction(String name,boolean keyPressed, float tpf) {
+        
+        if (name.equals("leave")&& nifty!=null) {
+            nifty.gotoScreen("gameScreen");            
+            stateManager.detach(this);
+        }
+
+    }
+    public void cleanup()
+    {
+        app.getInputManager().setCursorVisible(true);
+        player.cleanup();
+        app.getRootNode().detachAllChildren();
+        app.getRootNode().removeLight(sun);
+        app.getRootNode().removeLight(lamp);
+        musicNode.stop();
+        app.getViewPort().clearProcessors();
+    }
+     public void onStartScreen() 
+    {
+        
+    }
+
+    public void onEndScreen() 
+    {
+       
     }
 }

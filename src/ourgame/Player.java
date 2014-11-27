@@ -42,6 +42,7 @@ public class Player extends Node implements AnalogListener, ActionListener
     private Node pivotNode;
     private CameraNode camNode;
 
+    private int points = 0;
     
     /**
      * Creates a node containing a player <code>mesh</code> and adds
@@ -94,7 +95,10 @@ public class Player extends Node implements AnalogListener, ActionListener
         
         registerInput();
     }
-    
+    public int getPoints()
+    {
+        return points;
+    }
     public void update(float tpf)
     {
         //update the velocity crap
@@ -120,20 +124,22 @@ public class Player extends Node implements AnalogListener, ActionListener
     {
         public void collision(PhysicsCollisionEvent event) 
         {
-            if(event.getNodeA().getName().equals("terrain-geom-0") || event.getNodeB().getName().equals("terrain-geom-0")){
+            if((event.getNodeA().getName().equals("terrain-geom-0") && event.getNodeB().getName().equals("Player"))|| (event.getNodeA().getName().equals("Player")&&event.getNodeB().getName().equals("terrain-geom-0"))){
                 soundNode.play();
             }
             
             //if there's a coin, remove it
-            if(event.getNodeA().getName().equals("The Coin-geom-0") || event.getNodeB().getName().equals("The Coin-geom-0"))
+            if((event.getNodeA().getName().equals("The Coin-geom-0")&&event.getNodeB().getName().equals("Player")) || (event.getNodeA().getName().equals("Player")&&event.getNodeB().getName().equals("The Coin-geom-0")))
             {
                 if(event.getNodeA().getName().equals("The Coin-geom-0"))
                 {
                     event.getNodeA().removeFromParent();
+                    points = points+1000;
                 }
                 else
                 {
                     event.getNodeB().removeFromParent();
+                    points = points+1000;
                 }
             }
             System.out.println("----------------------------------");
@@ -143,7 +149,10 @@ public class Player extends Node implements AnalogListener, ActionListener
             System.out.println("----------------------------------");
         }
     }
-    
+    public void cleanup()
+    {
+        this.detachAllChildren();
+    }
     private void registerInput() {
         
         app.getInputManager().addMapping("rotateRight", new MouseAxisTrigger(MouseInput.AXIS_X, true));
