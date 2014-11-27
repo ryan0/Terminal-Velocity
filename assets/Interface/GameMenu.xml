@@ -262,9 +262,15 @@
     </screen>
     
     <screen id="hud" controller = "ourgame.GuiStateController">
-        <layer id="HUD" childLayout = "center">
+        <layer id="background" childLayout = "center">
             <panel childLayout = "center" visibleToMouse = "false">
                 <image id = "theHUD" filename = "Interface/Images/HUD-Steel.png" height = "100%" width = "100%"/>
+            </panel>
+        </layer>
+        <layer id = "foreground" childLayout = "vertical">
+            <panel childLayout = "horizontal" visibleToMouse = "true" height = "25%" width = "100%">
+                <panel visibleToMouse = "false" height = "100%" width = "90%"></panel>
+                <text id = "points" text = "0" font = "Interface/Fonts/Aparajita.fnt" align = "center" valign = "center" />
             </panel>
         </layer>
     </screen>
