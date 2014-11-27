@@ -110,10 +110,15 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
         }
         app.getRootNode().attachChild(coinNode);
         
-        if(Math.random()>.5)
+        if(Math.random()>.66)
             musicNode = new AudioNode(app.getAssetManager(), "Sounds/Sandstorm.ogg", false);
         else
+            if(Math.random()<.33)
             musicNode = new AudioNode(app.getAssetManager(), "Sounds/Nightcore_Clip.wav", false);
+            else
+                musicNode = new AudioNode(app.getAssetManager(), "Sounds/Epic Music Clip.wav", false);
+               
+        
         musicNode.setPositional(false);
         musicNode.setLooping(true);
         musicNode.setVolume(.1f);
