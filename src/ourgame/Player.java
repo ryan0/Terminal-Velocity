@@ -44,6 +44,8 @@ public class Player extends Node implements AnalogListener, ActionListener
 
     private int points = 0;
     
+    BulletAppState bullS;
+    
     /**
      * Creates a node containing a player <code>mesh</code> and adds
      * it to a specific <code>Application</code> and <code>bulletAppState</code>.
@@ -53,6 +55,7 @@ public class Player extends Node implements AnalogListener, ActionListener
      */
     public Player(BulletAppState bulletAppState, Application appRef)
     {
+        bullS = bulletAppState;
         setName("Player");
         
         app = (SimpleApplication)appRef;
@@ -68,8 +71,8 @@ public class Player extends Node implements AnalogListener, ActionListener
         BoxCollisionShape PlayerShape = new BoxCollisionShape(new Vector3f(1.5f, 6f, 1));
         physicsControl = new RigidBodyControl(PlayerShape, .05f);
         addControl(physicsControl);
-        bulletAppState.getPhysicsSpace().add(physicsControl);
-        bulletAppState.getPhysicsSpace().addCollisionListener(new PlayerPhysicsListener());
+        bullS.getPhysicsSpace().add(physicsControl);
+        bullS.getPhysicsSpace().addCollisionListener(new PlayerPhysicsListener());
         physicsControl.setAngularDamping(.999f);
         physicsControl.setRestitution(0);
         physicsControl.setGravity(new Vector3f(0f, 2*-9.8f, 0f));
@@ -101,6 +104,7 @@ public class Player extends Node implements AnalogListener, ActionListener
     }
     public void update(float tpf)
     {
+        points++;
         //update the velocity crap
         Vector3f xPlusZ = new Vector3f(
                 cam.getDirection().x, 
@@ -152,6 +156,7 @@ public class Player extends Node implements AnalogListener, ActionListener
     public void cleanup()
     {
         this.detachAllChildren();
+        physicsControl.destroy();
     }
     private void registerInput() {
         

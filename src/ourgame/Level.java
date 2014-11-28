@@ -143,6 +143,7 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
         points = player.getPoints();
         Element niftyElement = nifty.getCurrentScreen().findElementByName("points");
         niftyElement.getRenderer(TextRenderer.class).setText("Score: "+points);
+        System.out.println("Points: " +points);
     }
     
     private void initLight()
@@ -212,7 +213,7 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
     public void onAction(String name,boolean keyPressed, float tpf) {
         
         if (name.equals("leave")&& nifty!=null) {
-            nifty.gotoScreen("gameScreen");            
+            nifty.gotoScreen("gameScreen"); 
             stateManager.detach(this);
         }
 
@@ -220,12 +221,16 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
     @Override
     public void cleanup()
     {
+        System.out.println("Cleanup");
+        super.cleanup();
         app.getInputManager().setCursorVisible(true);
         player.cleanup();
         app.getRootNode().detachAllChildren();
         app.getRootNode().removeLight(sun);
         app.getRootNode().removeLight(lamp);
         musicNode.stop();
+        bulletAppState.cleanup();
+        //bulletAppState.getPhysicsSpace().destroy(); <----- This line of code causes a null pointer exception, kept here just because
         app.getViewPort().clearProcessors();
     }
      public void onStartScreen() 
