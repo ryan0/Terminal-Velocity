@@ -27,27 +27,32 @@ import com.jme3.scene.control.CameraControl;
 
 /**
  * A <code>Player</code> is a node which includes a
- * mesh and the mechanics for the actual falling
+ * playerMesh and the mechanics for the actual falling
  * character.
  * 
  * @author Ryan
  */
 public class Player extends Node implements AnalogListener, ActionListener
 {
-    private Spatial mesh;
+    private Spatial playerMesh;
     private RigidBodyControl physicsControl;
     private AudioNode soundNode;
     private SimpleApplication app;
     private Camera cam;
     private Node pivotNode;
     private CameraNode camNode;
-
-    private int points = 0;
     
-    BulletAppState bullS;
+    private boolean parachuteUsed = false;
+    private boolean parachuting = false;
+    private Spatial parachuteMesh;
+    
+    private int points = 0;
+    private boolean hitGround = false;
+    
+    BulletAppState bulletState;
     
     /**
-     * Creates a node containing a player <code>mesh</code> and adds
+     * Creates a node containing a player <code>playerMesh</code> and adds
      * it to a specific <code>Application</code> and <code>bulletAppState</code>.
      * 
      * @param bulletAppState
@@ -55,24 +60,24 @@ public class Player extends Node implements AnalogListener, ActionListener
      */
     public Player(BulletAppState bulletAppState, Application appRef)
     {
-        bullS = bulletAppState;
+        bulletState = bulletAppState;
         setName("Player");
         
         app = (SimpleApplication)appRef;
         cam = app.getCamera();
-        mesh = app.getAssetManager().loadModel("Models/Dude/WIP Dude Frame.obj");
-        mesh.setMaterial(new Material(app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md"));
+        playerMesh = app.getAssetManager().loadModel("Models/Dude/WIP Dude Frame.obj");
+        playerMesh.setMaterial(new Material(app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md"));
         
         Quaternion rotation = new Quaternion();
         rotation.fromAngles(0f, FastMath.PI, -FastMath.PI/2f);
-        mesh.setLocalRotation(rotation);
-        this.attachChild(mesh);
+        playerMesh.setLocalRotation(rotation);
+        this.attachChild(playerMesh);
         
         BoxCollisionShape PlayerShape = new BoxCollisionShape(new Vector3f(1.5f, 6f, 1));
         physicsControl = new RigidBodyControl(PlayerShape, .05f);
         addControl(physicsControl);
-        bullS.getPhysicsSpace().add(physicsControl);
-        bullS.getPhysicsSpace().addCollisionListener(new PlayerPhysicsListener());
+        bulletState.getPhysicsSpace().add(physicsControl);
+        bulletState.getPhysicsSpace().addCollisionListener(new PlayerPhysicsListener());
         physicsControl.setAngularDamping(.999f);
         physicsControl.setRestitution(0);
         physicsControl.setGravity(new Vector3f(0f, 2*-9.8f, 0f));
@@ -96,6 +101,10 @@ public class Player extends Node implements AnalogListener, ActionListener
         camNode.lookAt(this.getLocalTranslation(), Vector3f.UNIT_Y);
         setLocalTranslation(new Vector3f(-18000, 23000, -10000));
         
+        parachuteMesh = app.getAssetManager().loadModel("Models/Parachute/Parachute.j3o");
+        parachuteMesh.setMaterial(new Material(app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md"));
+        parachuteMesh.setLocalTranslation(new Vector3f(0,1,0));
+        
         registerInput();
     }
     public int getPoints()
@@ -104,7 +113,8 @@ public class Player extends Node implements AnalogListener, ActionListener
     }
     public void update(float tpf)
     {
-        points++;
+        if(!hitGround)
+            points++;
         //update the velocity crap
         Vector3f xPlusZ = new Vector3f(
                 cam.getDirection().x, 
@@ -116,12 +126,58 @@ public class Player extends Node implements AnalogListener, ActionListener
                 xPlusZ.x * physicsControl.getLinearVelocity().y * -2,
                 physicsControl.getLinearVelocity().y,
                 xPlusZ.z * physicsControl.getLinearVelocity().y * -2);
+        
+        if(parachuting)
+        {
+            if(angularV.getX()>20)
+                angularV.setX(20);
+            else if (angularV.getX()<-20)
+                angularV.setX(-20);
+            
+            if(angularV.getZ()>20)
+                angularV.setZ(20);
+            else if (angularV.getZ()<-20)
+                angularV.setZ(-20);
+            
+            if(angularV.getY()>40)
+                angularV.setY(40);
+            else if (angularV.getY()<-40)
+                angularV.setY(-40);
+        }
         physicsControl.setLinearVelocity(angularV);
         
-        //update the mesh orientation
-        Quaternion quat2 = pivotNode.getLocalRotation();
+        //report velocity
+        System.out.println("X:"+angularV.getX());
+        System.out.println("Y:"+angularV.getY());
+        System.out.println("Z:"+angularV.getZ());
         
-        mesh.getLocalRotation().slerp(quat2, tpf);
+        //update the playerMesh orientation
+        if(!parachuting)
+        {
+            Quaternion quat2 = pivotNode.getLocalRotation();
+            playerMesh.getLocalRotation().slerp(quat2, tpf);
+        }
+        else
+        {
+            this.setLocalRotation(Quaternion.DIRECTION_Z);
+            playerMesh.getLocalRotation().slerp(new Quaternion(0,1,0,1), 5*tpf);
+        }
+        
+        if(parachuteUsed && !parachuting)
+        {
+            parachuteMesh.setLocalScale(1f,1f,1f);
+            parachuteMesh.setLocalRotation(Quaternion.DIRECTION_Z);
+            this.attachChild(parachuteMesh);
+            parachuting = true;
+        }
+        if(parachuting && parachuteMesh.getLocalScale().getX()<6f)
+        {
+            parachuteMesh.setLocalScale(parachuteMesh.getLocalScale().add(.1f, .1f, .1f));
+            parachuteMesh.setLocalTranslation(parachuteMesh.getLocalTranslation().add(0,.3f,0));
+            Vector3f increaseVector = new Vector3f(camNode.getLocalTranslation());
+            camNode.setLocalTranslation(camNode.getLocalTranslation().add(increaseVector.mult(.02f)));
+            playerMesh.setLocalTranslation(playerMesh.getLocalTranslation().add(new Vector3f(0,-.08f,0)));
+        }
     }
     
     public class PlayerPhysicsListener implements PhysicsCollisionListener 
@@ -129,7 +185,11 @@ public class Player extends Node implements AnalogListener, ActionListener
         public void collision(PhysicsCollisionEvent event) 
         {
             if((event.getNodeA().getName().equals("terrain-geom-0") && event.getNodeB().getName().equals("Player"))|| (event.getNodeA().getName().equals("Player")&&event.getNodeB().getName().equals("terrain-geom-0"))){
-                soundNode.play();
+                if(Math.abs(event.getAppliedImpulse())+
+                        Math.abs(event.getAppliedImpulseLateral1())+
+                        Math.abs(event.getAppliedImpulseLateral2())>1)
+                    soundNode.play();
+                hitGround = true;
             }
             
             //if there's a coin, remove it
@@ -164,9 +224,8 @@ public class Player extends Node implements AnalogListener, ActionListener
         app.getInputManager().addMapping("rotateLeft", new MouseAxisTrigger(MouseInput.AXIS_X, false));
         app.getInputManager().addMapping("rotateUp", new MouseAxisTrigger(MouseInput.AXIS_Y, true));
         app.getInputManager().addMapping("rotateDown", new MouseAxisTrigger(MouseInput.AXIS_Y, false));
-        app.getInputManager().addMapping("rollLeft", new KeyTrigger(KeyInput.KEY_A));
-        app.getInputManager().addMapping("rollRight", new KeyTrigger(KeyInput.KEY_D));
-        app.getInputManager().addListener(this, "rotateRight", "rotateLeft", "rotateUp", "rotateDown", "rollLeft", "rollRight");
+        app.getInputManager().addMapping("use parachute", new KeyTrigger(KeyInput.KEY_SPACE));
+        app.getInputManager().addListener(this, "rotateRight", "rotateLeft", "rotateUp", "rotateDown", "use parachute");
     }
 
     public void onAnalog(String name, float value, float tpf) {
@@ -187,13 +246,8 @@ public class Player extends Node implements AnalogListener, ActionListener
     }
     public void onAction(String name, boolean keyPressed, float tpf) {
         
-        if (name.equals("rollLeft")) {
-          //getControl(RigidBodyControl.class).applyTorqueImpulse(new Vector3f(-1, 0, 0).mult(.5f*tpf));
-          mesh.rotate(0, -.1f, 0);
-        }
-        if (name.equals("rollRight")) {
-          //getControl(RigidBodyControl.class).applyTorqueImpulse(new Vector3f(1, 0, 0).mult(.5f*tpf));
-          mesh.rotate(0, .1f, 0);
+        if (name.equals("use parachute") && !parachuting) {
+            parachuteUsed = true;
         }
     }
 }

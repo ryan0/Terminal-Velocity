@@ -123,13 +123,14 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
         musicNode.setLooping(true);
         musicNode.setVolume(.1f);
         musicNode.play();
+        app.getRootNode().attachChild(musicNode);
         
         soundNode = new AudioNode(app.getAssetManager(), "Sounds/scream.ogg", false);
         soundNode.setPositional(false);
         soundNode.setLooping(false);
         app.getRootNode().attachChild(soundNode);
         
-        app.getRootNode().attachChild(musicNode);
+        
         registerInput();
     }
     public void setNifty(Nifty nif)
@@ -143,7 +144,7 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
         points = player.getPoints();
         Element niftyElement = nifty.getCurrentScreen().findElementByName("points");
         niftyElement.getRenderer(TextRenderer.class).setText("Score: "+points);
-        System.out.println("Points: " +points);
+        //System.out.println("Points: " +points);
     }
     
     private void initLight()
