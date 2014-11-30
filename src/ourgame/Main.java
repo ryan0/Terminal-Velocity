@@ -1,5 +1,6 @@
 package ourgame;
 
+import ourgame.items.*;
 import com.jme3.app.SimpleApplication;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.RenderManager;
@@ -39,6 +40,13 @@ public class Main extends SimpleApplication {
         NiftyJmeDisplay niftyDisplay = new NiftyJmeDisplay(assetManager, inputManager, audioRenderer, guiViewPort);
         niftyDisplay.getNifty().fromXml("Interface/GameMenu.xml", "start", guiController);
         getGuiViewPort().addProcessor(niftyDisplay);
+        
+        PlayerData data = new PlayerData();
+        data.addItem(new FuzzySlippers());
+        data.addItem(new FuzzySlippers());
+        data.setCurrency(1450);
+        data.setHUD(4);
+        data.save("SAVE FILE.txt");
         
     }
  
