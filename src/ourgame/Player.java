@@ -217,6 +217,7 @@ public class Player extends Node implements AnalogListener, ActionListener
     {
         this.detachAllChildren();
         physicsControl.destroy();
+        app.getInputManager().clearMappings();
     }
     private void registerInput() {
         

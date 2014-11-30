@@ -233,6 +233,7 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
         bulletAppState.cleanup();
         //bulletAppState.getPhysicsSpace().destroy(); <----- This line of code causes a null pointer exception, kept here just because
         app.getViewPort().clearProcessors();
+        app.getInputManager().clearMappings();
     }
      public void onStartScreen() 
     {

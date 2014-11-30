@@ -150,6 +150,12 @@
                 <image filename = "Interface/Images/Clouds.jpg" height = "100%" width = "100%"/>
             </panel>
         </layer>
+        <layer id = "stats" childLayout = "vertical">
+            <panel childLayout = "horizontal" visibleToMouse = "true" height = "15%" width = "100%">
+                <panel visibleToMouse = "false" height = "100%" width = "75%"></panel>
+                <text id = "currency" text = "Currency: 0" font = "Interface/Fonts/Aparajita.fnt" align = "center" valign = "center" />
+            </panel>
+        </layer>
         <layer id = "foreground" childLayout = "vertical">
             <panel id = "topText" height = "10%" width = "50%" align = "center" valign = "center" childLayout = "vertical">
                 <text id = "shopText" text = "Shop Menu" font = "Interface/Fonts/ArialBlack-36.fnt" align = "center" valign = "center" />
