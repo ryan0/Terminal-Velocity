@@ -74,7 +74,7 @@ public class Player extends Node implements AnalogListener, ActionListener
         this.attachChild(playerMesh);
         
         BoxCollisionShape PlayerShape = new BoxCollisionShape(new Vector3f(1.5f, 6f, 1));
-        physicsControl = new RigidBodyControl(PlayerShape, .05f);
+        physicsControl = new RigidBodyControl(PlayerShape, 70f);
         addControl(physicsControl);
         bulletState.getPhysicsSpace().add(physicsControl);
         bulletState.getPhysicsSpace().addCollisionListener(new PlayerPhysicsListener());
@@ -187,7 +187,7 @@ public class Player extends Node implements AnalogListener, ActionListener
             if((event.getNodeA().getName().equals("terrain-geom-0") && event.getNodeB().getName().equals("Player"))|| (event.getNodeA().getName().equals("Player")&&event.getNodeB().getName().equals("terrain-geom-0"))){
                 if(Math.abs(event.getAppliedImpulse())+
                         Math.abs(event.getAppliedImpulseLateral1())+
-                        Math.abs(event.getAppliedImpulseLateral2())>1)
+                        Math.abs(event.getAppliedImpulseLateral2())>800)
                     soundNode.play();
                 hitGround = true;
             }
