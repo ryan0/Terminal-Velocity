@@ -103,8 +103,8 @@
             </panel>
             <panel id = "makeGameItems" height = "75%" width = "75%" align = "center" valign = "center" childLayout = "vertical">
                 <panel id = "makeGame" height = "20%" width = "75%" align = "center" valign = "center" childLayout = "center">
-                    <control visibleToMouse = "true" name = "button" height = "75%" width = "100%" label = "Make dis game" id = "levelOneButton" align = "center" valign = "center">
-                        <interact onClick = "changeScreens(gameScreen)"/>
+                    <control visibleToMouse = "true" name = "button" height = "75%" width = "100%" label = "Make a new save" id = "levelOneButton" align = "center" valign = "center">
+                        <interact onClick = "makeNewSave()"/>
                     </control>
                 </panel>
                 <panel id = "bottomButtons" height = "20%" width = "100%" align = "center" valign = "center" childLayout = "horizontal">
@@ -131,7 +131,7 @@
             <panel id = "loadGameItems" height = "75%" width = "75%" align = "center" valign = "center" childLayout = "vertical">
                 <panel id = "loadGame" height = "20%" width = "75%" align = "center" valign = "center" childLayout = "center">
                     <control visibleToMouse = "true" name = "button" height = "75%" width = "100%" label = "Load dis game" id = "levelOneButton" align = "center" valign = "center">
-                        <interact onClick = "changeScreens(gameScreen)"/>
+                        <interact onClick = "loadSave()"/>
                     </control>
                 </panel>
                 <panel id = "bottomButtons" height = "20%" width = "100%" align = "center" valign = "center" childLayout = "horizontal">

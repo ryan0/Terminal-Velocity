@@ -23,7 +23,7 @@ public class PlayerData
     private int currentHUD;
     private ArrayList<Item> itemList = new ArrayList<Item>();
     
-    public void save(String fileName)
+    public boolean save(String fileName)
     {
         //write to the text file with the current variables
         try 
@@ -38,14 +38,15 @@ public class PlayerData
                 outputStream.write(item.toString()+"|");
             }
             outputStream.close();
+            return true;
         }
         catch (IOException ex1) 
         {
-            
+            return false;
         }
     }
     
-    public void load(String fileName)
+    public boolean load(String fileName)
     {
         try 
         {
@@ -60,14 +61,15 @@ public class PlayerData
                 itemList.add(Item.fromString(item));
             }
             inputStream.close();
+            return true;
         }
         catch (FileNotFoundException ex) 
         {
-            
+            return false;
         }
         catch (IOException ex) 
         {
-            
+            return false;
         }
     }
     

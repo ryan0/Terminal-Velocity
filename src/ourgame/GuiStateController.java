@@ -18,11 +18,14 @@ import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.io.File;
 
 public class GuiStateController extends AbstractAppState implements ScreenController
 {
     private SimpleApplication app;
     private AppStateManager stateManager;
+    
+    private PlayerData saveData;
     
     private Nifty nifty;
     private Screen screen;
@@ -35,8 +38,8 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     
     private boolean fullScreen = false;
     private Dimension res = new Dimension(640,480);
-    
     private Dimension maxScreenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    
     
     @Override
     public void initialize(AppStateManager stateManager1, Application dahApp)
@@ -75,11 +78,27 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
 
     public void changeScreens(String screenName)
     {
+        
         if(!nifty.getCurrentScreen().getScreenId().equals("start"))
             clickSound.playInstance();
         else
             windSound.setVolume(.1f);
         nifty.gotoScreen(screenName);
+    }
+    
+    //TODO
+    public boolean makeNewSave()
+    {
+        
+        saveData = new PlayerData();
+        return true;
+    }
+    
+    //TODO
+    public boolean loadSave()
+    {
+        
+        return true;
     }
     
     public String getHUD()

@@ -41,12 +41,12 @@ public class Main extends SimpleApplication {
         niftyDisplay.getNifty().fromXml("Interface/GameMenu.xml", "start", guiController);
         getGuiViewPort().addProcessor(niftyDisplay);
         
-        PlayerData data = new PlayerData();
-        data.addItem(new FuzzySlippers());
-        data.addItem(new FuzzySlippers());
-        data.setCurrency(1450);
-        data.setHUD(4);
-        data.save("SAVE FILE.txt");
+//        PlayerData data = new PlayerData();
+//        data.addItem(new FuzzySlippers());
+//        data.addItem(new FuzzySlippers());
+//        data.setCurrency(1450);
+//        data.setHUD(4);
+//        data.save("SAVE FILE.txt");
         
     }
  
