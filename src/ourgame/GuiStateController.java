@@ -18,7 +18,6 @@ import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.io.File;
 
 public class GuiStateController extends AbstractAppState implements ScreenController
 {
@@ -31,7 +30,6 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     private Screen screen;
     
     private String[] HUDs = {"None", "Steel", "Slim Red", "Jungle", "Contrast", "Prints", "Goggles"};
-    private int currentHUD = 1;
     
     private AudioNode clickSound;
     private AudioNode windSound;
@@ -83,39 +81,51 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
             clickSound.playInstance();
         else
             windSound.setVolume(.1f);
+        
+        if(screenName.equals("settings"))
+        {
+            NiftyImage img = nifty.getRenderEngine().createImage(null, "Interface/Images/HUD-"+HUDs[saveData.getHUD()]+".png", false);
+            Element HudThumbnail = nifty.getScreen("settings").findElementByName("currentHUD");
+            HudThumbnail.getRenderer(ImageRenderer.class).setImage(img);
+        }
         nifty.gotoScreen(screenName);
     }
     
-    //TODO
     public boolean makeNewSave()
     {
-        
         saveData = new PlayerData();
+        saveData.setCurrency(998);
+        saveData.setHUD(3);
+        saveData.save("THE SAVE FILE.txt");
+        changeScreens("gameScreen");
         return true;
     }
     
-    //TODO
     public boolean loadSave()
     {
-        
+        saveData = new PlayerData();
+        saveData.load("THE SAVE FILE.txt");
+        changeScreens("gameScreen");
         return true;
     }
     
     public String getHUD()
     {
-        return HUDs[currentHUD];
+        return HUDs[saveData.getHUD()];
     }
     
     public void cycleHUD()
     {
         clickSound.playInstance();
+        
+        int currentHUD = saveData.getHUD();
         if(currentHUD==HUDs.length-1)
-            currentHUD=0;
+            saveData.setHUD(0);
         else
-            currentHUD++;
+            saveData.setHUD(currentHUD+1);
         
         //change the thumbnail image
-        NiftyImage img = nifty.getRenderEngine().createImage(null, "Interface/Images/HUD-"+HUDs[currentHUD]+".png", false);
+        NiftyImage img = nifty.getRenderEngine().createImage(null, "Interface/Images/HUD-"+HUDs[saveData.getHUD()]+".png", false);
         Element HudThumbnail = nifty.getCurrentScreen().findElementByName("currentHUD");
         HudThumbnail.getRenderer(ImageRenderer.class).setImage(img);
         

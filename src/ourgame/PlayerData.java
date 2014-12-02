@@ -51,14 +51,19 @@ public class PlayerData
         try 
         {
             BufferedReader inputStream = new BufferedReader(new FileReader(fileName));
-            currency = Integer.parseInt(inputStream.readLine());
-            currentHUD = Integer.parseInt(inputStream.readLine());
+            //set the values to what is read
+            setCurrency(Integer.parseInt(inputStream.readLine()));
+            setHUD(Integer.parseInt(inputStream.readLine()));
             String itemString = inputStream.readLine();
             itemList.clear();
-            String[] loadedItemList = itemString.split("|");
-            for(String item:loadedItemList)
+            //Separate each of the items
+            if(itemString!=null)
             {
-                itemList.add(Item.fromString(item));
+                String[] loadedItemList = itemString.split("|");
+                for(String item:loadedItemList)
+                {
+                    itemList.add(Item.fromString(item));
+                }
             }
             inputStream.close();
             return true;
@@ -73,9 +78,19 @@ public class PlayerData
         }
     }
     
+    public int getCurrency()
+    {
+        return currency;
+    }
+    
     public void setCurrency(int newValue)
     {
         currency = newValue;
+    }
+    
+    public int getHUD()
+    {
+        return currentHUD;
     }
     
     public void setHUD(int theHUD)
