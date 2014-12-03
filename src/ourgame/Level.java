@@ -40,7 +40,7 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
 {
     private Nifty nifty;
     private Screen screen;
-    private int points;
+    private int points = 0;
     public static final Quaternion PITCH045 = new Quaternion().fromAngleAxis(FastMath.PI/4,   new Vector3f(1,0,0));
     public static final Quaternion ROLL045  = new Quaternion().fromAngleAxis(FastMath.PI/4,   new Vector3f(0,0,1));
     public static final Quaternion YAW045   = new Quaternion().fromAngleAxis(FastMath.PI/4,   new Vector3f(0,1,0));
@@ -144,9 +144,16 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
         points = player.getPoints();
         Element niftyElement = nifty.getCurrentScreen().findElementByName("points");
         niftyElement.getRenderer(TextRenderer.class).setText("Score: "+points);
+        if (player.getHitGround() == true)
+        {
+            gameEnded();
+        }
         //System.out.println("Points: " +points);
     }
-    
+    public int getPoints()
+    {
+        return points;
+    }
     private void initLight()
     {
         app.getCamera().setFrustumFar(100000);
@@ -214,10 +221,14 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
     public void onAction(String name,boolean keyPressed, float tpf) {
         
         if (name.equals("leave")&& nifty!=null) {
-            nifty.gotoScreen("gameScreen"); 
-            stateManager.detach(this);
+            gameEnded();
         }
 
+    }
+    public void gameEnded()
+    {
+        nifty.gotoScreen("gameEnded");
+        stateManager.detach(this);
     }
     @Override
     public void cleanup()

@@ -266,7 +266,22 @@
             </panel>
         </layer>
     </screen>
-    
+    <screen id = "gameEnded" controller = "ourgame.GuiStateController">
+        <layer id = "foreground" childLayout = "center">
+            <panel id = "container" childLayout = "vertical" height = "100%" width = "100%" visibleToMouse = "true">
+                <interact onMouseOver ="gameHasEnded()"/>
+                <panel childLayout = "center" visibleToMouse = "true" height = "33%" width = "100%">
+                    <text id = "Congrats" text = "Congrats, you have finished level one!" font = "Interface/Fonts/ArialBlack-36.fnt" align = "center" valign = "center"/>
+                </panel>
+                <panel childLayout = "center" visibleToMouse = "true" height = "33%" width = "100%">
+                    <text id = "points" text = "Points: 0" font = "Interface/Fonts/Vani.fnt" align = "center" valign = "center"/>
+                </panel>
+                <panel childLayout = "center" visibleToMouse = "true" height = "33%" width = "100%">
+                    <text id = "currency" text = "Currency: 0" font = "Interface/Fonts/Vani.fnt" align = "center" valign = "center"/>
+                </panel>
+            </panel>
+        </layer>
+    </screen>
     <screen id="hud" controller = "ourgame.GuiStateController">
         <layer id="background" childLayout = "center">
             <panel childLayout = "center" visibleToMouse = "false">

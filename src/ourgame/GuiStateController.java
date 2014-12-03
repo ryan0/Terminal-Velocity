@@ -11,8 +11,10 @@ import com.jme3.app.state.AppStateManager;
 import com.jme3.audio.AudioNode;
 import com.jme3.system.AppSettings;
 import de.lessvoid.nifty.Nifty;
+import de.lessvoid.nifty.NiftyMethodInvoker;
 import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.elements.render.ImageRenderer;
+import de.lessvoid.nifty.elements.render.TextRenderer;
 import de.lessvoid.nifty.render.NiftyImage;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
@@ -21,6 +23,13 @@ import java.awt.Toolkit;
 
 public class GuiStateController extends AbstractAppState implements ScreenController
 {
+    private float time = 0;
+    private int points = 0;
+    private int currency = 0;
+    private int pointsCounted = 0;
+    private int currencyCounted = 0;
+    private boolean gameEndScreenOne = false;
+    private boolean gameEndScreenTwo = false;
     private SimpleApplication app;
     private AppStateManager stateManager;
     
@@ -28,7 +37,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     
     private Nifty nifty;
     private Screen screen;
-    
+    private Level level;
     private String[] HUDs = {"None", "Steel", "Slim Red", "Jungle", "Contrast", "Prints", "Goggles"};
     
     private AudioNode clickSound;
@@ -59,7 +68,40 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         app.getRootNode().attachChild(windSound);
         windSound.play();
     }
-    
+    @Override
+    //gives time
+    public void update(float tpf)
+    {
+        time += tpf;
+        if (gameEndScreenOne)
+        {
+            if (pointsCounted < points)
+            {
+                pointsCounted++;
+                updatePoints(pointsCounted);
+            }
+            else if (currencyCounted <currency)
+            {
+                currencyCounted++;
+                updateCurrency(currencyCounted);
+            }
+            else
+            {
+                gameEndScreenOne = false;
+                gameEndScreenTwo = true;
+                time = 0;
+            }
+        }
+        else if (gameEndScreenTwo)
+        {
+            if (time>5.0)
+            {
+                gameEndScreenTwo = false;
+                changeScreens("gameScreen");
+            }
+        }
+        
+    }
     /**
      * Creates a <code>Level</code> appState and attaches it
      * to the <code>stateManager</code>. 
@@ -67,7 +109,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     public void startLevel()
     {
         clickSound.playInstance();
-        Level level = new Level();
+        level = new Level();
         level.setNifty(nifty);
         stateManager.attach(level);
         nifty.gotoScreen("hud");
@@ -75,7 +117,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     }
 
     public void changeScreens(String screenName)
-    {
+    {   
         
         if(!nifty.getCurrentScreen().getScreenId().equals("start"))
             clickSound.playInstance();
@@ -170,7 +212,28 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         }
         
     }
-    
+    public void doNothing()
+    {
+    }
+    public void gameHasEnded()
+    {
+        Element scrElement = nifty.getCurrentScreen().findElementByName("container");
+        scrElement.getElementInteraction().setOnMouseOver(new NiftyMethodInvoker(nifty,"doNothing()",this));
+        points = level.getPoints();
+        currency = points/4;
+        gameEndScreenOne = true;
+        windSound.play();
+    }
+    public void updatePoints(int val)
+    {
+        Element niftyElement = nifty.getCurrentScreen().findElementByName("points");
+        niftyElement.getRenderer(TextRenderer.class).setText("Points: "+ val);
+    }
+    public void updateCurrency(int val)
+    {
+        Element niftyElement = nifty.getCurrentScreen().findElementByName("currency");
+        niftyElement.getRenderer(TextRenderer.class).setText("Currency: "+ val);
+    }
     public void toggleFullScreen()
     {
         

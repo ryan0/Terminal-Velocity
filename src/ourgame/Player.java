@@ -219,6 +219,10 @@ public class Player extends Node implements AnalogListener, ActionListener
         physicsControl.destroy();
         app.getInputManager().clearMappings();
     }
+    public boolean getHitGround()
+    {
+        return hitGround;
+    }
     private void registerInput() {
         
         app.getInputManager().addMapping("rotateRight", new MouseAxisTrigger(MouseInput.AXIS_X, true));
