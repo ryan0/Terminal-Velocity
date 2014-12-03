@@ -96,6 +96,12 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         {
             if (time>5.0)
             {
+                pointsCounted = 0;
+                currencyCounted = 0;
+                updatePoints(0);
+                updateCurrency(0);
+                Element scrElement = nifty.getCurrentScreen().findElementByName("container");
+                scrElement.getElementInteraction().setOnMouseOver(new NiftyMethodInvoker(nifty,"gameHasEnded()",this));
                 gameEndScreenTwo = false;
                 changeScreens("gameScreen");
             }
