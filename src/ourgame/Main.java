@@ -1,6 +1,5 @@
 package ourgame;
 
-import ourgame.items.*;
 import com.jme3.app.SimpleApplication;
 import com.jme3.niftygui.NiftyJmeDisplay;
 import com.jme3.renderer.RenderManager;

@@ -75,12 +75,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         time += tpf;
         if (gameEndScreenOne)
         {
-            if (pointsCounted < points)
-            {
-                pointsCounted++;
-                updatePoints(pointsCounted);
-            }
-            else if (currencyCounted <currency)
+            if (currencyCounted <currency)
             {
                 currencyCounted++;
                 updateCurrency(currencyCounted);
@@ -226,7 +221,9 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         Element scrElement = nifty.getCurrentScreen().findElementByName("container");
         scrElement.getElementInteraction().setOnMouseOver(new NiftyMethodInvoker(nifty,"doNothing()",this));
         points = level.getPoints();
-        currency = points/4;
+        updatePoints(points);
+        currency = points/10;
+        saveData.setCurrency(currency);
         gameEndScreenOne = true;
         windSound.play();
     }
