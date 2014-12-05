@@ -10,11 +10,15 @@ import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.audio.AudioNode;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.collision.shapes.CollisionShape;
+import com.jme3.bullet.control.RigidBodyControl;
+import com.jme3.bullet.util.CollisionShapeFactory;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
+import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
@@ -24,16 +28,24 @@ import com.jme3.post.filters.BloomFilter;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.CameraNode;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import com.jme3.shadow.DirectionalLightShadowFilter;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
 import com.jme3.shadow.EdgeFilteringMode;
+import com.jme3.terrain.geomipmap.TerrainLodControl;
+import com.jme3.terrain.geomipmap.TerrainQuad;
+import com.jme3.terrain.heightmap.AbstractHeightMap;
+import com.jme3.terrain.heightmap.ImageBasedHeightMap;
+import com.jme3.texture.Texture;
+import com.jme3.texture.Texture.WrapMode;
+import com.jme3.util.TangentBinormalGenerator;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.elements.render.TextRenderer;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 
-public class Level extends AbstractAppState implements ActionListener,ScreenController
+public class Level2 extends AbstractAppState implements ActionListener,ScreenController
 {
     private Nifty nifty;
     private Screen screen;
@@ -67,8 +79,76 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
         stateManager.attach(bulletAppState);
         bulletAppState.getPhysicsSpace().setAccuracy(1f/480f);
         
-        Terrain terrain = new Terrain(bulletAppState, app);
+        
+        
+//        Node terrain = new Node("terrain");
+//        Spatial mesh = app.getAssetManager().loadModel("Models/Terrain/terrain.obj");
+//
+//        TangentBinormalGenerator.generate(mesh);
+//        Material mat = new Material (app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
+//        mat.setTexture("DiffuseMap", app.getAssetManager().loadTexture("Textures/TerrainTexture.png"));
+//        mat.setTexture("NormalMap", app.getAssetManager().loadTexture("Textures/TerrainNormalMap.png"));
+//        mesh.setMaterial(mat);
+//        mesh.setLocalScale(new Vector3f(100000f, 100000f, 100000f));
+//
+//        
+//        CollisionShape terrainShape = CollisionShapeFactory.createMeshShape(mesh);
+//        RigidBodyControl physicsControl = new RigidBodyControl(terrainShape, 0);
+//        mesh.addControl(physicsControl);
+//        terrain.attachChild(mesh);
+//        bulletAppState.getPhysicsSpace().add(mesh);
+        
+        Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Terrain/TerrainLighting.j3md");
+        mat.setTexture("AlphaMap", app.getAssetManager().loadTexture("Textures/terrain/alphaMap.png"));
+
+        Texture grass = app.getAssetManager().loadTexture("Textures/terrain/images/grass.png");
+        grass.setWrap(Texture.WrapMode.Repeat);
+        mat.setTexture("DiffuseMap", grass);
+        mat.setFloat("DiffuseMap_0_scale", 128f);
+
+        Texture midRock = app.getAssetManager().loadTexture("Textures/terrain/images/midRock.png");
+        midRock.setWrap(Texture.WrapMode.Repeat);
+        mat.setTexture("DiffuseMap_2", midRock);
+        mat.setFloat("DiffuseMap_2_scale", 32f);
+        
+        Texture rock = app.getAssetManager().loadTexture("Textures/terrain/images/rock.png");
+        rock.setWrap(Texture.WrapMode.Repeat);
+        mat.setTexture("DiffuseMap_1", rock);
+        mat.setFloat("DiffuseMap_1_scale", 64f);
+
+
+        Texture grassNormalMap = app.getAssetManager().loadTexture("Textures/terrain/images/grassNormalMap.png");
+        grassNormalMap.setWrap(WrapMode.Repeat);
+        Texture midRockNormalMap = app.getAssetManager().loadTexture("Textures/terrain/images/midRockNormalMap.png");
+        midRockNormalMap.setWrap(WrapMode.Repeat);
+        Texture rockNormalMap = app.getAssetManager().loadTexture("Textures/terrain/images/rockNormalMap.png");
+        rockNormalMap.setWrap(WrapMode.Repeat);
+        mat.setTexture("NormalMap", grassNormalMap);
+        mat.setTexture("NormalMap_1", rockNormalMap);
+        mat.setTexture("NormalMap_2", midRockNormalMap);
+        
+        AbstractHeightMap heightmap;
+        Texture heightMapImage = app.getAssetManager().loadTexture("Textures/terrain/heightMap.png");
+        heightmap = new ImageBasedHeightMap(heightMapImage.getImage());
+        heightmap.load();
+
+        int patchSize = 65;
+        TerrainQuad terrain = new TerrainQuad("my terrain", patchSize, 257, heightmap.getHeightMap());
+
+        terrain.setMaterial(mat);
+        terrain.setLocalScale(2000f, 500f, 2000f);
+        terrain.setLocalTranslation(-50000f, -94000f, -40000);
+
+        TerrainLodControl control = new TerrainLodControl(terrain, app.getCamera());
+        terrain.addControl(control);
+        
+        terrain.addControl(new RigidBodyControl(0));
+        bulletAppState.getPhysicsSpace().add(terrain);
+        
         app.getRootNode().attachChild(terrain);
+        
+        
+        
         
         player = new Player(bulletAppState, app); 
         
@@ -146,7 +226,7 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
     }
     private void initLight()
     {
-        app.getCamera().setFrustumFar(100000);
+        app.getCamera().setFrustumFar(1000000);
         
         Node skyNode = new Node();
         skyNode.attachChild(SkyFactory.createSky(app.getAssetManager(),
@@ -160,11 +240,11 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
         app.getRootNode().attachChild(skyNode);
         
         lamp = new AmbientLight();
-        lamp.setColor(ColorRGBA.White);
+        lamp.setColor(ColorRGBA.White.mult(.2f));
         app.getRootNode().addLight(lamp);
         sun = new DirectionalLight();
-        sun.setColor(ColorRGBA.White);
-        sun.setDirection(new Vector3f(1f,-1f, 0f));
+        sun.setColor(ColorRGBA.White.mult(2f));
+        sun.setDirection(new Vector3f(0f,-1f, -2f));
         app.getRootNode().addLight(sun);
         
         
@@ -174,23 +254,12 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
         dlsr.setLight(sun);
         dlsr.setLambda(0.55f);
         dlsr.setShadowIntensity(0.6f);
-        dlsr.setEdgeFilteringMode(EdgeFilteringMode.Dither);
+        dlsr.setEdgeFilteringMode(EdgeFilteringMode.PCFPOISSON);
         app.getViewPort().addProcessor(dlsr);
         
-        //THIS CAN BE USED IN CHANGING THE LINEAR VELOCITY BASED ON CAMERA ANGLE
-        //direction.set(app.getCamera().getDirection()).normalizeLocal();
         
-        DirectionalLightShadowFilter dlsf;
-        dlsf = new DirectionalLightShadowFilter(app.getAssetManager(), SHADOWMAP_SIZE, 4);
-        dlsf.setLight(sun);
-        dlsf.setLambda(0.55f);
-        dlsf.setShadowIntensity(0.6f);
-        dlsf.setEdgeFilteringMode(EdgeFilteringMode.PCF4);
-        dlsf.setEnabled(true);
 
-        FilterPostProcessor fpp = new FilterPostProcessor(app.getAssetManager());
-        fpp.addFilter(dlsf);
-        
+        FilterPostProcessor fpp = new FilterPostProcessor(app.getAssetManager());      
         
         BloomFilter bloom = new BloomFilter(BloomFilter.GlowMode.Objects);
         fpp.addFilter(bloom);

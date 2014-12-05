@@ -66,11 +66,13 @@
             <panel id = "LevelSelectItems" height = "75%" width = "75%" align = "center" valign = "center" childLayout = "vertical">
                 <panel id = "button1" height = "20%" width = "75%" align = "center" valign = "center" childLayout = "center">
                     <control visibleToMouse = "true" name = "button" height = "75%" width = "100%" label = "Level One" id = "levelOneButton" align = "center" valign = "center">
-                        <interact onClick = "selectLevel(Level One)"/>
+                        <interact onClick = "selectLevel(level1)"/>
                     </control>
                 </panel>
                 <panel id = "button2" height = "20%" width = "75%" align = "center" valign = "center" childLayout = "center">
-                    <control visibleToMouse = "true" name = "button" height = "75%" width = "100%" label = "Level Two" id = "levelTwoButton" align = "center" valign = "center"></control>
+                    <control visibleToMouse = "true" name = "button" height = "75%" width = "100%" label = "Level Two" id = "levelTwoButton" align = "center" valign = "center">
+                        <interact onClick = "selectLevel(level2)"/>
+                    </control>
                 </panel>
                 <panel id = "button3" height = "20%" width = "75%" align = "center" valign = "center" childLayout = "center">
                     <control visibleToMouse = "true" name = "button" height = "75%" width = "100%" label = "Level Three" id = "levelThreeButton" align = "center" valign = "center"></control>

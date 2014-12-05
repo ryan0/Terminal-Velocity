@@ -39,7 +39,10 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     
     private Nifty nifty;
     private Screen screen;
-    private Level level;
+    private String selectedLevel;
+    private Level level1;
+    private Level2 level2;
+    
     private String[] HUDs = {"None", "Steel", "Slim Red", "Jungle", "Contrast", "Prints", "Goggles"};
     
     private AudioNode clickSound;
@@ -110,14 +113,30 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
      * Creates a <code>Level</code> appState and attaches it
      * to the <code>stateManager</code>. 
      */
+    public void selectLevel(String levelName)
+    {
+        selectedLevel = levelName;
+    }
+    
     public void startLevel()
     {
         clickSound.playInstance();
-        level = new Level();
-        level.setNifty(nifty);
-        stateManager.attach(level);
+        if(selectedLevel.equals("level1"))
+        {
+        level1 = new Level();
+        level1.setNifty(nifty);
+        stateManager.attach(level1);
         nifty.gotoScreen("hud");
         windSound.stop();
+        }
+        if(selectedLevel.equals("level2"))
+        {
+        level2 = new Level2();
+        level2.setNifty(nifty);
+        stateManager.attach(level2);
+        nifty.gotoScreen("hud");
+        windSound.stop();
+        }
     }
 
     public void changeScreens(String screenName)
@@ -236,7 +255,8 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     {
         Element scrElement = nifty.getCurrentScreen().findElementByName("container");
         scrElement.getElementInteraction().setOnMouseOver(new NiftyMethodInvoker(nifty,"doNothing()",this));
-        points = level.getPoints();
+        if(selectedLevel.equals("level1")) points = level1.getPoints();
+        if(selectedLevel.equals("level2")) points = level2.getPoints();
         updatePoints(points);
         currencyEarned = points/10;
         saveData.setCurrency(saveData.getCurrency()+currencyEarned);
