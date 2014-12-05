@@ -95,6 +95,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
                 currencyCounted = 0;
                 updatePoints(0);
                 updateCurrency(0);
+                updateShopCurrency();
                 Element scrElement = nifty.getCurrentScreen().findElementByName("container");
                 scrElement.getElementInteraction().setOnMouseOver(new NiftyMethodInvoker(nifty,"gameHasEnded()",this));
                 gameEndScreenTwo = false;
@@ -119,10 +120,9 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
 
     public void changeScreens(String screenName)
     {   
-        
-        if(!nifty.getCurrentScreen().getScreenId().equals("start"))
+        if(!nifty.getCurrentScreen().getScreenId().equals("start")&&!nifty.getCurrentScreen().getScreenId().equals("gameEnded"))
             clickSound.playInstance();
-        else
+        else if (nifty.getCurrentScreen().getScreenId().equals("start"))
             windSound.setVolume(.1f);
         
         if(screenName.equals("settings"))
@@ -133,7 +133,12 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         }
         nifty.gotoScreen(screenName);
     }
-    
+    public void updateShopCurrency()
+    {
+        Element niftElem = nifty.getScreen("shopMenu").findElementByName("shopCurrency");
+        String curr = "Currency: "+saveData.getCurrency();
+        niftElem.getRenderer(TextRenderer.class).setText(curr);
+    }
     public boolean makeNewSave()
     {
         saveData = new PlayerData();
