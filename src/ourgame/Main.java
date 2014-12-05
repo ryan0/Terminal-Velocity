@@ -12,18 +12,20 @@ public class Main extends SimpleApplication {
     
     public static void main(String[] args)
     {
+        Main app = new Main();
+        AppSettings newSettings = new AppSettings(true);
         
+        //Comment out the following 9 lines for debugging purposes
 //        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 //        double width = screenSize.getWidth();
 //        double height = screenSize.getHeight();
-        Main app = new Main();
-        AppSettings blah = new AppSettings(true);
-//        blah.setResolution((int)width, (int)height);
-//        blah.setFullscreen(true);
-//        app.setSettings(blah);
+//        newSettings.setResolution((int)width, (int)height);
+//        newSettings.setFullscreen(false);
+//        app.setSettings(newSettings);
 //        app.setDisplayFps(false);
 //        app.setDisplayStatView(false);
 //        app.setShowSettings(false);
+        
         app.start();
     }
  

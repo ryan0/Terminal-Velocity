@@ -20,12 +20,13 @@ import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import javax.swing.JOptionPane;
 
 public class GuiStateController extends AbstractAppState implements ScreenController
 {
     private float time = 0;
     private int points = 0;
-    private int currency = 0;
+    private int currencyEarned = 0;
     private int pointsCounted = 0;
     private int currencyCounted = 0;
     private boolean gameEndScreenOne = false;
@@ -34,6 +35,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     private AppStateManager stateManager;
     
     private PlayerData saveData;
+    private String fileName;
     
     private Nifty nifty;
     private Screen screen;
@@ -75,7 +77,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         time += tpf;
         if (gameEndScreenOne)
         {
-            if (currencyCounted <currency)
+            if (currencyCounted <currencyEarned)
             {
                 currencyCounted++;
                 updateCurrency(currencyCounted);
@@ -119,7 +121,6 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
 
     public void changeScreens(String screenName)
     {   
-        
         if(!nifty.getCurrentScreen().getScreenId().equals("start"))
             clickSound.playInstance();
         else
@@ -137,9 +138,11 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     public boolean makeNewSave()
     {
         saveData = new PlayerData();
-        saveData.setCurrency(998);
-        saveData.setHUD(3);
-        saveData.save("THE SAVE FILE.txt");
+        saveData.setCurrency(0);
+        saveData.setHUD(1);
+        fileName = JOptionPane.showInputDialog(null, "Enter save name");
+        saveData.save("saves/"+fileName+".sav");
+        SaveManager.recordSave(fileName);
         changeScreens("gameScreen");
         return true;
     }
@@ -147,9 +150,13 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     public boolean loadSave()
     {
         saveData = new PlayerData();
-        saveData.load("THE SAVE FILE.txt");
-        changeScreens("gameScreen");
-        return true;
+        fileName = JOptionPane.showInputDialog(null, "Enter save name");
+        boolean success = saveData.load("saves/"+fileName+".sav");
+        if(success)
+        {
+            changeScreens("gameScreen");
+        }
+        return success;
     }
     
     public String getHUD()
@@ -166,7 +173,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
             saveData.setHUD(0);
         else
             saveData.setHUD(currentHUD+1);
-        
+        saveData.save("saves/"+fileName+".sav");
         //change the thumbnail image
         NiftyImage img = nifty.getRenderEngine().createImage(null, "Interface/Images/HUD-"+HUDs[saveData.getHUD()]+".png", false);
         Element HudThumbnail = nifty.getCurrentScreen().findElementByName("currentHUD");
@@ -215,6 +222,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     }
     public void doNothing()
     {
+        
     }
     public void gameHasEnded()
     {
@@ -222,8 +230,9 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         scrElement.getElementInteraction().setOnMouseOver(new NiftyMethodInvoker(nifty,"doNothing()",this));
         points = level.getPoints();
         updatePoints(points);
-        currency = points/10;
-        saveData.setCurrency(currency);
+        currencyEarned = points/10;
+        saveData.setCurrency(saveData.getCurrency()+currencyEarned);
+        saveData.save("saves/"+fileName+".sav");
         gameEndScreenOne = true;
         windSound.play();
     }
