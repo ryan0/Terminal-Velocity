@@ -1,6 +1,6 @@
 # Blender v2.71 (sub 0) OBJ File: 'Parachute.blend'
 # www.blender.org
-mtllib NewParachute.mtl
+mtllib Parachute.mtl
 o Cylinder_Cylinder.002
 v 0.051756 1.902857 -1.833151
 v 0.286147 2.228329 -0.654783
@@ -564,7 +564,7 @@ vt 0.931097 1.000000
 vt 0.931097 0.001588
 vt 1.000000 0.000000
 vt 1.000000 0.989331
-usemtl Material.001
+usemtl Material.002
 s off
 f 25/1 24/2 51/3 52/4
 f 16/5 14/6 42/7 43/8
