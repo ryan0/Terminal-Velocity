@@ -25,6 +25,9 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.CameraControl;
 
+
+//import com.jme3.material.RenderState.FaceCullMode.jme3.material.FaceCullMode;
+
 /**
  * A <code>Player</code> is a node which includes a
  * playerMesh and the mechanics for the actual falling
@@ -101,10 +104,9 @@ public class Player extends Node implements AnalogListener, ActionListener
         camNode.lookAt(this.getLocalTranslation(), Vector3f.UNIT_Y);
         setLocalTranslation(new Vector3f(-18000, 23000, -10000));
         
-        parachuteMesh = app.getAssetManager().loadModel("Models/Parachute/Parachute.j3o");
+        parachuteMesh = app.getAssetManager().loadModel("Models/Parachute/Parachute2.j3o");
         parachuteMesh.setMaterial(new Material(app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md"));
-        parachuteMesh.setLocalTranslation(new Vector3f(0,1,0));
-        
+        parachuteMesh.setLocalTranslation(new Vector3f(0,1,1));
         registerInput();
     }
     public int getPoints()
