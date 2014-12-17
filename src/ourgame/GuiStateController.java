@@ -12,6 +12,7 @@ import com.jme3.audio.AudioNode;
 import com.jme3.system.AppSettings;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.NiftyMethodInvoker;
+import de.lessvoid.nifty.controls.TextField;
 import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.elements.render.ImageRenderer;
 import de.lessvoid.nifty.elements.render.TextRenderer;
@@ -153,6 +154,12 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
             HudThumbnail.getRenderer(ImageRenderer.class).setImage(img);
         }
         nifty.gotoScreen(screenName);
+        nifty.getScreen("makeNewGame").findElementByName("tField").hide();
+        nifty.getScreen("makeNewGame").findElementByName("confirm").hide();
+        nifty.getScreen("makeNewGame").findElementByName("middleText").hide();
+        nifty.getScreen("loadGame").findElementByName("tField").hide();
+        nifty.getScreen("loadGame").findElementByName("confirm").hide();
+        nifty.getScreen("loadGame").findElementByName("middleText").hide();
     }
     
     public void updateShopCurrency()
@@ -167,8 +174,10 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         saveData = new PlayerData();
         saveData.setCurrency(0);
         saveData.setHUD(1);
-        fileName = JOptionPane.showInputDialog(null, "Enter save name");
-        saveData.save("saves/"+fileName+".ryansucks");
+        TextField file = nifty.getCurrentScreen().findNiftyControl("saveInput",TextField.class);
+        fileName = file.getText();
+        System.out.println(fileName);
+        saveData.save("saves/"+fileName+".sav");
         SaveManager.recordSave(fileName);
         changeScreens("gameScreen");
         return true;
@@ -177,7 +186,8 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     public boolean loadSave()
     {
         saveData = new PlayerData();
-        fileName = JOptionPane.showInputDialog(null, "Enter save name");
+        TextField file = nifty.getCurrentScreen().findNiftyControl("loadInput",TextField.class);
+        fileName = file.getText();
         boolean success = saveData.load("saves/"+fileName+".sav");
         if(success)
         {
@@ -185,7 +195,12 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         }
         return success;
     }
-    
+    public void unhideElem()
+    {
+        nifty.getCurrentScreen().findElementByName("tField").show();
+        nifty.getCurrentScreen().findElementByName("confirm").show();
+        nifty.getCurrentScreen().findElementByName("middleText").show();
+    }
     public String getHUD()
     {
         return HUDs[saveData.getHUD()];
