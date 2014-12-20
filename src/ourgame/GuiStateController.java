@@ -11,7 +11,6 @@ import com.jme3.app.state.AppStateManager;
 import com.jme3.audio.AudioNode;
 import com.jme3.system.AppSettings;
 import de.lessvoid.nifty.Nifty;
-import de.lessvoid.nifty.NiftyMethodInvoker;
 import de.lessvoid.nifty.controls.TextField;
 import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.elements.render.ImageRenderer;
@@ -21,7 +20,6 @@ import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import javax.swing.JOptionPane;
 
 public class GuiStateController extends AbstractAppState implements ScreenController
 {
@@ -79,6 +77,10 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     public void update(float tpf)
     {
         time += tpf;
+        if (nifty.getCurrentScreen().getScreenId().equals("gameEnded")&&!gameEndScreenOne&&!gameEndScreenTwo)
+        {
+            gameHasEnded();
+        }
         if (gameEndScreenOne)
         {
             if (currencyCounted <currencyEarned)
@@ -102,8 +104,8 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
                 updatePoints(0);
                 updateCurrency(0);
                 updateShopCurrency();
-                Element scrElement = nifty.getCurrentScreen().findElementByName("container");
-                scrElement.getElementInteraction().setOnMouseOver(new NiftyMethodInvoker(nifty,"gameHasEnded()",this));
+                //Element scrElement = nifty.getCurrentScreen().findElementByName("container");
+                //scrElement.getElementInteraction().setOnMouseOver(new NiftyMethodInvoker(nifty,"gameHasEnded()",this));
                 gameEndScreenTwo = false;
                 changeScreens("gameScreen");
             }
@@ -268,8 +270,8 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     }
     public void gameHasEnded()
     {
-        Element scrElement = nifty.getCurrentScreen().findElementByName("container");
-        scrElement.getElementInteraction().setOnMouseOver(new NiftyMethodInvoker(nifty,"doNothing()",this));
+        //Element scrElement = nifty.getCurrentScreen().findElementByName("container");
+        //scrElement.getElementInteraction().setOnMouseOver(new NiftyMethodInvoker(nifty,"doNothing()",this));
         if(selectedLevel.equals("level1")) points = level1.getPoints();
         if(selectedLevel.equals("level2")) points = level2.getPoints();
         updatePoints(points);

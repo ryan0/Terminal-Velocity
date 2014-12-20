@@ -295,7 +295,6 @@
     <screen id = "gameEnded" controller = "ourgame.GuiStateController">
         <layer id = "foreground" childLayout = "center">
             <panel id = "container" childLayout = "vertical" height = "100%" width = "100%" visibleToMouse = "true">
-                <interact onMouseOver ="gameHasEnded()"/>
                 <panel childLayout = "center" visibleToMouse = "true" height = "33%" width = "100%">
                     <text id = "Congrats" text = "Congrats, you have finished level one!" font = "Interface/Fonts/ArialBlack-36.fnt" align = "center" valign = "center"/>
                 </panel>
