@@ -190,9 +190,10 @@
                 <panel id = "col1" childLayout = "vertical" valign = "center" width = "50%" height = "100%">
                     <panel childLayout = "center" valign = "center" align = "center" height = "33%" width = "100%">
                         <panel childLayout = "horizontal" height = "60%" width = "85%">
-                            <control id = "b1"visibleToMouse = "true" name = "button" height = "100%" width = "82.35%" label = "Balloon&#10;Cost:  15" align = "center" valign = "center">
+                            <control id = "b1" visibleToMouse = "true" name = "button" height = "100%" width = "82.35%" label = "Balloon&#10;Cost:  15" align = "center" valign = "center">
+                                <interact onClick = "selectUpgrade(1)"/>
                             </control>
-                            <image filename = "Interface/Images/BalloonIcon.png" height = "100%" width = "17.65%" valign = "center"/>
+                            <image filename = "Interface/Images/BalloonIcon.png" height = "100%" width = "17.65%" valign = "center"/>                       
                             <effect>
                                 <onHover name="hint" hintText="Makes you fall slower" hintDelay="200" />
                             </effect>                        
@@ -201,6 +202,7 @@
                     <panel childLayout = "center" valign = "center" align = "center" height = "33%" width = "100%">
                         <panel childLayout = "horizontal" height = "60%" width = "85%">
                             <control id = "b2"visibleToMouse = "true" name = "button" height = "100%" width = "82.35%" label = "Balloon" align = "center" valign = "center">
+                                <interact onClick = "selectUpgrade(2)"/>
                             </control>
                             <image filename = "Interface/Images/BalloonIcon.png" height = "100%" width = "17.65%" valign = "center"/>
                             <effect>
@@ -211,6 +213,7 @@
                     <panel childLayout = "center" valign = "center" align = "center" height = "33%" width = "100%">
                         <panel childLayout = "horizontal" height = "60%" width = "85%">
                             <control id = "b3"visibleToMouse = "true" name = "button" height = "100%" width = "82.35%" label = "Balloon" align = "center" valign = "center">
+                                <interact onClick = "selectUpgrade(3)"/>
                             </control>
                             <image filename = "Interface/Images/BalloonIcon.png" height = "100%" width = "17.65%" valign = "center"/>
                             <effect>
@@ -224,6 +227,7 @@
                         <panel childLayout = "horizontal"height = "60%" width = "85%">
                             <image filename = "Interface/Images/FuzzySlippersIcon.png" height = "100%" width = "17.65%" valign = "center"/>
                             <control id = "b4"visibleToMouse = "true" name = "button" height = "100%" width = "82.35%" label = "Fuzzy Slippers" valign = "center">
+                                <interact onClick = "selectUpgrade(4)"/>
                             </control>
                             <effect>
                                 <onHover name="hint" hintText="Allows you to hit the ground faster without dying" hintDelay="200" />
@@ -234,6 +238,7 @@
                         <panel childLayout = "horizontal"height = "60%" width = "85%">
                             <image filename = "Interface/Images/FuzzySlippersIcon.png" height = "100%" width = "17.65%" valign = "center"/>
                             <control id = "b5"visibleToMouse = "true" name = "button" height = "100%" width = "82.35%" label = "Fuzzy Slippers&#10;Cost:  10" valign = "center">
+                                <interact onClick = "selectUpgrade(5)"/>
                             </control>
                             <effect>
                                 <onHover name="hint" hintText="Allows you to hit the ground faster without dying" hintDelay="200" />
@@ -244,6 +249,7 @@
                         <panel childLayout = "horizontal"height = "60%" width = "85%">
                             <image filename = "Interface/Images/FuzzySlippersIcon.png" height = "100%" width = "17.65%" valign = "center"/>
                             <control id = "b6"visibleToMouse = "true" name = "button" height = "100%" width = "82.35%" label = "Fuzzy Slippers" valign = "center">
+                                <interact onClick = "selectUpgrade(6)"/>    
                             </control>
                             <effect>
                                 <onHover name="hint" hintText="Allows you to hit the ground faster without dying" hintDelay="200" />
@@ -258,8 +264,10 @@
                         <interact onClick = "changeScreens(gameScreen)"/>
                     </control>
                 </panel>
-                <panel childLayout = "center" valign = "center" align = "center" height = "100%" width = "50%">
-                    <control visibleToMouse = "true" name = "button" height = "50%" width = "60%" label = "Buy" align = "center" valign = "center"></control>
+                <panel id = "buyIt" childLayout = "center" valign = "center" align = "center" height = "100%" width = "50%">
+                    <control visibleToMouse = "true" name = "button" height = "50%" width = "60%" label = "Buy" align = "center" valign = "center">
+                        <interact onClick = "buyTheUpgrade()"/>
+                    </control>
                 </panel>
             </panel>
         </layer>

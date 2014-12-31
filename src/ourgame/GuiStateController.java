@@ -20,6 +20,7 @@ import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import ourgame.items.Item;
 
 public class GuiStateController extends AbstractAppState implements ScreenController
 {
@@ -39,6 +40,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     private Nifty nifty;
     private Screen screen;
     private String selectedLevel;
+    private int selectedUpgrade=0;
     private Level level;
     
     private String[] HUDs = {"None", "Steel", "Slim Red", "Jungle", "Contrast", "Prints", "Goggles"};
@@ -154,6 +156,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         nifty.getScreen("loadGame").findElementByName("tField").hide();
         nifty.getScreen("loadGame").findElementByName("confirm").hide();
         nifty.getScreen("loadGame").findElementByName("middleText").hide();
+        nifty.getScreen("shopMenu").findElementByName("buyIt").hide();
     }
     
     public void updateShopCurrency()
@@ -170,7 +173,6 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         saveData.setHUD(1);
         TextField file = nifty.getCurrentScreen().findNiftyControl("saveInput",TextField.class);
         fileName = file.getText();
-        System.out.println(fileName);
         saveData.save("saves/"+fileName+".sav");
         SaveManager.recordSave(fileName);
         changeScreens("gameScreen");
@@ -187,6 +189,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         {
             changeScreens("gameScreen");
         }
+        updateShopCurrency();
         return success;
     }
     public void unhideElem()
@@ -256,15 +259,12 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         }
         
     }
-    public void doNothing()
-    {
-        
-    }
     public void gameHasEnded()
     {
         //Element scrElement = nifty.getCurrentScreen().findElementByName("container");
         //scrElement.getElementInteraction().setOnMouseOver(new NiftyMethodInvoker(nifty,"doNothing()",this));
-        level.getPoints();
+        System.out.println("ack I am hit");
+        points = level.getPoints();
         updatePoints(points);
         currencyEarned = points/10;
         saveData.setCurrency(saveData.getCurrency()+currencyEarned);
@@ -281,6 +281,84 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     {
         Element niftyElement = nifty.getCurrentScreen().findElementByName("currency");
         niftyElement.getRenderer(TextRenderer.class).setText("Currency: "+ val);
+    }
+    public void buyTheUpgrade()
+    {
+        //subtracts money from currency
+        //updates currency in save file and gui
+        //updates items in save file
+        Element niftElem = nifty.getScreen("shopMenu").findElementByName("shopCurrency");
+        int currentCurrency = saveData.getCurrency();
+        //Item upgrade = new Item();
+        if (selectedUpgrade==1)
+        {
+            currentCurrency = currentCurrency-15;
+            saveData.setCurrency(currentCurrency);
+            updateShopCurrency();
+           // saveData.addItem(upgrade.fromString("Fuzzy Slippers"));
+        }
+        else if(selectedUpgrade==2)
+        {
+            
+        }
+        else if(selectedUpgrade==3)
+        {
+            
+        }
+        else if(selectedUpgrade==4)
+        {
+            
+        }
+        else if(selectedUpgrade==5)
+        {
+            currentCurrency = currentCurrency-10;
+            saveData.setCurrency(currentCurrency);
+            updateShopCurrency();
+        }
+        else if(selectedUpgrade==6)
+        {
+            
+        }
+        saveData.save("saves/"+fileName+".sav");
+        SaveManager.recordSave(fileName);
+    }
+    public void selectUpgrade(String upgrade)
+    {
+        int upgradeNum = Integer.parseInt(upgrade);
+        if (upgradeNum==1&&(saveData.getCurrency()>=15))
+        {
+            nifty.getCurrentScreen().findElementByName("buyIt").show();
+            selectedUpgrade = 1;
+        }
+        else if (upgradeNum==2)
+        {
+            nifty.getCurrentScreen().findElementByName("buyIt").hide();
+            selectedUpgrade = 0;
+        }
+        else if (upgradeNum==3)
+        {
+            nifty.getCurrentScreen().findElementByName("buyIt").hide();
+            selectedUpgrade = 0;
+        }
+        else if (upgradeNum==4)
+        {
+            nifty.getCurrentScreen().findElementByName("buyIt").hide();
+            selectedUpgrade = 0;
+        }
+        else if (upgradeNum==5&&saveData.getCurrency()>=10)
+        {
+            nifty.getCurrentScreen().findElementByName("buyIt").show();
+            selectedUpgrade = 5;
+        }
+        else if (upgradeNum==6)
+        {
+            nifty.getCurrentScreen().findElementByName("buyIt").hide();
+            selectedUpgrade = 0;
+        }
+        else
+        {
+            nifty.getCurrentScreen().findElementByName("buyIt").hide();
+        }
     }
     public void toggleFullScreen()
     {
