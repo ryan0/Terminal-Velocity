@@ -125,8 +125,8 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         clickSound.playInstance();
         if(selectedLevel.equals("level1"))
         {
-            level = new Level();
-            level.initialize(stateManager, app, "Textures/terrain");
+            level = new Level("Textures/terrain");
+            level.initialize(stateManager, app);
             level.setNifty(nifty);
             stateManager.attach(level);
             nifty.gotoScreen("hud");

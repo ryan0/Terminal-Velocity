@@ -39,6 +39,7 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
     
     private SimpleApplication app;
     private AppStateManager stateManager;
+    private String assetFolder;
     
     private AmbientLight lamp;
     private DirectionalLight sun;
@@ -51,8 +52,13 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
     
     private AudioNode soundNode;
    
+    public Level(String assetFolder)
+    {
+        this.assetFolder = assetFolder;
+    }
     
-    public void initialize(AppStateManager stateManager1, Application dahApp, String assetFolder)
+    @Override
+    public void initialize(AppStateManager stateManager1, Application dahApp)
     {
         super.initialize(stateManager1, app);
         app = (SimpleApplication)dahApp;
