@@ -21,8 +21,10 @@ public abstract class Item
     
     public static Item fromString(String string)
     {
-        if(string.equals("fuzzy slippers"))
+        if(string.equals("Fuzzy Slippers"))
             return new FuzzySlippers();
+        else if (string.equals("Balloon"))
+            return new Balloon();
         else
             return null;
     }
