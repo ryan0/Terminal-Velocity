@@ -79,5 +79,6 @@ public class Terrain extends Node
         
         terrain.addControl(new RigidBodyControl(0));
         bulletAppState.getPhysicsSpace().add(terrain);
+        this.attachChild(terrain);
     }
 }

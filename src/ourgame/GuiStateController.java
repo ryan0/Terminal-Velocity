@@ -39,8 +39,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     private Nifty nifty;
     private Screen screen;
     private String selectedLevel;
-    private Level level1;
-    private Level level2;
+    private Level level;
     
     private String[] HUDs = {"None", "Steel", "Slim Red", "Jungle", "Contrast", "Prints", "Goggles"};
     
@@ -126,19 +125,12 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         clickSound.playInstance();
         if(selectedLevel.equals("level1"))
         {
-        level1 = new Level();
-        level1.setNifty(nifty);
-        stateManager.attach(level1);
-        nifty.gotoScreen("hud");
-        windSound.stop();
-        }
-        if(selectedLevel.equals("level2"))
-        {
-        level2 = new Level();
-        level2.setNifty(nifty);
-        stateManager.attach(level2);
-        nifty.gotoScreen("hud");
-        windSound.stop();
+            level = new Level();
+            level.initialize(stateManager, app, "Textures/terrain");
+            level.setNifty(nifty);
+            stateManager.attach(level);
+            nifty.gotoScreen("hud");
+            windSound.stop();
         }
     }
 
@@ -272,8 +264,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     {
         //Element scrElement = nifty.getCurrentScreen().findElementByName("container");
         //scrElement.getElementInteraction().setOnMouseOver(new NiftyMethodInvoker(nifty,"doNothing()",this));
-        if(selectedLevel.equals("level1")) points = level1.getPoints();
-        if(selectedLevel.equals("level2")) points = level2.getPoints();
+        level.getPoints();
         updatePoints(points);
         currencyEarned = points/10;
         saveData.setCurrency(saveData.getCurrency()+currencyEarned);
