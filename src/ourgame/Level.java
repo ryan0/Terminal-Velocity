@@ -23,7 +23,6 @@ import com.jme3.post.filters.BloomFilter;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.CameraNode;
 import com.jme3.scene.Node;
-import com.jme3.shadow.DirectionalLightShadowFilter;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
 import com.jme3.shadow.EdgeFilteringMode;
 import de.lessvoid.nifty.Nifty;
@@ -52,8 +51,8 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
     
     private AudioNode soundNode;
    
-    @Override
-    public void initialize(AppStateManager stateManager1, Application dahApp)
+    
+    public void initialize(AppStateManager stateManager1, Application dahApp, String assetFolder)
     {
         super.initialize(stateManager1, app);
         app = (SimpleApplication)dahApp;
@@ -64,23 +63,16 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
         
         bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
-        bulletAppState.getPhysicsSpace().setAccuracy(1f/480f);
+        bulletAppState.getPhysicsSpace().setAccuracy(1f/256f);
         
-        Terrain terrain = new Terrain(bulletAppState, app);
+        
+        Terrain terrain = new Terrain(bulletAppState, app, assetFolder);
         app.getRootNode().attachChild(terrain);
         
+        
         player = new Player(bulletAppState, app); 
-        
-//        camNode = new CameraNode("Camera Node", app.getCamera());
-//        camNode.setControlDir(CameraControl.ControlDirection.SpatialToCamera);
-//        camNode.setLocalTranslation(player.getLocalTranslation().add(new Vector3f(0, -5, -20)));
-//        System.out.println(player.getLocalTranslation().toString());
-//        camNode.lookAt(player.getLocalTranslation(), Vector3f.UNIT_Y);
-//        camNode.setEnabled(true);
-        
         app.getRootNode().attachChild(player);
         
-        bulletAppState.getPhysicsSpace().setAccuracy(1f/250f);
         
         Node coinNode = new Node();
         AmbientLight coinLamp = new AmbientLight();
@@ -145,7 +137,7 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
     }
     private void initLight()
     {
-        app.getCamera().setFrustumFar(100000);
+        app.getCamera().setFrustumFar(1000000);
         
         Node skyNode = new Node();
         skyNode.attachChild(SkyFactory.createSky(app.getAssetManager(),
@@ -159,11 +151,11 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
         app.getRootNode().attachChild(skyNode);
         
         lamp = new AmbientLight();
-        lamp.setColor(ColorRGBA.White);
+        lamp.setColor(ColorRGBA.White.mult(.2f));
         app.getRootNode().addLight(lamp);
         sun = new DirectionalLight();
-        sun.setColor(ColorRGBA.White);
-        sun.setDirection(new Vector3f(1f,-1f, 0f));
+        sun.setColor(ColorRGBA.White.mult(2f));
+        sun.setDirection(new Vector3f(0f,-1f, -2f));
         app.getRootNode().addLight(sun);
         
         
@@ -173,23 +165,12 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
         dlsr.setLight(sun);
         dlsr.setLambda(0.55f);
         dlsr.setShadowIntensity(0.6f);
-        dlsr.setEdgeFilteringMode(EdgeFilteringMode.Dither);
+        dlsr.setEdgeFilteringMode(EdgeFilteringMode.PCFPOISSON);
         app.getViewPort().addProcessor(dlsr);
         
-        //THIS CAN BE USED IN CHANGING THE LINEAR VELOCITY BASED ON CAMERA ANGLE
-        //direction.set(app.getCamera().getDirection()).normalizeLocal();
         
-        DirectionalLightShadowFilter dlsf;
-        dlsf = new DirectionalLightShadowFilter(app.getAssetManager(), SHADOWMAP_SIZE, 4);
-        dlsf.setLight(sun);
-        dlsf.setLambda(0.55f);
-        dlsf.setShadowIntensity(0.6f);
-        dlsf.setEdgeFilteringMode(EdgeFilteringMode.PCF4);
-        dlsf.setEnabled(true);
 
-        FilterPostProcessor fpp = new FilterPostProcessor(app.getAssetManager());
-        fpp.addFilter(dlsf);
-        
+        FilterPostProcessor fpp = new FilterPostProcessor(app.getAssetManager());      
         
         BloomFilter bloom = new BloomFilter(BloomFilter.GlowMode.Objects);
         fpp.addFilter(bloom);

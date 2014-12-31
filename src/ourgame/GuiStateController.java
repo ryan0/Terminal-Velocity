@@ -40,7 +40,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     private Screen screen;
     private String selectedLevel;
     private Level level1;
-    private Level2 level2;
+    private Level level2;
     
     private String[] HUDs = {"None", "Steel", "Slim Red", "Jungle", "Contrast", "Prints", "Goggles"};
     
@@ -134,7 +134,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         }
         if(selectedLevel.equals("level2"))
         {
-        level2 = new Level2();
+        level2 = new Level();
         level2.setNifty(nifty);
         stateManager.attach(level2);
         nifty.gotoScreen("hud");
