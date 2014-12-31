@@ -13,5 +13,6 @@ public class Balloon extends Item
     public Balloon()
     {
         ID = "Balloon";
+        price = 15;
     }
 }

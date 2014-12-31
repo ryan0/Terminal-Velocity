@@ -14,5 +14,6 @@ public class FuzzySlippers extends Item
     public FuzzySlippers()
     {
         ID = "Fuzzy Slippers";
+        price = 10;
     }
 }
