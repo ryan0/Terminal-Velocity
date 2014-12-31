@@ -21,9 +21,13 @@ import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.scene.CameraNode;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.CameraControl;
+import com.jme3.util.TangentBinormalGenerator;
+
+
 
 
 //import com.jme3.material.RenderState.FaceCullMode.jme3.material.FaceCullMode;
@@ -37,7 +41,7 @@ import com.jme3.scene.control.CameraControl;
  */
 public class Player extends Node implements AnalogListener, ActionListener
 {
-    private Spatial playerMesh;
+    //private Node playerMesh;
     private RigidBodyControl physicsControl;
     private AudioNode soundNode;
     private SimpleApplication app;
@@ -45,6 +49,7 @@ public class Player extends Node implements AnalogListener, ActionListener
     private Node pivotNode;
     private CameraNode camNode;
     
+
     private boolean parachuteUsed = false;
     private boolean parachuting = false;
     private Spatial parachuteMesh;
@@ -68,13 +73,116 @@ public class Player extends Node implements AnalogListener, ActionListener
         
         app = (SimpleApplication)appRef;
         cam = app.getCamera();
-        playerMesh = app.getAssetManager().loadModel("Models/Dude/WIP Dude Frame.obj");
-        playerMesh.setMaterial(new Material(app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md"));
+        //playerMesh = app.getAssetManager().loadModel("Models/Dude/WIP Dude Frame - unjoined.obj");
+        //Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
+        
+        Spatial backpackS = app.getAssetManager().loadModel("Models/Dude/Backpack.obj");
+        Material mat1 = new Material (app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
+        mat1.setTexture("DiffuseMap", app.getAssetManager().loadTexture("Textures/Royal Blue.png"));
+        backpackS.setMaterial(mat1);
+        Spatial headS = app.getAssetManager().loadModel("Models/Dude/Head.obj"); 
+        Material mat2 = new Material (app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
+        mat2.setTexture("DiffuseMap", app.getAssetManager().loadTexture("Textures/Skin Tone.png"));
+        headS.setMaterial(mat2);
+        Spatial helmetS = app.getAssetManager().loadModel("Models/Dude/Helmet.obj");
+        Material mat3 = new Material (app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
+        mat3.setTexture("DiffuseMap", app.getAssetManager().loadTexture("Textures/Black.png"));
+        helmetS.setMaterial(mat3);
+        Spatial leftElbowS = app.getAssetManager().loadModel("Models/Dude/Left Elbow.obj");        
+        leftElbowS.setMaterial(mat3);
+        Spatial leftFootS = app.getAssetManager().loadModel("Models/Dude/Left Foot.obj");        
+        leftFootS.setMaterial(mat3);
+        Spatial leftHandS = app.getAssetManager().loadModel("Models/Dude/Left Hand.obj");        
+        leftHandS.setMaterial(mat1);
+        Spatial leftKneeS = app.getAssetManager().loadModel("Models/Dude/Left Knee.obj");        
+        leftKneeS.setMaterial(mat3);
+        Spatial leftLowerArmS = app.getAssetManager().loadModel("Models/Dude/Left Lower Arm.obj");        
+        leftLowerArmS.setMaterial(mat3);
+        Spatial leftLowerLegS = app.getAssetManager().loadModel("Models/Dude/Left Lower Leg.obj");        
+        leftLowerLegS.setMaterial(mat3);
+        Spatial leftShoulderS = app.getAssetManager().loadModel("Models/Dude/Left Shoulder.obj");        
+        leftShoulderS.setMaterial(mat3);
+        Spatial leftUpperArmS = app.getAssetManager().loadModel("Models/Dude/Left Upper Arm.obj");       
+        leftUpperArmS.setMaterial(mat3);
+        Spatial leftUpperLegS = app.getAssetManager().loadModel("Models/Dude/Left Upper Leg.obj");        
+        leftUpperLegS.setMaterial(mat3);
+        Spatial leftWristS = app.getAssetManager().loadModel("Models/Dude/Left Wrist.obj");        
+        leftWristS.setMaterial(mat1);
+        Spatial lowerTorsoS = app.getAssetManager().loadModel("Models/Dude/Lower Torso.obj");        
+        lowerTorsoS.setMaterial(mat3);
+        Spatial neckS = app.getAssetManager().loadModel("Models/Dude/Neck.obj");        
+        neckS.setMaterial(mat2);
+        Spatial rightElbowS = app.getAssetManager().loadModel("Models/Dude/Right Elbow.obj");        
+        rightElbowS.setMaterial(mat3);
+        Spatial rightFootS = app.getAssetManager().loadModel("Models/Dude/Right Foot.obj");        
+        rightFootS.setMaterial(mat3);
+        Spatial rightHandS = app.getAssetManager().loadModel("Models/Dude/Right Hand.obj");        
+        rightHandS.setMaterial(mat1);
+        Spatial rightKneeS = app.getAssetManager().loadModel("Models/Dude/Right Knee.obj");        
+        rightKneeS.setMaterial(mat3);
+        Spatial rightLowerArmS = app.getAssetManager().loadModel("Models/Dude/Right Lower Arm.obj");        
+        rightLowerArmS.setMaterial(mat3);
+        Spatial rightLowerLegS = app.getAssetManager().loadModel("Models/Dude/Right Lower Leg.obj");        
+        rightLowerLegS.setMaterial(mat3);
+        Spatial rightShoulderS = app.getAssetManager().loadModel("Models/Dude/Right Shoulder.obj");       
+        rightShoulderS.setMaterial(mat3);
+        Spatial rightUpperArmS = app.getAssetManager().loadModel("Models/Dude/Right Upper Arm.obj");       
+        rightUpperArmS.setMaterial(mat3);
+        Spatial rightUpperLegS = app.getAssetManager().loadModel("Models/Dude/Right Upper Leg.obj");        
+        rightUpperLegS.setMaterial(mat3);
+        Spatial rightWristS = app.getAssetManager().loadModel("Models/Dude/Right Wrist.obj"); 
+        rightWristS.setMaterial(mat1);
+        Spatial upperTorsoS = app.getAssetManager().loadModel("Models/Dude/Upper Torso.obj");       
+        upperTorsoS.setMaterial(mat3);
+        Spatial waistS = app.getAssetManager().loadModel("Models/Dude/Waist.obj");
+        waistS.setMaterial(mat3);
+        Spatial wingsS = app.getAssetManager().loadModel("Models/Dude/Wings.obj");
+        Material mat4 = new Material (app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
+        mat4.setTexture("DiffuseMap", app.getAssetManager().loadTexture("Textures/polycotton_blue_2_PNG.png"));
+        wingsS.setMaterial(mat4);
+        //Material mat1 = new Material(app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
+       // mat1.setTexture("DiffuseMap", app.getAssetManager().loadTexture("Textures/polycotton_blue_2_PNS.png"));
+        //wingsS.setMaterial(mat1);
+        
+        
+        attachChild(backpackS);
+        attachChild(headS);
+        attachChild(helmetS);
+        attachChild(leftElbowS);
+        attachChild(leftFootS);
+        attachChild(leftHandS);
+        attachChild(leftKneeS);
+        attachChild(leftLowerArmS);
+        attachChild(leftLowerLegS);
+        attachChild(leftShoulderS);
+        attachChild(leftUpperArmS);
+        attachChild(leftUpperLegS);
+        attachChild(leftWristS);
+        attachChild(lowerTorsoS);
+        attachChild(neckS);
+        attachChild(rightElbowS);
+        attachChild(rightFootS);
+        attachChild(rightHandS);
+        attachChild(rightKneeS);
+        attachChild(rightLowerArmS);
+        attachChild(rightLowerLegS);
+        attachChild(rightShoulderS);
+        attachChild(rightUpperArmS);
+        attachChild(rightUpperLegS);
+        attachChild(rightWristS);
+        attachChild(upperTorsoS);
+        attachChild(waistS);
+        attachChild(wingsS);
+        
+        
+        //Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
+        //mat.setTexture("DiffuseMap", app.getAssetManager().loadTexture("Textures/polycotton_blue_2_PNS.png"));
+        //setMaterial(mat);
         
         Quaternion rotation = new Quaternion();
         rotation.fromAngles(0f, FastMath.PI, -FastMath.PI/2f);
-        playerMesh.setLocalRotation(rotation);
-        this.attachChild(playerMesh);
+        setLocalRotation(rotation);
+        //this.attachChild(playerMesh);
         
         BoxCollisionShape PlayerShape = new BoxCollisionShape(new Vector3f(1.5f, 6f, 1));
         physicsControl = new RigidBodyControl(PlayerShape, 70f);
@@ -115,8 +223,8 @@ public class Player extends Node implements AnalogListener, ActionListener
     }
     public void update(float tpf)
     {
-        if(!hitGround)
-            points++;
+         if(!hitGround&&!parachuteUsed)
+            points+=tpf;
         //update the velocity crap
         Vector3f xPlusZ = new Vector3f(
                 cam.getDirection().x, 
@@ -157,12 +265,12 @@ public class Player extends Node implements AnalogListener, ActionListener
         if(!parachuting)
         {
             Quaternion quat2 = pivotNode.getLocalRotation();
-            playerMesh.getLocalRotation().slerp(quat2, tpf);
+            getLocalRotation().slerp(quat2, tpf);
         }
         else
         {
             this.setLocalRotation(Quaternion.DIRECTION_Z);
-            playerMesh.getLocalRotation().slerp(new Quaternion(0,1,0,1), 5*tpf);
+            getLocalRotation().slerp(new Quaternion(0,1,0,1), 5*tpf);
         }
         
         if(parachuteUsed && !parachuting)
@@ -178,7 +286,7 @@ public class Player extends Node implements AnalogListener, ActionListener
             parachuteMesh.setLocalTranslation(parachuteMesh.getLocalTranslation().add(0,.3f,0));
             Vector3f increaseVector = new Vector3f(camNode.getLocalTranslation());
             camNode.setLocalTranslation(camNode.getLocalTranslation().add(increaseVector.mult(.02f)));
-            playerMesh.setLocalTranslation(playerMesh.getLocalTranslation().add(new Vector3f(0,-.08f,0)));
+            setLocalTranslation(getLocalTranslation().add(new Vector3f(0,-.08f,0)));
         }
     }
     
