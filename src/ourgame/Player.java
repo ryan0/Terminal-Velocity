@@ -140,11 +140,7 @@ public class Player extends Node implements AnalogListener, ActionListener
         Material mat4 = new Material (app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
         mat4.setTexture("DiffuseMap", app.getAssetManager().loadTexture("Textures/polycotton_blue_2_PNG.png"));
         wingsS.setMaterial(mat4);
-        //Material mat1 = new Material(app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
-       // mat1.setTexture("DiffuseMap", app.getAssetManager().loadTexture("Textures/polycotton_blue_2_PNS.png"));
-        //wingsS.setMaterial(mat1);
-        
-        
+                
         attachChild(backpackS);
         attachChild(headS);
         attachChild(helmetS);
@@ -174,16 +170,11 @@ public class Player extends Node implements AnalogListener, ActionListener
         attachChild(waistS);
         attachChild(wingsS);
         
-        
-        //Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
-        //mat.setTexture("DiffuseMap", app.getAssetManager().loadTexture("Textures/polycotton_blue_2_PNS.png"));
-        //setMaterial(mat);
-        
+            
         Quaternion rotation = new Quaternion();
-        rotation.fromAngles(0f, FastMath.PI, -FastMath.PI/2f);
+        rotation.fromAngles(0f, FastMath.PI/2f, -FastMath.PI/2f);
         setLocalRotation(rotation);
-        //this.attachChild(playerMesh);
-        
+                
         BoxCollisionShape PlayerShape = new BoxCollisionShape(new Vector3f(1.5f, 6f, 1));
         physicsControl = new RigidBodyControl(PlayerShape, 70f);
         addControl(physicsControl);
@@ -213,8 +204,8 @@ public class Player extends Node implements AnalogListener, ActionListener
         setLocalTranslation(new Vector3f(-18000, 23000, -10000));
         
         parachuteMesh = app.getAssetManager().loadModel("Models/Parachute/Parachute2.j3o");
-        parachuteMesh.setMaterial(new Material(app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md"));
         parachuteMesh.setLocalTranslation(new Vector3f(0,1,1));
+        parachuteMesh.setMaterial(mat1);
         registerInput();
     }
     public int getPoints()
@@ -269,14 +260,20 @@ public class Player extends Node implements AnalogListener, ActionListener
         }
         else
         {
-            this.setLocalRotation(Quaternion.DIRECTION_Z);
-            getLocalRotation().slerp(new Quaternion(0,1,0,1), 5*tpf);
+            //this.setLocalRotation(Quaternion.DIRECTION_Z);
+            Quaternion pitch90 = new Quaternion();
+            pitch90.fromAngleAxis(FastMath.PI/2, new Vector3f(0,0,1));
+            this.setLocalRotation(pitch90);
+            getLocalRotation().slerp(new Quaternion(0,1,0,1), 5*tpf); //*** (0, 1, 0,1)
         }
         
         if(parachuteUsed && !parachuting)
         {
             parachuteMesh.setLocalScale(1f,1f,1f);
-            parachuteMesh.setLocalRotation(Quaternion.DIRECTION_Z);
+            //parachuteMesh.setLocalRotation(Quaternion.DIRECTION_Z);
+            Quaternion pitch90 = new Quaternion();
+            pitch90.fromAngleAxis(FastMath.PI/2, new Vector3f(0,0,1));
+            parachuteMesh.setLocalRotation(pitch90);
             this.attachChild(parachuteMesh);
             parachuting = true;
         }
