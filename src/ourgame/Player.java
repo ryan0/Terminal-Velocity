@@ -41,7 +41,7 @@ import com.jme3.util.TangentBinormalGenerator;
  */
 public class Player extends Node implements AnalogListener, ActionListener
 {
-    //private Node playerMesh;
+    private Node playerMesh = new Node(); //
     private RigidBodyControl physicsControl;
     private AudioNode soundNode;
     private SimpleApplication app;
@@ -141,40 +141,41 @@ public class Player extends Node implements AnalogListener, ActionListener
         mat4.setTexture("DiffuseMap", app.getAssetManager().loadTexture("Textures/polycotton_blue_2_PNG.png"));
         wingsS.setMaterial(mat4);
                 
-        attachChild(backpackS);
-        attachChild(headS);
-        attachChild(helmetS);
-        attachChild(leftElbowS);
-        attachChild(leftFootS);
-        attachChild(leftHandS);
-        attachChild(leftKneeS);
-        attachChild(leftLowerArmS);
-        attachChild(leftLowerLegS);
-        attachChild(leftShoulderS);
-        attachChild(leftUpperArmS);
-        attachChild(leftUpperLegS);
-        attachChild(leftWristS);
-        attachChild(lowerTorsoS);
-        attachChild(neckS);
-        attachChild(rightElbowS);
-        attachChild(rightFootS);
-        attachChild(rightHandS);
-        attachChild(rightKneeS);
-        attachChild(rightLowerArmS);
-        attachChild(rightLowerLegS);
-        attachChild(rightShoulderS);
-        attachChild(rightUpperArmS);
-        attachChild(rightUpperLegS);
-        attachChild(rightWristS);
-        attachChild(upperTorsoS);
-        attachChild(waistS);
-        attachChild(wingsS);
+        playerMesh.attachChild(backpackS);
+        playerMesh.attachChild(headS);
+        playerMesh.attachChild(helmetS);
+        playerMesh.attachChild(leftElbowS);
+        playerMesh.attachChild(leftFootS);
+        playerMesh.attachChild(leftHandS);
+        playerMesh.attachChild(leftKneeS);
+        playerMesh.attachChild(leftLowerArmS);
+        playerMesh.attachChild(leftLowerLegS);
+        playerMesh.attachChild(leftShoulderS);
+        playerMesh.attachChild(leftUpperArmS);
+        playerMesh.attachChild(leftUpperLegS);
+        playerMesh.attachChild(leftWristS);
+        playerMesh.attachChild(lowerTorsoS);
+        playerMesh.attachChild(neckS);
+        playerMesh.attachChild(rightElbowS);
+        playerMesh.attachChild(rightFootS);
+        playerMesh.attachChild(rightHandS);
+        playerMesh.attachChild(rightKneeS);
+        playerMesh.attachChild(rightLowerArmS);
+        playerMesh.attachChild(rightLowerLegS);
+        playerMesh.attachChild(rightShoulderS);
+        playerMesh.attachChild(rightUpperArmS);
+        playerMesh.attachChild(rightUpperLegS);
+        playerMesh.attachChild(rightWristS);
+        playerMesh.attachChild(upperTorsoS);
+        playerMesh.attachChild(waistS);
+        playerMesh.attachChild(wingsS);
         
             
         Quaternion rotation = new Quaternion();
         rotation.fromAngles(0f, FastMath.PI/2f, -FastMath.PI/2f);
-        setLocalRotation(rotation);
-                
+        playerMesh.setLocalRotation(rotation);
+        this.attachChild(playerMesh);
+        
         BoxCollisionShape PlayerShape = new BoxCollisionShape(new Vector3f(1.5f, 6f, 1));
         physicsControl = new RigidBodyControl(PlayerShape, 70f);
         addControl(physicsControl);
@@ -204,7 +205,7 @@ public class Player extends Node implements AnalogListener, ActionListener
         setLocalTranslation(new Vector3f(-18000, 23000, -10000));
         
         parachuteMesh = app.getAssetManager().loadModel("Models/Parachute/Parachute2.j3o");
-        parachuteMesh.setLocalTranslation(new Vector3f(0,1,1));
+        parachuteMesh.setLocalTranslation(new Vector3f(-2,12,3.5f));
         parachuteMesh.setMaterial(mat1);
         registerInput();
     }
@@ -260,20 +261,18 @@ public class Player extends Node implements AnalogListener, ActionListener
         }
         else
         {
-            //this.setLocalRotation(Quaternion.DIRECTION_Z);
-            Quaternion pitch90 = new Quaternion();
-            pitch90.fromAngleAxis(FastMath.PI/2, new Vector3f(0,0,1));
-            this.setLocalRotation(pitch90);
-            getLocalRotation().slerp(new Quaternion(0,1,0,1), 5*tpf); //*** (0, 1, 0,1)
+            this.setLocalRotation(Quaternion.DIRECTION_Z);
+            //Quaternion pitch90 = new Quaternion();
+            //pitch90.fromAngleAxis(FastMath.PI/2, new Vector3f(0,0,1));
+            //this.setLocalRotation(pitch90);
+            playerMesh.getLocalRotation().slerp(new Quaternion(0,1,0,1), 5*tpf); //*** (0, 1, 0,1)
         }
         
         if(parachuteUsed && !parachuting)
         {
-            parachuteMesh.setLocalScale(1f,1f,1f);
-            //parachuteMesh.setLocalRotation(Quaternion.DIRECTION_Z);
-            Quaternion pitch90 = new Quaternion();
-            pitch90.fromAngleAxis(FastMath.PI/2, new Vector3f(0,0,1));
-            parachuteMesh.setLocalRotation(pitch90);
+            parachuteMesh.setLocalScale(.8f,.8f,.8f);
+            parachuteMesh.setLocalRotation(Quaternion.DIRECTION_Z);
+            //parachuteMesh.setLocalTranslation()
             this.attachChild(parachuteMesh);
             parachuting = true;
         }
