@@ -263,7 +263,6 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     {
         //Element scrElement = nifty.getCurrentScreen().findElementByName("container");
         //scrElement.getElementInteraction().setOnMouseOver(new NiftyMethodInvoker(nifty,"doNothing()",this));
-        System.out.println("ack I am hit");
         points = level.getPoints();
         updatePoints(points);
         currencyEarned = points/10;

@@ -290,7 +290,8 @@ public class Player extends Node implements AnalogListener, ActionListener
     {
         public void collision(PhysicsCollisionEvent event) 
         {
-            if((event.getNodeA().getName().equals("terrain-geom-0") && event.getNodeB().getName().equals("Player"))|| (event.getNodeA().getName().equals("Player")&&event.getNodeB().getName().equals("terrain-geom-0"))){
+            
+            if((event.getNodeA().getName().equals("le terrain") && event.getNodeB().getName().equals("Player"))|| (event.getNodeA().getName().equals("Player")&&event.getNodeB().getName().equals("le terrain"))){
                 if(Math.abs(event.getAppliedImpulse())+
                         Math.abs(event.getAppliedImpulseLateral1())+
                         Math.abs(event.getAppliedImpulseLateral2())>800)
@@ -312,11 +313,12 @@ public class Player extends Node implements AnalogListener, ActionListener
                     points = points+100;
                 }
             }
-            System.out.println("----------------------------------");
-            System.out.println("Collision Between:");
-            System.out.println(event.getNodeA().getName());
-            System.out.println(event.getNodeB().getName());
-            System.out.println("----------------------------------");
+            //For debugging purposes
+//            System.out.println("----------------------------------");
+//            System.out.println("Collision Between:");
+//            System.out.println(event.getNodeA().getName());
+//            System.out.println(event.getNodeB().getName());
+//            System.out.println("----------------------------------");
         }
     }
     public void cleanup()

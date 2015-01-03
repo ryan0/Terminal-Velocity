@@ -48,3 +48,5 @@ Temporary Items
 .apdisk
 /dist/
 savefiles.list
+savefiles.list
+*.sav
