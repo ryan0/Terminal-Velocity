@@ -204,8 +204,8 @@ public class Player extends Node implements AnalogListener, ActionListener
         camNode.lookAt(this.getLocalTranslation(), Vector3f.UNIT_Y);
         setLocalTranslation(new Vector3f(-18000, 23000, -10000));
         
-        parachuteMesh = app.getAssetManager().loadModel("Models/Parachute/Parachute2.j3o");
-        parachuteMesh.setLocalTranslation(new Vector3f(-2,12,3.5f));
+        parachuteMesh = app.getAssetManager().loadModel("Models/Parachute/Parachute3.j3o");
+        parachuteMesh.setLocalTranslation(new Vector3f(-1.8f,11,3.5f));
         parachuteMesh.setMaterial(mat1);
         registerInput();
     }
