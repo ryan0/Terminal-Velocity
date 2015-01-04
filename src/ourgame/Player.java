@@ -208,7 +208,7 @@ public class Player extends Node implements AnalogListener, ActionListener
         setLocalTranslation(new Vector3f(-18000, 23000, -10000));
         
         parachuteMesh = app.getAssetManager().loadModel("Models/Parachute/Parachute3.j3o");
-        parachuteMesh.setLocalTranslation(new Vector3f(-1.8f,11,3.5f));
+        parachuteMesh.setLocalTranslation(new Vector3f(0,5,0));
         parachuteMesh.setMaterial(mat1);
         registerInput();
     }
@@ -283,7 +283,7 @@ public class Player extends Node implements AnalogListener, ActionListener
         
         if(parachuteUsed && !parachuting)
         {
-            parachuteMesh.setLocalScale(.8f,.8f,.8f);
+            parachuteMesh.setLocalScale(.7f,.7f,.7f);
             parachuteMesh.setLocalRotation(Quaternion.DIRECTION_Z);
             //parachuteMesh.setLocalTranslation()
             this.attachChild(parachuteMesh);
@@ -292,7 +292,7 @@ public class Player extends Node implements AnalogListener, ActionListener
         if(parachuting && parachuteMesh.getLocalScale().getX()<6f)
         {
             parachuteMesh.setLocalScale(parachuteMesh.getLocalScale().add(.1f, .1f, .1f));
-            parachuteMesh.setLocalTranslation(parachuteMesh.getLocalTranslation().add(0,.3f,0));
+            parachuteMesh.setLocalTranslation(parachuteMesh.getLocalTranslation().add(0,-.05f,0));
             Vector3f increaseVector = new Vector3f(camNode.getLocalTranslation());
             camNode.setLocalTranslation(camNode.getLocalTranslation().add(increaseVector.mult(.02f)));
             setLocalTranslation(getLocalTranslation().add(new Vector3f(0,-.08f,0)));
