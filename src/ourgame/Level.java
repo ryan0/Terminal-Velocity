@@ -30,12 +30,14 @@ import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.elements.render.TextRenderer;
 import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
+import java.util.ArrayList;
+import ourgame.items.Item;
 
 public class Level extends AbstractAppState implements ActionListener,ScreenController
 {
     private Nifty nifty;
     private Screen screen;
-    private int points = 0;
+    private float points = 0;
     
     private SimpleApplication app;
     private AppStateManager stateManager;
@@ -51,10 +53,20 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
     AudioNode musicNode;
     
     private AudioNode soundNode;
+    
+    private boolean hasBalloon = false;
+    private boolean hasFuzzySlippers= false;
    
-    public Level(String assetFolder)
+    public Level(String assetFolder, ArrayList<Item> items)
     {
         this.assetFolder = assetFolder;
+        for(Item item: items)
+        {
+            if(item.getID().equals("Fuzzy Slippers"))
+                hasFuzzySlippers = true;
+            else if(item.getID().equals("Balloon"))
+                hasBalloon = true;
+        }
     }
     
     @Override
@@ -76,7 +88,8 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
         app.getRootNode().attachChild(terrain);
         
         
-        player = new Player(bulletAppState, app); 
+        player = new Player(bulletAppState, app);
+        player.sendItems(hasBalloon, hasFuzzySlippers);
         app.getRootNode().attachChild(player);
         
         
@@ -100,10 +113,13 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
         if(Math.random()>.66)
             musicNode = new AudioNode(app.getAssetManager(), "Sounds/Sandstorm.ogg", false);
         else
+        {
             if(Math.random()<.33)
-            musicNode = new AudioNode(app.getAssetManager(), "Sounds/Nightcore_Clip.wav", false);
-            else
-                musicNode = new AudioNode(app.getAssetManager(), "Sounds/Epic Music Clip.wav", false);
+             musicNode = new AudioNode(app.getAssetManager(), "Sounds/Nightcore_Clip.wav", false);
+             else
+                 musicNode = new AudioNode(app.getAssetManager(), "Sounds/Epic Music Clip.wav", false); 
+        }
+            
                
         
         musicNode.setPositional(false);
@@ -130,14 +146,14 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
         player.update(tpf);
         points = player.getPoints();
         Element niftyElement = nifty.getCurrentScreen().findElementByName("points");
-        niftyElement.getRenderer(TextRenderer.class).setText("Score: "+points);
+        niftyElement.getRenderer(TextRenderer.class).setText("Score: "+ (int) points);
         if (player.getHitGround() == true)
         {
             gameEnded();
         }
         //System.out.println("Points: " +points);
     }
-    public int getPoints()
+    public float getPoints()
     {
         return points;
     }

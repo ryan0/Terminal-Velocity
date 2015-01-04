@@ -54,8 +54,12 @@ public class Player extends Node implements AnalogListener, ActionListener
     private boolean parachuting = false;
     private Spatial parachuteMesh;
     
-    private int points = 0;
+    private float points = 0;
     private boolean hitGround = false;
+    private boolean died = false;
+    
+    private boolean hasBalloon = false;
+    private boolean hasFuzzySlippers = false;
     
     BulletAppState bulletState;
     
@@ -186,7 +190,6 @@ public class Player extends Node implements AnalogListener, ActionListener
         physicsControl.setGravity(new Vector3f(0f, 2*-9.8f, 0f));
         physicsControl.setPhysicsLocation(new Vector3f(-18000, 22000, -10000));
         
-        
         soundNode = new AudioNode(app.getAssetManager(), "Sounds/scream.ogg", false);
         soundNode.setPositional(false);
         soundNode.setLooping(false);
@@ -209,14 +212,22 @@ public class Player extends Node implements AnalogListener, ActionListener
         parachuteMesh.setMaterial(mat1);
         registerInput();
     }
-    public int getPoints()
+    
+    public void sendItems(boolean balloon, boolean fuzzySlippers)
+    {
+        hasBalloon = balloon;
+        hasFuzzySlippers = fuzzySlippers;
+    }
+    
+    public float getPoints()
     {
         return points;
     }
+    
     public void update(float tpf)
     {
          if(!hitGround&&!parachuteUsed)
-            points+=tpf;
+            points+=tpf*50;
         //update the velocity crap
         Vector3f xPlusZ = new Vector3f(
                 cam.getDirection().x, 
@@ -224,34 +235,39 @@ public class Player extends Node implements AnalogListener, ActionListener
                 cam.getDirection().z);
         xPlusZ.normalize();
         
-        Vector3f angularV = new Vector3f(
+        
+        Vector3f linearVelocity = new Vector3f(
                 xPlusZ.x * physicsControl.getLinearVelocity().y * -2,
                 physicsControl.getLinearVelocity().y,
                 xPlusZ.z * physicsControl.getLinearVelocity().y * -2);
         
+        if(hasBalloon)
+            linearVelocity.setY(linearVelocity.getY()+5*tpf);
+        
+        
         if(parachuting)
         {
-            if(angularV.getX()>20)
-                angularV.setX(20);
-            else if (angularV.getX()<-20)
-                angularV.setX(-20);
+            if(linearVelocity.getX()>20)
+                linearVelocity.setX(20);
+            else if (linearVelocity.getX()<-20)
+                linearVelocity.setX(-20);
             
-            if(angularV.getZ()>20)
-                angularV.setZ(20);
-            else if (angularV.getZ()<-20)
-                angularV.setZ(-20);
+            if(linearVelocity.getZ()>20)
+                linearVelocity.setZ(20);
+            else if (linearVelocity.getZ()<-20)
+                linearVelocity.setZ(-20);
             
-            if(angularV.getY()>40)
-                angularV.setY(40);
-            else if (angularV.getY()<-40)
-                angularV.setY(-40);
+            if(linearVelocity.getY()>40)
+                linearVelocity.setY(40);
+            else if (linearVelocity.getY()<-40)
+                linearVelocity.setY(-40);
         }
-        physicsControl.setLinearVelocity(angularV);
+        physicsControl.setLinearVelocity(linearVelocity);
         
-        //report velocity
-        System.out.println("X:"+angularV.getX());
-        System.out.println("Y:"+angularV.getY());
-        System.out.println("Z:"+angularV.getZ());
+//        report velocity
+        //System.out.println("X:"+linearVelocity.getX());
+        System.out.println("Y:"+linearVelocity.getY());
+        //System.out.println("Z:"+linearVelocity.getZ());
         
         //update the playerMesh orientation
         if(!parachuting)
@@ -262,9 +278,6 @@ public class Player extends Node implements AnalogListener, ActionListener
         else
         {
             this.setLocalRotation(Quaternion.DIRECTION_Z);
-            //Quaternion pitch90 = new Quaternion();
-            //pitch90.fromAngleAxis(FastMath.PI/2, new Vector3f(0,0,1));
-            //this.setLocalRotation(pitch90);
             playerMesh.getLocalRotation().slerp(new Quaternion(0,1,0,1), 5*tpf); //*** (0, 1, 0,1)
         }
         
@@ -292,10 +305,16 @@ public class Player extends Node implements AnalogListener, ActionListener
         {
             
             if((event.getNodeA().getName().equals("le terrain") && event.getNodeB().getName().equals("Player"))|| (event.getNodeA().getName().equals("Player")&&event.getNodeB().getName().equals("le terrain"))){
+                int maxHitForce = 700;
+                if(hasFuzzySlippers)
+                    maxHitForce*= 1.2;
                 if(Math.abs(event.getAppliedImpulse())+
                         Math.abs(event.getAppliedImpulseLateral1())+
-                        Math.abs(event.getAppliedImpulseLateral2())>800)
+                        Math.abs(event.getAppliedImpulseLateral2())>maxHitForce)
+                {
                     soundNode.play();
+                    died = true;
+                }
                 hitGround = true;
             }
             

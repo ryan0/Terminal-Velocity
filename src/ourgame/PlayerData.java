@@ -35,7 +35,11 @@ public class PlayerData
             outputStream.newLine();
             for(Item item:itemList)
             {
-                outputStream.write(item.toString()+"|");
+                if(item!=null)
+                {
+                    outputStream.write(item.toString()+"/");
+                }
+                    
             }
             outputStream.close();
             return true;
@@ -59,13 +63,14 @@ public class PlayerData
             //Separate each of the items
             if(itemString!=null)
             {
-                String[] loadedItemList = itemString.split("|");
+                String[] loadedItemList = itemString.split("/");
                 for(String item:loadedItemList)
                 {
                     itemList.add(Item.fromString(item));
                 }
             }
             inputStream.close();
+            
             return true;
         }
         catch (FileNotFoundException ex) 
@@ -101,5 +106,10 @@ public class PlayerData
     public void addItem(Item item)
     {
         itemList.add(item);
+    }
+    
+    public ArrayList<Item> getItems()
+    {
+        return itemList;
     }
 }

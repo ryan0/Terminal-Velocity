@@ -20,12 +20,12 @@ import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import ourgame.items.Item;
+import ourgame.items.*;
 
 public class GuiStateController extends AbstractAppState implements ScreenController
 {
     private float time = 0;
-    private int points = 0;
+    private float points = 0;
     private int currencyEarned = 0;
     private int pointsCounted = 0;
     private int currencyCounted = 0;
@@ -127,8 +127,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         clickSound.playInstance();
         if(selectedLevel.equals("level1"))
         {
-            level = new Level("Textures/terrain");
-            //level.initialize(stateManager, app);
+            level = new Level("Textures/terrain", saveData.getItems());
             level.setNifty(nifty);
             stateManager.attach(level);
             nifty.gotoScreen("hud");
@@ -265,16 +264,16 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         //scrElement.getElementInteraction().setOnMouseOver(new NiftyMethodInvoker(nifty,"doNothing()",this));
         points = level.getPoints();
         updatePoints(points);
-        currencyEarned = points/10;
+        currencyEarned = (int) (points/10);
         saveData.setCurrency(saveData.getCurrency()+currencyEarned);
         saveData.save("saves/"+fileName+".sav");
         gameEndScreenOne = true;
         windSound.play();
     }
-    public void updatePoints(int val)
+    public void updatePoints(float val)
     {
         Element niftyElement = nifty.getCurrentScreen().findElementByName("points");
-        niftyElement.getRenderer(TextRenderer.class).setText("Points: "+ val);
+        niftyElement.getRenderer(TextRenderer.class).setText("Points: "+ (int) val);
     }
     public void updateCurrency(int val)
     {
@@ -294,7 +293,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
             currentCurrency = currentCurrency-15;
             saveData.setCurrency(currentCurrency);
             updateShopCurrency();
-           // saveData.addItem(upgrade.fromString("Fuzzy Slippers"));
+            saveData.addItem(new Balloon());
         }
         else if(selectedUpgrade==2)
         {
@@ -313,13 +312,13 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
             currentCurrency = currentCurrency-10;
             saveData.setCurrency(currentCurrency);
             updateShopCurrency();
+            saveData.addItem(new FuzzySlippers());
         }
         else if(selectedUpgrade==6)
         {
             
         }
         saveData.save("saves/"+fileName+".sav");
-        SaveManager.recordSave(fileName);
     }
     public void selectUpgrade(String upgrade)
     {
