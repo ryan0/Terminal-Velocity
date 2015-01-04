@@ -266,7 +266,7 @@ public class Player extends Node implements AnalogListener, ActionListener
         
 //        report velocity
         //System.out.println("X:"+linearVelocity.getX());
-        System.out.println("Y:"+linearVelocity.getY());
+        //System.out.println("Y:"+linearVelocity.getY());
         //System.out.println("Z:"+linearVelocity.getZ());
         
         //update the playerMesh orientation
