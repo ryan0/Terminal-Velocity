@@ -61,6 +61,9 @@ public class Player extends Node implements AnalogListener, ActionListener
     private boolean hasBalloon = false;
     private boolean hasFuzzySlippers = false;
     
+    private float xRotation = 0;
+    private float yRotation = 0;
+    
     BulletAppState bulletState;
     
     /**
@@ -144,41 +147,44 @@ public class Player extends Node implements AnalogListener, ActionListener
         Material mat4 = new Material (app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
         mat4.setTexture("DiffuseMap", app.getAssetManager().loadTexture("Textures/polycotton_blue_2_PNG.png"));
         wingsS.setMaterial(mat4);
-                
-        playerMesh.attachChild(backpackS);
-        playerMesh.attachChild(headS);
-        playerMesh.attachChild(helmetS);
-        playerMesh.attachChild(leftElbowS);
-        playerMesh.attachChild(leftFootS);
-        playerMesh.attachChild(leftHandS);
-        playerMesh.attachChild(leftKneeS);
-        playerMesh.attachChild(leftLowerArmS);
-        playerMesh.attachChild(leftLowerLegS);
-        playerMesh.attachChild(leftShoulderS);
-        playerMesh.attachChild(leftUpperArmS);
-        playerMesh.attachChild(leftUpperLegS);
-        playerMesh.attachChild(leftWristS);
-        playerMesh.attachChild(lowerTorsoS);
-        playerMesh.attachChild(neckS);
-        playerMesh.attachChild(rightElbowS);
-        playerMesh.attachChild(rightFootS);
-        playerMesh.attachChild(rightHandS);
-        playerMesh.attachChild(rightKneeS);
-        playerMesh.attachChild(rightLowerArmS);
-        playerMesh.attachChild(rightLowerLegS);
-        playerMesh.attachChild(rightShoulderS);
-        playerMesh.attachChild(rightUpperArmS);
-        playerMesh.attachChild(rightUpperLegS);
-        playerMesh.attachChild(rightWristS);
-        playerMesh.attachChild(upperTorsoS);
-        playerMesh.attachChild(waistS);
-        playerMesh.attachChild(wingsS);
+        
+        Node rotateNode = new Node();
+        
+        rotateNode.attachChild(backpackS);
+        rotateNode.attachChild(headS);
+        rotateNode.attachChild(helmetS);
+        rotateNode.attachChild(leftElbowS);
+        rotateNode.attachChild(leftFootS);
+        rotateNode.attachChild(leftHandS);
+        rotateNode.attachChild(leftKneeS);
+        rotateNode.attachChild(leftLowerArmS);
+        rotateNode.attachChild(leftLowerLegS);
+        rotateNode.attachChild(leftShoulderS);
+        rotateNode.attachChild(leftUpperArmS);
+        rotateNode.attachChild(leftUpperLegS);
+        rotateNode.attachChild(leftWristS);
+        rotateNode.attachChild(lowerTorsoS);
+        rotateNode.attachChild(neckS);
+        rotateNode.attachChild(rightElbowS);
+        rotateNode.attachChild(rightFootS);
+        rotateNode.attachChild(rightHandS);
+        rotateNode.attachChild(rightKneeS);
+        rotateNode.attachChild(rightLowerArmS);
+        rotateNode.attachChild(rightLowerLegS);
+        rotateNode.attachChild(rightShoulderS);
+        rotateNode.attachChild(rightUpperArmS);
+        rotateNode.attachChild(rightUpperLegS);
+        rotateNode.attachChild(rightWristS);
+        rotateNode.attachChild(upperTorsoS);
+        rotateNode.attachChild(waistS);
+        rotateNode.attachChild(wingsS);
         
             
         Quaternion rotation = new Quaternion();
-        rotation.fromAngles(0f, FastMath.PI/2f, -FastMath.PI/2f);
-        playerMesh.setLocalRotation(rotation);
-        this.attachChild(playerMesh);
+        rotation.fromAngles(0f, -FastMath.PI/2f, -FastMath.PI/2f);
+        rotateNode.setLocalRotation(rotation);
+        playerMesh.attachChild(rotateNode);
+        attachChild(playerMesh);
         
         BoxCollisionShape PlayerShape = new BoxCollisionShape(new Vector3f(1.5f, 6f, 1));
         physicsControl = new RigidBodyControl(PlayerShape, 70f);
@@ -195,16 +201,16 @@ public class Player extends Node implements AnalogListener, ActionListener
         soundNode.setLooping(false);
         this.attachChild(soundNode);
         
+        
         pivotNode = new Node("Pivot");
-        pivotNode.setLocalRotation(rotation);
+        
         
         camNode = new CameraNode("Camera Node", cam);
         camNode.setControlDir(CameraControl.ControlDirection.SpatialToCamera);
         camNode.setEnabled(true);
         pivotNode.attachChild(camNode);
         this.attachChild(pivotNode);
-        camNode.setLocalTranslation(new Vector3f(-3, -20, 0));
-        camNode.lookAt(this.getLocalTranslation(), Vector3f.UNIT_Y);
+        camNode.setLocalTranslation(new Vector3f(0, 5, -30));
         setLocalTranslation(new Vector3f(-18000, 23000, -10000));
         
         parachuteMesh = app.getAssetManager().loadModel("Models/Parachute/Parachute3.j3o");
@@ -273,7 +279,7 @@ public class Player extends Node implements AnalogListener, ActionListener
         if(!parachuting)
         {
             Quaternion quat2 = pivotNode.getLocalRotation();
-            getLocalRotation().slerp(quat2, tpf);
+            playerMesh.getLocalRotation().slerp(quat2, tpf);
         }
         else
         {
@@ -362,19 +368,17 @@ public class Player extends Node implements AnalogListener, ActionListener
 
     public void onAnalog(String name, float value, float tpf) {
         
-        if (name.equals("rotateRight")) {
-            pivotNode.rotate(-.01f,0,0);
-        }
-        if (name.equals("rotateLeft")) {
-            pivotNode.rotate(.01f,0,0);
-        }
-        if (name.equals("rotateUp")) {
-            pivotNode.rotate(0,0,-.01f);
-        }
-        if (name.equals("rotateDown")) {
-            pivotNode.rotate(0,0,.01f);
-        }
-        camNode.lookAt(this.getLocalTranslation(),Vector3f.UNIT_Y);
+        if (name.equals("rotateRight")) 
+            xRotation += 20f * value * tpf;
+        if (name.equals("rotateLeft")) 
+            xRotation -= 20f * value * tpf;
+        if (name.equals("rotateUp")) 
+           yRotation += 20f * value * tpf;
+        if (name.equals("rotateDown")) 
+           yRotation -= 20f * value * tpf;
+        
+        Quaternion rotation = new Quaternion().fromAngles(yRotation, xRotation, 0f);
+        pivotNode.setLocalRotation(rotation);
     }
     public void onAction(String name, boolean keyPressed, float tpf) {
         
