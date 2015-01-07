@@ -20,6 +20,7 @@ import de.lessvoid.nifty.screen.Screen;
 import de.lessvoid.nifty.screen.ScreenController;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.util.ArrayList;
 import ourgame.items.*;
 
 public class GuiStateController extends AbstractAppState implements ScreenController
@@ -108,7 +109,9 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
                 //Element scrElement = nifty.getCurrentScreen().findElementByName("container");
                 //scrElement.getElementInteraction().setOnMouseOver(new NiftyMethodInvoker(nifty,"gameHasEnded()",this));
                 gameEndScreenTwo = false;
-                changeScreens("gameScreen");
+                Element el = nifty.getCurrentScreen().findElementByName("Congrats");
+                el.getRenderer(TextRenderer.class).setText("Congrats, you have finished level one!");
+                changeScreens("gameScreen");                
             }
         }
         
@@ -127,6 +130,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         clickSound.playInstance();
         if(selectedLevel.equals("level1"))
         {
+            setupHud();
             level = new Level("Textures/terrain", saveData.getItems());
             level.setNifty(nifty);
             stateManager.attach(level);
@@ -134,7 +138,24 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
             windSound.stop();
         }
     }
-
+    public void setupHud()
+    {
+        ArrayList<Item> itemList;
+        itemList = saveData.getItems();
+        for (Item i:itemList)
+        {
+            if (i.toString().equals("Balloon"))
+            {
+                Element yummy = nifty.getScreen("hud").findElementByName("balloon");
+                yummy.show();
+            }
+            else if (i.toString().equals("Fuzzy Slippers"))
+            {
+                Element yummy = nifty.getScreen("hud").findElementByName("slippers");
+                yummy.show();
+            }
+        }
+    }
     public void changeScreens(String screenName)
     {   
         if(!nifty.getCurrentScreen().getScreenId().equals("start")&&!nifty.getCurrentScreen().getScreenId().equals("gameEnded"))
@@ -156,6 +177,8 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         nifty.getScreen("loadGame").findElementByName("confirm").hide();
         nifty.getScreen("loadGame").findElementByName("middleText").hide();
         nifty.getScreen("shopMenu").findElementByName("buyIt").hide();
+        nifty.getScreen("hud").findElementByName("balloon").hide();
+        nifty.getScreen("hud").findElementByName("slippers").hide();
     }
     
     public void updateShopCurrency()
@@ -172,10 +195,15 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         saveData.setHUD(1);
         TextField file = nifty.getCurrentScreen().findNiftyControl("saveInput",TextField.class);
         fileName = file.getText();
-        saveData.save("saves/"+fileName+".sav");
-        SaveManager.recordSave(fileName);
-        changeScreens("gameScreen");
-        return true;
+        if (!fileName.equals(""))
+        {
+            saveData.save("saves/"+fileName+".sav");
+            SaveManager.recordSave(fileName);
+            changeScreens("gameScreen");
+            return true;
+        }
+        
+        return false;
     }
     
     public boolean loadSave()
@@ -263,12 +291,24 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         //Element scrElement = nifty.getCurrentScreen().findElementByName("container");
         //scrElement.getElementInteraction().setOnMouseOver(new NiftyMethodInvoker(nifty,"doNothing()",this));
         points = level.getPoints();
-        updatePoints(points);
-        currencyEarned = (int) (points/10);
-        saveData.setCurrency(saveData.getCurrency()+currencyEarned);
-        saveData.save("saves/"+fileName+".sav");
-        gameEndScreenOne = true;
-        windSound.play();
+        if (level.getDeath())
+        {
+            //you have failed
+            windSound.play();
+            gameEndScreenTwo = true;
+            time = 0;
+            Element el = nifty.getCurrentScreen().findElementByName("Congrats");
+            el.getRenderer(TextRenderer.class).setText("You have failed and Died!");
+        }
+        else
+        {
+            updatePoints(points);
+            currencyEarned = (int) (points/10);
+            saveData.setCurrency(saveData.getCurrency()+currencyEarned);
+            saveData.save("saves/"+fileName+".sav");
+            gameEndScreenOne = true;
+            windSound.play();
+        }
     }
     public void updatePoints(float val)
     {
@@ -290,7 +330,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         //Item upgrade = new Item();
         if (selectedUpgrade==1)
         {
-            currentCurrency = currentCurrency-15;
+            currentCurrency = currentCurrency-300;
             saveData.setCurrency(currentCurrency);
             updateShopCurrency();
             saveData.addItem(new Balloon());
@@ -309,7 +349,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         }
         else if(selectedUpgrade==5)
         {
-            currentCurrency = currentCurrency-10;
+            currentCurrency = currentCurrency-250;
             saveData.setCurrency(currentCurrency);
             updateShopCurrency();
             saveData.addItem(new FuzzySlippers());
@@ -323,7 +363,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     public void selectUpgrade(String upgrade)
     {
         int upgradeNum = Integer.parseInt(upgrade);
-        if (upgradeNum==1&&(saveData.getCurrency()>=15))
+        if (upgradeNum==1&&(saveData.getCurrency()>=300))
         {
             nifty.getCurrentScreen().findElementByName("buyIt").show();
             selectedUpgrade = 1;
@@ -343,7 +383,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
             nifty.getCurrentScreen().findElementByName("buyIt").hide();
             selectedUpgrade = 0;
         }
-        else if (upgradeNum==5&&saveData.getCurrency()>=10)
+        else if (upgradeNum==5&&saveData.getCurrency()>=250)
         {
             nifty.getCurrentScreen().findElementByName("buyIt").show();
             selectedUpgrade = 5;

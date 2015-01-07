@@ -43,6 +43,7 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
     private AppStateManager stateManager;
     private String assetFolder;
     
+    private boolean death = false;
     private AmbientLight lamp;
     private DirectionalLight sun;
     
@@ -154,11 +155,19 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
         points = player.getPoints();
         Element niftyElement = nifty.getCurrentScreen().findElementByName("points");
         niftyElement.getRenderer(TextRenderer.class).setText("Score: "+ (int) points);
-        if (player.getHitGround() == true)
+        if (player.getHitGround() == true||player.getDeath()==true)
         {
+            if (player.getDeath()==true)
+            {
+                death = true;
+            }
             gameEnded();
         }
         //System.out.println("Points: " +points);
+    }
+    public boolean getDeath()
+    {
+        return death;
     }
     public float getPoints()
     {
@@ -220,6 +229,7 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
     public void onAction(String name,boolean keyPressed, float tpf) {
         
         if (name.equals("leave")&& nifty!=null) {
+            death = true;
             gameEnded();
         }
 

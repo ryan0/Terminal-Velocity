@@ -48,7 +48,7 @@ public class Player extends Node implements AnalogListener, ActionListener
     private Camera cam;
     private Node pivotNode;
     private CameraNode camNode;
-    
+    private Node rotateNode = new Node();
 
     private boolean parachuteUsed = false;
     private boolean parachuting = false;
@@ -148,7 +148,6 @@ public class Player extends Node implements AnalogListener, ActionListener
         mat4.setTexture("DiffuseMap", app.getAssetManager().loadTexture("Textures/polycotton_blue_2_PNG.png"));
         wingsS.setMaterial(mat4);
         
-        Node rotateNode = new Node();
         
         rotateNode.attachChild(backpackS);
         rotateNode.attachChild(headS);
@@ -276,15 +275,16 @@ public class Player extends Node implements AnalogListener, ActionListener
         //System.out.println("Z:"+linearVelocity.getZ());
         
         //update the playerMesh orientation
-        if(!parachuting)
+         if(!parachuting)
         {
-            Quaternion quat2 = pivotNode.getLocalRotation();
-            playerMesh.getLocalRotation().slerp(quat2, tpf);
+            Quaternion quat = pivotNode.getLocalRotation();
+            playerMesh.getLocalRotation().slerp(quat, tpf);
         }
         else
         {
-            this.setLocalRotation(Quaternion.DIRECTION_Z);
-            playerMesh.getLocalRotation().slerp(new Quaternion(0,1,0,1), 5*tpf); //*** (0, 1, 0,1)
+            rotateNode.setLocalRotation(new Quaternion().fromAngles(0f, FastMath.PI/2f, 0f));
+            Quaternion quat = pivotNode.getLocalRotation();
+            playerMesh.getLocalRotation().slerp(quat, tpf);
         }
         
         if(parachuteUsed && !parachuting)
@@ -311,9 +311,9 @@ public class Player extends Node implements AnalogListener, ActionListener
         {
             
             if((event.getNodeA().getName().equals("le terrain") && event.getNodeB().getName().equals("Player"))|| (event.getNodeA().getName().equals("Player")&&event.getNodeB().getName().equals("le terrain"))){
-                int maxHitForce = 700;
+                int maxHitForce = 2500;
                 if(hasFuzzySlippers)
-                    maxHitForce*= 1.2;
+                    maxHitForce*= 1.5;
                 if(Math.abs(event.getAppliedImpulse())+
                         Math.abs(event.getAppliedImpulseLateral1())+
                         Math.abs(event.getAppliedImpulseLateral2())>maxHitForce)
@@ -345,6 +345,10 @@ public class Player extends Node implements AnalogListener, ActionListener
 //            System.out.println(event.getNodeB().getName());
 //            System.out.println("----------------------------------");
         }
+    }
+    public boolean getDeath()
+    {
+        return died;
     }
     public void cleanup()
     {
