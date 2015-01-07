@@ -61,6 +61,7 @@ public class Player extends Node implements AnalogListener, ActionListener
     private boolean hasBalloon = false;
     private boolean hasFuzzySlippers = false;
     private boolean hasMagnet = false;
+    private boolean hasBOB = false;
     
     private float xRotation = 0;
     private float yRotation = 0;
@@ -219,11 +220,12 @@ public class Player extends Node implements AnalogListener, ActionListener
         registerInput();
     }
     
-    public void sendItems(boolean balloon, boolean fuzzySlippers, boolean magnet)
+    public void sendItems(boolean balloon, boolean fuzzySlippers, boolean magnet,boolean BOB)
     {
         hasBalloon = balloon;
         hasFuzzySlippers = fuzzySlippers;
         hasMagnet = magnet;
+        hasBOB = BOB;
     }
     
     public float getPoints()
@@ -247,8 +249,9 @@ public class Player extends Node implements AnalogListener, ActionListener
                 xPlusZ.x * physicsControl.getLinearVelocity().y * -2,
                 physicsControl.getLinearVelocity().y,
                 xPlusZ.z * physicsControl.getLinearVelocity().y * -2);
-        
-        if(hasBalloon)
+        if (hasBOB)
+            linearVelocity.setY(linearVelocity.getY()+10*tpf);
+        else if(hasBalloon)
             linearVelocity.setY(linearVelocity.getY()+5*tpf);
         
         
@@ -327,7 +330,7 @@ public class Player extends Node implements AnalogListener, ActionListener
             }
             
             //if there's a coin, remove it
-            if((event.getNodeA().getName().equals("goldCoin-geom-0")&&event.getNodeB().getName().equals("Player")) || (event.getNodeA().getName().equals("Player")&&event.getNodeB().getName().equals("goldCoin-geom-0")))
+            else if((event.getNodeA().getName().equals("goldCoin-geom-0")&&event.getNodeB().getName().equals("Player")) || (event.getNodeA().getName().equals("Player")&&event.getNodeB().getName().equals("goldCoin-geom-0")))
             {
                 if(event.getNodeA().getName().equals("goldCoin-geom-0"))
                 {
@@ -339,6 +342,15 @@ public class Player extends Node implements AnalogListener, ActionListener
                     event.getNodeB().removeFromParent();
                     points = points+100;
                 }
+            }
+            else if (event.getNodeA().getName().equals("goldCoin-geom-0"))
+            {
+                //in case coin collides with terrain or with another coin
+                event.getNodeA().removeFromParent();
+            }
+            else if (event.getNodeB().getName().equals("goldCoin-geom-0"))
+            {
+                event.getNodeB().removeFromParent();
             }
             //For debugging purposes
 //            System.out.println("----------------------------------");

@@ -54,9 +54,13 @@ public class Coin extends Node{
         bulletAppState.getPhysicsSpace().add(mesh);
         control.setGravity(new Vector3f());
     }
+    public Spatial getMesh()
+    {
+        return mesh;
+    }
     public void setForce(float x, float y, float z)
     {
-        control.setLinearVelocity(new Vector3f(x,y,z));
+        control.setLinearVelocity(new Vector3f(x*5,y*5,z*5));
     }
     public void setVelZero()
     {

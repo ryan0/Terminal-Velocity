@@ -23,6 +23,7 @@ import com.jme3.post.filters.BloomFilter;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.CameraNode;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
 import com.jme3.shadow.EdgeFilteringMode;
 import de.lessvoid.nifty.Nifty;
@@ -58,6 +59,7 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
     private boolean hasBalloon = false;
     private boolean hasFuzzySlippers= false;
     private boolean hasMagnet = false;
+    private boolean hasBOB = false;
     private Node coinNode;
     private Coin [] coinList = new Coin[101];
     public Level(String assetFolder, ArrayList<Item> items)
@@ -71,6 +73,10 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
                 hasBalloon = true;
             else if (item.getID().equals("Magnet"))
                 hasMagnet = true;
+            else if (item.getID().equals("Bunch of Balloons"))
+            {
+                hasBOB = true;
+            }
         }
     }
     
@@ -94,7 +100,7 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
         
         
         player = new Player(bulletAppState, app);
-        player.sendItems(hasBalloon, hasFuzzySlippers,hasMagnet);
+        player.sendItems(hasBalloon, hasFuzzySlippers,hasMagnet,hasBOB);
         app.getRootNode().attachChild(player);
         
         
@@ -157,21 +163,24 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
     @Override
     public void update(float tpf)
     {
-        for (Coin c: coinList)
+        if (hasMagnet)
         {
-            double hyp = Math.pow(Math.pow((c.getWorldTranslation().x-player.getWorldTranslation().x),2)//radius from coin to player
-                        +Math.pow((c.getWorldTranslation().y-player.getWorldTranslation().y),2)
-                        +Math.pow((c.getWorldTranslation().z-player.getWorldTranslation().z),2),0.5);
-            if (hyp<=20000)
+            for (Coin c: coinList)
             {
-                System.out.println("sup");
-                c.setForce(player.getWorldTranslation().x-c.getWorldTranslation().x,
-                        player.getWorldTranslation().y-c.getWorldTranslation().y,
-                        player.getWorldTranslation().z-c.getWorldTranslation().z);
-            }
-            else
-            {
-                c.setVelZero();
+                Spatial s = c.getMesh();
+                double hyp = Math.pow(Math.pow((c.getMesh().getWorldTranslation().x-player.getWorldTranslation().x),2)//radius from coin to player
+                            +Math.pow((c.getMesh().getWorldTranslation().y-player.getWorldTranslation().y),2)
+                            +Math.pow((c.getMesh().getWorldTranslation().z-player.getWorldTranslation().z),2),0.5);
+                if (hyp<=1000)
+                {
+                    c.setForce(player.getWorldTranslation().x-c.getMesh().getWorldTranslation().x,
+                            player.getWorldTranslation().y-c.getMesh().getWorldTranslation().y,
+                            player.getWorldTranslation().z-c.getMesh().getWorldTranslation().z);
+                }
+                else
+                {
+                    c.setVelZero();
+                }
             }
         }
         player.update(tpf);
