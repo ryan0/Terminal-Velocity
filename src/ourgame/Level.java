@@ -57,7 +57,9 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
     
     private boolean hasBalloon = false;
     private boolean hasFuzzySlippers= false;
-   
+    private boolean hasMagnet = false;
+    private Node coinNode;
+    private Coin [] coinList = new Coin[101];
     public Level(String assetFolder, ArrayList<Item> items)
     {
         this.assetFolder = assetFolder;
@@ -67,6 +69,8 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
                 hasFuzzySlippers = true;
             else if(item.getID().equals("Balloon"))
                 hasBalloon = true;
+            else if (item.getID().equals("Magnet"))
+                hasMagnet = true;
         }
     }
     
@@ -90,16 +94,17 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
         
         
         player = new Player(bulletAppState, app);
-        player.sendItems(hasBalloon, hasFuzzySlippers);
+        player.sendItems(hasBalloon, hasFuzzySlippers,hasMagnet);
         app.getRootNode().attachChild(player);
         
         
-        Node coinNode = new Node();
+        coinNode = new Node();
         AmbientLight coinLamp = new AmbientLight();
         coinLamp.setColor(ColorRGBA.White.mult(2));
         coinNode.addLight(coinLamp);
         
         //coin stuff
+        
         for(int count = 0; count <= 100; count++)
         {
             Coin coin = new Coin(bulletAppState, app,
@@ -107,6 +112,7 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
                         (int)(16000+FastMath.nextRandomFloat()*6000),
                         (int)(-13000+FastMath.nextRandomFloat()*6000)),
                     new Vector3f(30,30,30));
+            coinList[count]=coin;
             coinNode.attachChild(coin);
         }
         app.getRootNode().attachChild(coinNode);
@@ -151,6 +157,23 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
     @Override
     public void update(float tpf)
     {
+        for (Coin c: coinList)
+        {
+            double hyp = Math.pow(Math.pow((c.getWorldTranslation().x-player.getWorldTranslation().x),2)//radius from coin to player
+                        +Math.pow((c.getWorldTranslation().y-player.getWorldTranslation().y),2)
+                        +Math.pow((c.getWorldTranslation().z-player.getWorldTranslation().z),2),0.5);
+            if (hyp<=20000)
+            {
+                System.out.println("sup");
+                c.setForce(player.getWorldTranslation().x-c.getWorldTranslation().x,
+                        player.getWorldTranslation().y-c.getWorldTranslation().y,
+                        player.getWorldTranslation().z-c.getWorldTranslation().z);
+            }
+            else
+            {
+                c.setVelZero();
+            }
+        }
         player.update(tpf);
         points = player.getPoints();
         Element niftyElement = nifty.getCurrentScreen().findElementByName("points");

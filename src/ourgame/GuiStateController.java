@@ -140,8 +140,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     }
     public void setupHud()
     {
-        ArrayList<Item> itemList;
-        itemList = saveData.getItems();
+        ArrayList<Item> itemList = saveData.getItems();
         for (Item i:itemList)
         {
             if (i.toString().equals("Balloon"))
@@ -153,6 +152,11 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
             {
                 Element yummy = nifty.getScreen("hud").findElementByName("slippers");
                 yummy.show();
+            }
+            else if (i.toString().equals("Magnet"));
+            {
+                Element iWonderIfMrKramerOrAnyoneInMyGroupReadsThis = nifty.getScreen("hud").findElementByName("magnet");
+                iWonderIfMrKramerOrAnyoneInMyGroupReadsThis.show();
             }
         }
     }
@@ -332,12 +336,13 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         {
             currentCurrency = currentCurrency-300;
             saveData.setCurrency(currentCurrency);
-            updateShopCurrency();
             saveData.addItem(new Balloon());
         }
         else if(selectedUpgrade==2)
         {
-            
+            currentCurrency = currentCurrency-450;
+            saveData.setCurrency(currentCurrency);
+            saveData.addItem(new Magnet());
         }
         else if(selectedUpgrade==3)
         {
@@ -351,13 +356,13 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         {
             currentCurrency = currentCurrency-250;
             saveData.setCurrency(currentCurrency);
-            updateShopCurrency();
             saveData.addItem(new FuzzySlippers());
         }
         else if(selectedUpgrade==6)
         {
             
         }
+        updateShopCurrency();
         saveData.save("saves/"+fileName+".sav");
     }
     public void selectUpgrade(String upgrade)
@@ -368,10 +373,10 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
             nifty.getCurrentScreen().findElementByName("buyIt").show();
             selectedUpgrade = 1;
         }
-        else if (upgradeNum==2)
+        else if (upgradeNum==2&&(saveData.getCurrency()>=450))
         {
-            nifty.getCurrentScreen().findElementByName("buyIt").hide();
-            selectedUpgrade = 0;
+            nifty.getCurrentScreen().findElementByName("buyIt").show();
+            selectedUpgrade = 2;
         }
         else if (upgradeNum==3)
         {

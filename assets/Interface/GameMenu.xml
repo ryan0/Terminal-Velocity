@@ -201,12 +201,12 @@
                     </panel>
                     <panel childLayout = "center" valign = "center" align = "center" height = "33%" width = "100%">
                         <panel childLayout = "horizontal" height = "60%" width = "85%">
-                            <control id = "b2"visibleToMouse = "true" name = "button" height = "100%" width = "82.35%" label = "Balloon" align = "center" valign = "center">
+                            <control id = "b2"visibleToMouse = "true" name = "button" height = "100%" width = "82.35%" label = "Magnet&#10;Cost:  450" align = "center" valign = "center">
                                 <interact onClick = "selectUpgrade(2)"/>
                             </control>
                             <image filename = "Interface/Images/BalloonIcon.png" height = "100%" width = "17.65%" valign = "center"/>
                             <effect>
-                                <onHover name="hint" hintText="Makes you fall slower" hintDelay="200" />
+                                <onHover name="hint" hintText="Attracts nearby coins" hintDelay="200" />
                             </effect>                        
                         </panel>
                     </panel>

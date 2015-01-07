@@ -22,7 +22,7 @@ import com.jme3.util.TangentBinormalGenerator;
  */
 public class Coin extends Node{
     private Spatial mesh;
-    
+    private RigidBodyControl control;
     /**
      * Creates a node containing a coin <code>mesh</code> and adds
      * it to a specific <code>Application</code> and <code>bulletAppState</code>.
@@ -48,11 +48,18 @@ public class Coin extends Node{
         mesh.rotate(FastMath.HALF_PI,FastMath.TWO_PI*FastMath.nextRandomFloat(),0);
         
         CollisionShape coinShape = new BoxCollisionShape(new Vector3f(30, 30, 30));
-        RigidBodyControl control = new RigidBodyControl(coinShape, .000001f);
+        control = new RigidBodyControl(coinShape, .000001f);
         mesh.addControl(control);
         this.attachChild(mesh);
         bulletAppState.getPhysicsSpace().add(mesh);
         control.setGravity(new Vector3f());
     }
-    
+    public void setForce(float x, float y, float z)
+    {
+        control.setLinearVelocity(new Vector3f(x,y,z));
+    }
+    public void setVelZero()
+    {
+        control.setLinearVelocity(new Vector3f(0,0,0));
+    }
 }

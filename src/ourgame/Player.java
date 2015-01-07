@@ -60,6 +60,7 @@ public class Player extends Node implements AnalogListener, ActionListener
     
     private boolean hasBalloon = false;
     private boolean hasFuzzySlippers = false;
+    private boolean hasMagnet = false;
     
     private float xRotation = 0;
     private float yRotation = 0;
@@ -218,10 +219,11 @@ public class Player extends Node implements AnalogListener, ActionListener
         registerInput();
     }
     
-    public void sendItems(boolean balloon, boolean fuzzySlippers)
+    public void sendItems(boolean balloon, boolean fuzzySlippers, boolean magnet)
     {
         hasBalloon = balloon;
         hasFuzzySlippers = fuzzySlippers;
+        hasMagnet = magnet;
     }
     
     public float getPoints()
