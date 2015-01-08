@@ -128,40 +128,67 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     public void startLevel()
     {
         clickSound.playInstance();
+        System.out.println("In startLevel()");
         if(selectedLevel.equals("level1"))
         {
+            System.out.println("Selected level = level one");
             setupHud();
+            System.out.println("Setup HUD finished");
             level = new Level("Textures/terrain", saveData.getItems());
+            System.out.println("Level instaniated");
             level.setNifty(nifty);
             stateManager.attach(level);
+            System.out.println("Level attached");
             nifty.gotoScreen("hud");
+            System.out.println("Changed screen to HUD");
             windSound.stop();
+            System.out.println("Stopped wind sound");
         }
     }
     public void setupHud()
     {
         ArrayList<Item> itemList = saveData.getItems();
+        System.out.println("Setting up HUD");
         for (Item i:itemList)
         {
-            if (i.toString().equals("Balloon"))
+            System.out.println("Iterating through itemList");
+            if(i!=null)
             {
-                Element yummy = nifty.getScreen("hud").findElementByName("balloon");
-                yummy.show();
+                if(i.toString()==null)
+                {
+                    System.out.println("THE ITEM'S TOSTRING IS NULL!");
+                }
+                else
+                    System.out.println(i.toString());
+                if (i.toString().equals("Balloon"))
+                {
+                    System.out.println("That item is a balloon");
+                    Element hudBalloonIcon = nifty.getScreen("hud").findElementByName("balloon");
+                    hudBalloonIcon.show();
+                }
+                else if (i.toString().equals("Fuzzy Slippers"))
+                {
+                    System.out.println("That item is slippers");
+                    Element hudSlippersIcon = nifty.getScreen("hud").findElementByName("slippers");
+                    hudSlippersIcon.show();
+                }
+                else if (i.toString().equals("Magnet"))
+                {
+                    System.out.println("That item is a magnet");
+                    Element hudMagnetIcon = nifty.getScreen("hud").findElementByName("magnet");
+                    hudMagnetIcon.show();
+                }
+                else if (i.toString().equals("Bunch of Balloons"))
+                {
+                    System.out.println("That item is a BOB");
+                    Element hudBOBIcon = nifty.getScreen("hud").findElementByName("bunch");
+                    hudBOBIcon.show();
+                }
+                else System.out.println("That item is a ??????????");
             }
-            else if (i.toString().equals("Fuzzy Slippers"))
+            else
             {
-                Element yummy = nifty.getScreen("hud").findElementByName("slippers");
-                yummy.show();
-            }
-            else if (i.toString().equals("Magnet"))
-            {
-                Element iWonderIfMrKramerOrAnyoneInMyGroupReadsThis = nifty.getScreen("hud").findElementByName("magnet");
-                iWonderIfMrKramerOrAnyoneInMyGroupReadsThis.show();
-            }
-            else if (i.toString().equals("Bunch of Balloons"))
-            {
-                Element eek = nifty.getScreen("hud").findElementByName("bunch");
-                eek.show();
+                System.out.println("THE ITEM IS NULL!");
             }
         }
     }
@@ -188,6 +215,8 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         nifty.getScreen("shopMenu").findElementByName("buyIt").hide();
         nifty.getScreen("hud").findElementByName("balloon").hide();
         nifty.getScreen("hud").findElementByName("slippers").hide();
+        nifty.getScreen("hud").findElementByName("bunch").hide();
+        nifty.getScreen("hud").findElementByName("magnet").hide();
     }
     
     public void updateShopCurrency()

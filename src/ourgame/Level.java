@@ -167,7 +167,6 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
         {
             for (Coin c: coinList)
             {
-                Spatial s = c.getMesh();
                 double hyp = Math.pow(Math.pow((c.getMesh().getWorldTranslation().x-player.getWorldTranslation().x),2)//radius from coin to player
                             +Math.pow((c.getMesh().getWorldTranslation().y-player.getWorldTranslation().y),2)
                             +Math.pow((c.getMesh().getWorldTranslation().z-player.getWorldTranslation().z),2),0.5);

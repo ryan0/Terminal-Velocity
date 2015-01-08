@@ -250,9 +250,9 @@ public class Player extends Node implements AnalogListener, ActionListener
                 physicsControl.getLinearVelocity().y,
                 xPlusZ.z * physicsControl.getLinearVelocity().y * -2);
         if (hasBOB)
-            linearVelocity.setY(linearVelocity.getY()+10*tpf);
+            linearVelocity.setY(linearVelocity.getY()+6*tpf);
         else if(hasBalloon)
-            linearVelocity.setY(linearVelocity.getY()+5*tpf);
+            linearVelocity.setY(linearVelocity.getY()+3*tpf);
         
         
         if(parachuting)
@@ -316,7 +316,7 @@ public class Player extends Node implements AnalogListener, ActionListener
         {
             
             if((event.getNodeA().getName().equals("le terrain") && event.getNodeB().getName().equals("Player"))|| (event.getNodeA().getName().equals("Player")&&event.getNodeB().getName().equals("le terrain"))){
-                int maxHitForce = 2500;
+                int maxHitForce = 2700;
                 if(hasFuzzySlippers)
                     maxHitForce*= 1.5;
                 if(Math.abs(event.getAppliedImpulse())+
