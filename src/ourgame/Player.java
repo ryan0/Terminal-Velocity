@@ -41,7 +41,7 @@ import com.jme3.util.TangentBinormalGenerator;
  */
 public class Player extends Node implements AnalogListener, ActionListener
 {
-    private Node playerMesh = new Node(); //
+    private Node playerMesh = new Node(); 
     private RigidBodyControl physicsControl;
     private AudioNode soundNode;
     private SimpleApplication app;
@@ -75,15 +75,17 @@ public class Player extends Node implements AnalogListener, ActionListener
      * @param bulletAppState
      * @param appRef
      */
-    public Player(BulletAppState bulletAppState, Application appRef)
+    public Player(BulletAppState bulletAppState, Application appRef) 
+     /*base jumping character is imported in separate pieces (allows for each to have separate textures) into different nodes attached together
+      *the rotation and physics for the character are applied with the camera following the character
+      *parachute model is loaded
+      */
     {
         bulletState = bulletAppState;
         setName("Player");
         
         app = (SimpleApplication)appRef;
         cam = app.getCamera();
-        //playerMesh = app.getAssetManager().loadModel("Models/Dude/WIP Dude Frame - unjoined.obj");
-        //Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
         
         Spatial backpackS = app.getAssetManager().loadModel("Models/Dude/Backpack.obj");
         Material mat1 = new Material (app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
@@ -221,6 +223,7 @@ public class Player extends Node implements AnalogListener, ActionListener
     }
     
     public void sendItems(boolean balloon, boolean fuzzySlippers, boolean magnet,boolean BOB)
+    //allows access to items that can be purchased in the shop
     {
         hasBalloon = balloon;
         hasFuzzySlippers = fuzzySlippers;
@@ -229,16 +232,20 @@ public class Player extends Node implements AnalogListener, ActionListener
     }
     
     public float getPoints()
+    //allows access to the number of points the player has earned
     {
         return points;
     }
     
     public void update(float tpf)
+    /* Allows the camera to follow the character, no matter the rotation inputed by the user
+     * Updates the velocity and other physics if an item is being used or if the character is parachuting
+     * Allows deployment of the parachute from the backpack of the character     * 
+     */
     {
          if(!hitGround&&!parachuteUsed)
             points+=tpf*50;
-        //update the velocity crap
-        Vector3f xPlusZ = new Vector3f(
+            Vector3f xPlusZ = new Vector3f(
                 cam.getDirection().x, 
                 0, 
                 cam.getDirection().z);
@@ -312,7 +319,10 @@ public class Player extends Node implements AnalogListener, ActionListener
     
     public class PlayerPhysicsListener implements PhysicsCollisionListener 
     {
-        public void collision(PhysicsCollisionEvent event) 
+        public void collision(PhysicsCollisionEvent event)
+        /* Tracks the character's force of collision with the ground, considering items when contact is made to determine if the character died or not
+         * Manages the coins on the terrain (so that one does not collide with another coin or the terrain and so that one receives points for collecting a coin)
+         */
         {
             
             if((event.getNodeA().getName().equals("le terrain") && event.getNodeB().getName().equals("Player"))|| (event.getNodeA().getName().equals("Player")&&event.getNodeB().getName().equals("le terrain"))){
@@ -374,7 +384,9 @@ public class Player extends Node implements AnalogListener, ActionListener
     {
         return hitGround;
     }
-    private void registerInput() {
+    private void registerInput() 
+    //initializes all the possible user inputs
+    {
         
         app.getInputManager().addMapping("rotateRight", new MouseAxisTrigger(MouseInput.AXIS_X, true));
         app.getInputManager().addMapping("rotateLeft", new MouseAxisTrigger(MouseInput.AXIS_X, false));
@@ -384,7 +396,9 @@ public class Player extends Node implements AnalogListener, ActionListener
         app.getInputManager().addListener(this, "rotateRight", "rotateLeft", "rotateUp", "rotateDown", "use parachute");
     }
 
-    public void onAnalog(String name, float value, float tpf) {
+    public void onAnalog(String name, float value, float tpf) 
+    //defines how the figure can rotate as a result of different user inputs
+    {
         
         if (name.equals("rotateRight")) 
             xRotation += 20f * value * tpf;
@@ -398,7 +412,9 @@ public class Player extends Node implements AnalogListener, ActionListener
         Quaternion rotation = new Quaternion().fromAngles(yRotation, xRotation, 0f);
         pivotNode.setLocalRotation(rotation);
     }
-    public void onAction(String name, boolean keyPressed, float tpf) {
+    public void onAction(String name, boolean keyPressed, float tpf) 
+    //ensures that parachute is only used once
+    {
         
         if (name.equals("use parachute") && !parachuting) {
             parachuteUsed = true;
