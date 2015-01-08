@@ -133,6 +133,14 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
             nifty.gotoScreen("hud");
             windSound.stop();
         }
+        if(selectedLevel.equals("level2"))
+        {
+            level = new Level("Textures/island", saveData.getItems());
+            level.setNifty(nifty);
+            stateManager.attach(level);
+            nifty.gotoScreen("hud");
+            windSound.stop();
+        }
     }
 
     public void changeScreens(String screenName)

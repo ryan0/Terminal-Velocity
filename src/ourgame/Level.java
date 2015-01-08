@@ -17,14 +17,21 @@ import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
+import com.jme3.math.Plane;
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.post.filters.BloomFilter;
 import com.jme3.renderer.queue.RenderQueue;
+import com.jme3.renderer.queue.RenderQueue.ShadowMode;
 import com.jme3.scene.CameraNode;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
+import com.jme3.scene.shape.Quad;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
 import com.jme3.shadow.EdgeFilteringMode;
+import com.jme3.water.SimpleWaterProcessor;
 import de.lessvoid.nifty.Nifty;
 import de.lessvoid.nifty.elements.Element;
 import de.lessvoid.nifty.elements.render.TextRenderer;
@@ -45,6 +52,8 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
     
     private AmbientLight lamp;
     private DirectionalLight sun;
+    
+    Terrain terrain;
     
     private BulletAppState bulletAppState;
     Player player;
@@ -75,7 +84,7 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
         super.initialize(stateManager1, app);
         app = (SimpleApplication)dahApp;
         stateManager = stateManager1;
-        initLight();
+        
         
         app.getInputManager().setCursorVisible(false);
         
@@ -84,9 +93,9 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
         bulletAppState.getPhysicsSpace().setAccuracy(1f/256f);
         
         
-        Terrain terrain = new Terrain(bulletAppState, app, assetFolder);
+        terrain = new Terrain(bulletAppState, app, assetFolder);
         app.getRootNode().attachChild(terrain);
-        
+        initLight();
         
         player = new Player(bulletAppState, app);
         player.sendItems(hasBalloon, hasFuzzySlippers);
@@ -184,7 +193,7 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
         app.getRootNode().addLight(lamp);
         sun = new DirectionalLight();
         sun.setColor(ColorRGBA.White.mult(2f));
-        sun.setDirection(new Vector3f(0f,-1f, -2f));
+        sun.setDirection(new Vector3f(0f,-1f, -1f));
         app.getRootNode().addLight(sun);
         
         
@@ -205,6 +214,8 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
         fpp.addFilter(bloom);
         
         app.getViewPort().addProcessor(fpp);
+        
+     
     }
     public void bind(Nifty nifty, Screen screen) 
     {
