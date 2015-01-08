@@ -63,6 +63,12 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
     private Node coinNode;
     private Coin [] coinList = new Coin[101];
     
+    /**
+     * This method receives a String and an ArrayList which gives it access to the upgrade items
+     * 
+     * @param assetFolder - a String which allows access to the assets, specifically the upgrade items
+     * @param items - an ArrayList of all the items available to buy in the shop
+     */
     public Level(String assetFolder, ArrayList<Item> items)
     //recognizes whether or not a user has bought one of the items
     {

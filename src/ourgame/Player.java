@@ -423,7 +423,7 @@ public class Player extends Node implements AnalogListener, ActionListener
         pivotNode.setLocalRotation(rotation);
     }
     public void onAction(String name, boolean keyPressed, float tpf) 
-    //ensures that parachute is only used once
+    //ensures that the parachute is only used once
     {
         
         if (name.equals("use parachute") && !parachuting) {
