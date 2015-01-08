@@ -27,10 +27,19 @@ public class Coin extends Node{
      * Creates a node containing a coin <code>mesh</code> and adds
      * it to a specific <code>Application</code> and <code>bulletAppState</code>.
      * 
-     * @param bulletAppState the desired parent bulletAppState
-     * @param app the desired parent Application
+     */
+    
+    /**
+     * 
+     * @param bulletAppState - allows for physics simulations as the desired parent bulletAppState
+     * @param app - an instance of the application (the game) which is the desired parent Application
+     * @param position - a float vector which allows the translation of the individual coins
+     * @param size - a float vector which allows the coin to be sized
      */
     public Coin(BulletAppState bulletAppState, Application app, Vector3f position,Vector3f size)
+    /* Imports coin model, applies texture, lighting, and color, randomly rotates the coins
+     * Gives the coins a collision shape so contact between the character and the coin can be detected
+     */
     {
         setName("Coin");
         
