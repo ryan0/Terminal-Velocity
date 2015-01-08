@@ -11,6 +11,7 @@ import java.awt.Toolkit;
 public class Main extends SimpleApplication {
     
     public static void main(String[] args)
+    //Creates an instance of the application and starts to run it
     {
         Main app = new Main();
         AppSettings newSettings = new AppSettings(true);
@@ -31,6 +32,7 @@ public class Main extends SimpleApplication {
  
     @Override
     public void simpleInitApp() 
+    //Accesses assets, inputs, audio, the xml files for the menus, and the GUI
     {
         flyCam.setEnabled(false);
         //flyCam.setDragToRotate(true);
