@@ -19,8 +19,12 @@ import java.util.ArrayList;
 public class SaveManager 
 {
     
-    //Add a new line to the list for a new save
+    /**
+     * 
+     * @param fileName - the String variable the user inputs to access a previous game
+     */
     public static void recordSave(String fileName)
+    //Writes a new file name to savefiles.list in a new ine
     {
         try 
         {
@@ -45,8 +49,9 @@ public class SaveManager
         }
     }
     
-    //Load the save files' names from the list into the ArrayList
+    
     public static ArrayList<String> getSaves()
+    //Load the save files' names from the list into the ArrayList
     {
         ArrayList<String> saveFiles = new ArrayList<String>();
         try 
