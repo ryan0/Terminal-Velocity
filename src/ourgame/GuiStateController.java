@@ -54,8 +54,16 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     private Dimension maxScreenSize = Toolkit.getDefaultToolkit().getScreenSize();
     
     
+    /**
+     * 
+     * @param stateManager1 - allows the continuous execution of the main code 
+     * @param dahApp - instance of the application which will be executed
+     */
     @Override
-    public void initialize(AppStateManager stateManager1, Application dahApp)
+        public void initialize(AppStateManager stateManager1, Application dahApp)
+        /* Initializes the application
+         * "Turns off" the two sounds that would occur during the menu display of the game
+         */    
     {
         super.initialize(stateManager1, app);
         app = (SimpleApplication)dahApp;
@@ -74,9 +82,20 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         app.getRootNode().attachChild(windSound);
         windSound.play();
     }
+    
+    /**
+     * The method receives one float value and assigns it to a private global variable.
+     * 
+     * @param tpf - a float standing for the time per frame
+     */
     @Override
     //gives time
     public void update(float tpf)
+    /* Displays one of two end screens (depending on a safe or unsafe landing) with the earned currency visible
+     * The first indicates that the base jumper did not land safely, and their currency is updated according to the most recent jump.
+     * The second indicates that the player has passed the level, returning the points to 0 and increasing the shop currency by however much was earned in the last base jump
+     * 
+     */
     {
         time += tpf;
         if (nifty.getCurrentScreen().getScreenId().equals("gameEnded")&&!gameEndScreenOne&&!gameEndScreenTwo)
@@ -126,6 +145,10 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     }
     
     public void startLevel()
+    /* Loads the selected level (terrain, HUD skin, ends wind audio) along with any items the user previously bought
+     * 
+     * 
+     */
     {
         clickSound.playInstance();
         System.out.println("In startLevel()");
@@ -146,6 +169,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         }
     }
     public void setupHud()
+    //initializes all the possible items in the shop and displays their respective icons      
     {
         ArrayList<Item> itemList = saveData.getItems();
         System.out.println("Setting up HUD");
@@ -192,7 +216,12 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
             }
         }
     }
+    /**
+     * 
+     * @param screenName - a string which represents the various strings within the menus before starting gameplay 
+     */
     public void changeScreens(String screenName)
+    //allows navigation through the different screens before starting a level
     {   
         if(!nifty.getCurrentScreen().getScreenId().equals("start")&&!nifty.getCurrentScreen().getScreenId().equals("gameEnded"))
             clickSound.playInstance();
@@ -220,6 +249,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     }
     
     public void updateShopCurrency()
+    // Updates the currency amount within the shop from the saved information        
     {
         Element niftElem = nifty.getScreen("shopMenu").findElementByName("shopCurrency");
         String curr = "Currency: "+saveData.getCurrency();
@@ -227,6 +257,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     }
     
     public boolean makeNewSave()
+    //the user can save his game (with all initial settings such as no currency) under any inputed String (no blank saves)
     {
         saveData = new PlayerData();
         saveData.setCurrency(0);
@@ -245,6 +276,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
     }
     
     public boolean loadSave()
+    //Allows the user to continue a previous game, retaining items and earned currency
     {
         saveData = new PlayerData();
         TextField file = nifty.getCurrentScreen().findNiftyControl("loadInput",TextField.class);
@@ -258,6 +290,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         return success;
     }
     public void unhideElem()
+    //Allows access to menu features such as text fields (for user input)
     {
         nifty.getCurrentScreen().findElementByName("tField").show();
         nifty.getCurrentScreen().findElementByName("confirm").show();
@@ -287,8 +320,13 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         Element actualHUD = nifty.getScreen("hud").findElementByName("theHUD");
         actualHUD.getRenderer(ImageRenderer.class).setImage(img);
     }
-    
+    /**
+     * This method receives a String variable and splits it to set the resolution of the screen
+     * 
+     * @param resValues - a string variable that represents the resolution of the screen (for example, 800x600) that will be split at the x
+     */
     public void changeRes(String resValues)
+    //Allows the user to change the resolution of the window
     {
         AppSettings newSettings = new AppSettings(true);
         //Retrieve the individual values from the string "widthxheight"
@@ -325,6 +363,9 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         
     }
     public void gameHasEnded()
+    /* Accessed either when the character crashes and dies or when they successfully complete a level
+     * If the level is completed successfully, the currency earned is calculated and credited to the user's save file
+     */
     {
         //Element scrElement = nifty.getCurrentScreen().findElementByName("container");
         //scrElement.getElementInteraction().setOnMouseOver(new NiftyMethodInvoker(nifty,"doNothing()",this));
@@ -348,17 +389,21 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
             windSound.play();
         }
     }
+
     public void updatePoints(float val)
+    //Updates the points for the user to see
     {
         Element niftyElement = nifty.getCurrentScreen().findElementByName("points");
         niftyElement.getRenderer(TextRenderer.class).setText("Points: "+ (int) val);
     }
     public void updateCurrency(int val)
+    //Updates the currency for the user to see
     {
         Element niftyElement = nifty.getCurrentScreen().findElementByName("currency");
         niftyElement.getRenderer(TextRenderer.class).setText("Currency: "+ val);
     }
     public void buyTheUpgrade()
+    //Removes an amount of currency equivalent to the price of an item from the user's currency when an item is bought
     {
         //subtracts money from currency
         //updates currency in save file and gui
@@ -393,6 +438,7 @@ public class GuiStateController extends AbstractAppState implements ScreenContro
         saveData.save("saves/"+fileName+".sav");
     }
     public void selectUpgrade(String upgrade)
+    //Allows the user to pick specifically which upgrade he will purchase
     {
         int upgradeNum = Integer.parseInt(upgrade);
         if (upgradeNum==1&&(saveData.getCurrency()>=300))
