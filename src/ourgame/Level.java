@@ -62,7 +62,9 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
     private boolean hasBOB = false;
     private Node coinNode;
     private Coin [] coinList = new Coin[101];
+    
     public Level(String assetFolder, ArrayList<Item> items)
+    //recognizes whether or not a user has bought one of the items
     {
         this.assetFolder = assetFolder;
         for(Item item: items)
@@ -82,6 +84,11 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
     
     @Override
     public void initialize(AppStateManager stateManager1, Application dahApp)
+    /* Accesses terrain and attaches it to the root node
+     * Hides cursor
+     * Randomly places coins over the terrain
+     * Implements music (randomly picks one of four audio clips to play)
+     */
     {
         super.initialize(stateManager1, app);
         app = (SimpleApplication)dahApp;
@@ -162,6 +169,10 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
     }
     @Override
     public void update(float tpf)
+    /* Implements coin magnet if bought
+     * Displays points 
+     * Ends game if character touches the terrain
+     */
     {
         if (hasMagnet)
         {
@@ -205,7 +216,8 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
         return points;
     }
     private void initLight()
-    {
+    // Creates sky box and implements lighting and shadows
+         {
         app.getCamera().setFrustumFar(1000000);
         
         Node skyNode = new Node();
@@ -251,13 +263,17 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
         this.nifty = nifty;
         this.screen = screen;
     }
-    private void registerInput() {
+    private void registerInput() 
+    //allows the player to quit the game with by pressing the E key
+    {
         app.getInputManager().addMapping("leave", new KeyTrigger(KeyInput.KEY_E));
         app.getInputManager().addListener(this, "leave");
     }
 
 
-    public void onAction(String name,boolean keyPressed, float tpf) {
+    public void onAction(String name,boolean keyPressed, float tpf) 
+    //game is ended (equivalent to hitting the ground and dying) if player quits the game
+    {
         
         if (name.equals("leave")&& nifty!=null) {
             death = true;
@@ -272,6 +288,7 @@ public class Level extends AbstractAppState implements ActionListener,ScreenCont
     }
     @Override
     public void cleanup()
+    //returns to original settings (cursor becomes visible, all nodes are detached from the root node, lighting is removed, music is ended)
     {
         System.out.println("Cleanup");
         super.cleanup();
