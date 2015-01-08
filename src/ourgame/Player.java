@@ -222,6 +222,16 @@ public class Player extends Node implements AnalogListener, ActionListener
         registerInput();
     }
     
+    /**
+     * The method receives 4 boolean values and assigns them to private
+     * global variables.
+     * 
+     * @param balloon - whether or not the player has the balloon
+     * @param fuzzySlippers - whether or not the player has the fuzzy slippers
+     * @param magnet - whether or not the player has the magnet
+     * @param BOB - whether or not the player has the bunch of balloons
+     * 
+     */
     public void sendItems(boolean balloon, boolean fuzzySlippers, boolean magnet,boolean BOB)
     //allows access to items that can be purchased in the shop
     {
