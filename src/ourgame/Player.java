@@ -41,14 +41,14 @@ import com.jme3.util.TangentBinormalGenerator;
  */
 public class Player extends Node implements AnalogListener, ActionListener
 {
-    private Node playerMesh = new Node(); //
+    private Node playerMesh = new Node(); 
     private RigidBodyControl physicsControl;
     private AudioNode soundNode;
     private SimpleApplication app;
     private Camera cam;
     private Node pivotNode;
     private CameraNode camNode;
-    
+    private Node rotateNode = new Node();
 
     private boolean parachuteUsed = false;
     private boolean parachuting = false;
@@ -60,6 +60,8 @@ public class Player extends Node implements AnalogListener, ActionListener
     
     private boolean hasBalloon = false;
     private boolean hasFuzzySlippers = false;
+    private boolean hasMagnet = false;
+    private boolean hasBOB = false;
     
     private float xRotation = 0;
     private float yRotation = 0;
@@ -73,15 +75,17 @@ public class Player extends Node implements AnalogListener, ActionListener
      * @param bulletAppState
      * @param appRef
      */
-    public Player(BulletAppState bulletAppState, Application appRef)
+    public Player(BulletAppState bulletAppState, Application appRef) 
+     /*base jumping character is imported in separate pieces (allows for each to have separate textures) into different nodes attached together
+      *the rotation and physics for the character are applied with the camera following the character
+      *parachute model is loaded
+      */
     {
         bulletState = bulletAppState;
         setName("Player");
         
         app = (SimpleApplication)appRef;
         cam = app.getCamera();
-        //playerMesh = app.getAssetManager().loadModel("Models/Dude/WIP Dude Frame - unjoined.obj");
-        //Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
         
         Spatial backpackS = app.getAssetManager().loadModel("Models/Dude/Backpack.obj");
         Material mat1 = new Material (app.getAssetManager(), "Common/MatDefs/Light/Lighting.j3md");
@@ -148,7 +152,6 @@ public class Player extends Node implements AnalogListener, ActionListener
         mat4.setTexture("DiffuseMap", app.getAssetManager().loadTexture("Textures/polycotton_blue_2_PNG.png"));
         wingsS.setMaterial(mat4);
         
-        Node rotateNode = new Node();
         
         rotateNode.attachChild(backpackS);
         rotateNode.attachChild(headS);
@@ -219,23 +222,40 @@ public class Player extends Node implements AnalogListener, ActionListener
         registerInput();
     }
     
-    public void sendItems(boolean balloon, boolean fuzzySlippers)
+    /**
+     * The method receives 4 boolean values and assigns them to private
+     * global variables.
+     * 
+     * @param balloon - whether or not the player has the balloon
+     * @param fuzzySlippers - whether or not the player has the fuzzy slippers
+     * @param magnet - whether or not the player has the magnet
+     * @param BOB - whether or not the player has the bunch of balloons
+     * 
+     */
+    public void sendItems(boolean balloon, boolean fuzzySlippers, boolean magnet,boolean BOB)
+    //allows access to items that can be purchased in the shop
     {
         hasBalloon = balloon;
         hasFuzzySlippers = fuzzySlippers;
+        hasMagnet = magnet;
+        hasBOB = BOB;
     }
     
     public float getPoints()
+    //allows access to the number of points the player has earned
     {
         return points;
     }
     
     public void update(float tpf)
+    /* Allows the camera to follow the character, no matter the rotation inputed by the user
+     * Updates the velocity and other physics if an item is being used or if the character is parachuting
+     * Allows deployment of the parachute from the backpack of the character     * 
+     */
     {
          if(!hitGround&&!parachuteUsed)
             points+=tpf*50;
-        //update the velocity crap
-        Vector3f xPlusZ = new Vector3f(
+            Vector3f xPlusZ = new Vector3f(
                 cam.getDirection().x, 
                 0, 
                 cam.getDirection().z);
@@ -246,9 +266,10 @@ public class Player extends Node implements AnalogListener, ActionListener
                 xPlusZ.x * physicsControl.getLinearVelocity().y * -2,
                 physicsControl.getLinearVelocity().y,
                 xPlusZ.z * physicsControl.getLinearVelocity().y * -2);
-        
-        if(hasBalloon)
-            linearVelocity.setY(linearVelocity.getY()+5*tpf);
+        if (hasBOB)
+            linearVelocity.setY(linearVelocity.getY()+6*tpf);
+        else if(hasBalloon)
+            linearVelocity.setY(linearVelocity.getY()+3*tpf);
         
         
         if(parachuting)
@@ -276,15 +297,16 @@ public class Player extends Node implements AnalogListener, ActionListener
         //System.out.println("Z:"+linearVelocity.getZ());
         
         //update the playerMesh orientation
-        if(!parachuting)
+         if(!parachuting)
         {
-            Quaternion quat2 = pivotNode.getLocalRotation();
-            playerMesh.getLocalRotation().slerp(quat2, tpf);
+            Quaternion quat = pivotNode.getLocalRotation();
+            playerMesh.getLocalRotation().slerp(quat, tpf);
         }
         else
         {
-            this.setLocalRotation(Quaternion.DIRECTION_Z);
-            playerMesh.getLocalRotation().slerp(new Quaternion(0,1,0,1), 5*tpf); //*** (0, 1, 0,1)
+            rotateNode.setLocalRotation(new Quaternion().fromAngles(0f, FastMath.PI/2f, 0f));
+            Quaternion quat = pivotNode.getLocalRotation();
+            playerMesh.getLocalRotation().slerp(quat, tpf);
         }
         
         if(parachuteUsed && !parachuting)
@@ -307,13 +329,16 @@ public class Player extends Node implements AnalogListener, ActionListener
     
     public class PlayerPhysicsListener implements PhysicsCollisionListener 
     {
-        public void collision(PhysicsCollisionEvent event) 
+        public void collision(PhysicsCollisionEvent event)
+        /* Tracks the character's force of collision with the ground, considering items when contact is made to determine if the character died or not
+         * Manages the coins on the terrain (so that one does not collide with another coin or the terrain and so that one receives points for collecting a coin)
+         */
         {
             
             if((event.getNodeA().getName().equals("le terrain") && event.getNodeB().getName().equals("Player"))|| (event.getNodeA().getName().equals("Player")&&event.getNodeB().getName().equals("le terrain"))){
-                int maxHitForce = 700;
+                int maxHitForce = 2700;
                 if(hasFuzzySlippers)
-                    maxHitForce*= 1.2;
+                    maxHitForce*= 1.5;
                 if(Math.abs(event.getAppliedImpulse())+
                         Math.abs(event.getAppliedImpulseLateral1())+
                         Math.abs(event.getAppliedImpulseLateral2())>maxHitForce)
@@ -325,7 +350,7 @@ public class Player extends Node implements AnalogListener, ActionListener
             }
             
             //if there's a coin, remove it
-            if((event.getNodeA().getName().equals("goldCoin-geom-0")&&event.getNodeB().getName().equals("Player")) || (event.getNodeA().getName().equals("Player")&&event.getNodeB().getName().equals("goldCoin-geom-0")))
+            else if((event.getNodeA().getName().equals("goldCoin-geom-0")&&event.getNodeB().getName().equals("Player")) || (event.getNodeA().getName().equals("Player")&&event.getNodeB().getName().equals("goldCoin-geom-0")))
             {
                 if(event.getNodeA().getName().equals("goldCoin-geom-0"))
                 {
@@ -338,6 +363,15 @@ public class Player extends Node implements AnalogListener, ActionListener
                     points = points+100;
                 }
             }
+            else if (event.getNodeA().getName().equals("goldCoin-geom-0"))
+            {
+                //in case coin collides with terrain or with another coin
+                event.getNodeA().removeFromParent();
+            }
+            else if (event.getNodeB().getName().equals("goldCoin-geom-0"))
+            {
+                event.getNodeB().removeFromParent();
+            }
             //For debugging purposes
 //            System.out.println("----------------------------------");
 //            System.out.println("Collision Between:");
@@ -345,6 +379,10 @@ public class Player extends Node implements AnalogListener, ActionListener
 //            System.out.println(event.getNodeB().getName());
 //            System.out.println("----------------------------------");
         }
+    }
+    public boolean getDeath()
+    {
+        return died;
     }
     public void cleanup()
     {
@@ -356,7 +394,9 @@ public class Player extends Node implements AnalogListener, ActionListener
     {
         return hitGround;
     }
-    private void registerInput() {
+    private void registerInput() 
+    //initializes all the possible user inputs
+    {
         
         app.getInputManager().addMapping("rotateRight", new MouseAxisTrigger(MouseInput.AXIS_X, true));
         app.getInputManager().addMapping("rotateLeft", new MouseAxisTrigger(MouseInput.AXIS_X, false));
@@ -366,7 +406,9 @@ public class Player extends Node implements AnalogListener, ActionListener
         app.getInputManager().addListener(this, "rotateRight", "rotateLeft", "rotateUp", "rotateDown", "use parachute");
     }
 
-    public void onAnalog(String name, float value, float tpf) {
+    public void onAnalog(String name, float value, float tpf) 
+    //defines how the figure can rotate as a result of different user inputs
+    {
         
         if (name.equals("rotateRight")) 
             xRotation += 20f * value * tpf;
@@ -380,7 +422,9 @@ public class Player extends Node implements AnalogListener, ActionListener
         Quaternion rotation = new Quaternion().fromAngles(yRotation, xRotation, 0f);
         pivotNode.setLocalRotation(rotation);
     }
-    public void onAction(String name, boolean keyPressed, float tpf) {
+    public void onAction(String name, boolean keyPressed, float tpf) 
+    //ensures that the parachute is only used once
+    {
         
         if (name.equals("use parachute") && !parachuting) {
             parachuteUsed = true;

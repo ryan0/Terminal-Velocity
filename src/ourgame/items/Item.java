@@ -25,6 +25,10 @@ public abstract class Item
             return new FuzzySlippers();
         else if (string.equals("Balloon"))
             return new Balloon();
+        else if (string.equals("Magnet"))
+            return new Magnet();
+        else if (string.equals("Bunch Of Balloons"))
+            return new BunchOfBalloons();
         else
             return null;
     }

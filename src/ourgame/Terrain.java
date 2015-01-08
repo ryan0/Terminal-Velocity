@@ -42,6 +42,8 @@ public class Terrain extends Node
      * @param app the desired parent Application
      */
     public Terrain(BulletAppState bulletAppState, Application app, String assetFolder)
+    //Accesses the terain and applies grass, midRock, and rock textures to it according to normal maps and a height map
+    //attaches the terrain to this after sizing it and adding a physics space
     {
         Material mat = new Material(app.getAssetManager(), "Common/MatDefs/Terrain/TerrainLighting.j3md");
         mat.setTexture("AlphaMap", app.getAssetManager().loadTexture(assetFolder + "/alphaMap.png"));

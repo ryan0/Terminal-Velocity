@@ -24,8 +24,8 @@ public class PlayerData
     private ArrayList<Item> itemList = new ArrayList<Item>();
     
     public boolean save(String fileName)
+    //Writes a user's information (current variables - items and currency) to his specific save file
     {
-        //write to the text file with the current variables
         try 
         {
             BufferedWriter outputStream = new BufferedWriter(new FileWriter(fileName));
@@ -51,6 +51,7 @@ public class PlayerData
     }
     
     public boolean load(String fileName)
+    //Allows the user to pull up an old game, with currency and items returned to the new game from the save file
     {
         try 
         {

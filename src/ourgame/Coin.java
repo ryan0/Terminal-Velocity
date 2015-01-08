@@ -22,15 +22,24 @@ import com.jme3.util.TangentBinormalGenerator;
  */
 public class Coin extends Node{
     private Spatial mesh;
-    
+    private RigidBodyControl control;
     /**
      * Creates a node containing a coin <code>mesh</code> and adds
      * it to a specific <code>Application</code> and <code>bulletAppState</code>.
      * 
-     * @param bulletAppState the desired parent bulletAppState
-     * @param app the desired parent Application
+     */
+    
+    /**
+     * 
+     * @param bulletAppState - allows for physics simulations as the desired parent bulletAppState
+     * @param app - an instance of the application (the game) which is the desired parent Application
+     * @param position - a float vector which allows the translation of the individual coins
+     * @param size - a float vector which allows the coin to be sized
      */
     public Coin(BulletAppState bulletAppState, Application app, Vector3f position,Vector3f size)
+    /* Imports coin model, applies texture, lighting, and color, randomly rotates the coins
+     * Gives the coins a collision shape so contact between the character and the coin can be detected
+     */
     {
         setName("Coin");
         
@@ -48,11 +57,22 @@ public class Coin extends Node{
         mesh.rotate(FastMath.HALF_PI,FastMath.TWO_PI*FastMath.nextRandomFloat(),0);
         
         CollisionShape coinShape = new BoxCollisionShape(new Vector3f(30, 30, 30));
-        RigidBodyControl control = new RigidBodyControl(coinShape, .000001f);
+        control = new RigidBodyControl(coinShape, .000001f);
         mesh.addControl(control);
         this.attachChild(mesh);
         bulletAppState.getPhysicsSpace().add(mesh);
         control.setGravity(new Vector3f());
     }
-    
+    public Spatial getMesh()
+    {
+        return mesh;
+    }
+    public void setForce(float x, float y, float z)
+    {
+        control.setLinearVelocity(new Vector3f(x*5,y*5,z*5));
+    }
+    public void setVelZero()
+    {
+        control.setLinearVelocity(new Vector3f(0,0,0));
+    }
 }
